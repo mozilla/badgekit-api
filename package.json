@@ -1,0 +1,32 @@
+{
+  "name": "badgekit-issue",
+  "version": "0.1.0",
+  "description": "BadgeKit issuing platform",
+  "main": "app",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "config-store": "~0.2.0",
+    "mysql": "~2.0.0-alpha9",
+    "streamsql": "git://github.com/andrewhayward/streamsql.git#generators",
+    "restify": "~2.6.0"
+  },
+  "devDependencies": {
+    "tap": "~0.4.4",
+    "mysql": "~2.0.0-alpha9"
+  },
+  "scripts": {
+    "test": "npm run lint && tap test/*.test.js",
+    "lint": "jshint index.js lib/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mozilla/badgekit-issue.git"
+  },
+  "author": "Mozilla Open Badges",
+  "license": "MPLv2",
+  "bugs": {
+    "url": "https://github.com/mozilla/badgekit-issue/issues"
+  }
+}
