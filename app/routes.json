@@ -1,0 +1,58 @@
+{
+  "/systems": {
+    "get": "getSystems",
+    "post": "addSystem"
+  },
+  "/systems/:systemId": {
+    "get": "getSystem",
+    "post": "updateSystem"
+  },
+  "/systems/:systemId/programs": {
+    "get": "getSystemPrograms"
+  },
+  "/systems/:systemId/issuers": {
+    "get": "getSystemIssuers"
+  },
+  "/systems/:systemId/badges": {
+    "get": "getSystemBadges"
+  },
+
+  "/issuers": {
+    "get": "getIssuers",
+    "post": "addIssuer"
+  },
+  "/issuers/:issuerId": {
+    "get": "getIssuer",
+    "post": "updateIssuer"
+  },
+  "/issuers/:issuerId/systems": {
+    "get": "getIssuerSystems"
+  },
+  "/issuers/:issuerId/programs": {
+    "get": "getIssuerPrograms"
+  },
+  "/issuers/:issuerId/badges": {
+    "get": "getIssuerBadges"
+  },
+
+  "/programs": {
+    "get": "getPrograms",
+    "post": "addProgram"
+  },
+  "/programs/:programId": {
+    "get": "getProgram",
+    "post": "updateProgram"
+  },
+  "/programs/:programId/badges": {
+    "get": "getProgramBadges"
+  },
+
+  "/badges": {
+    "get": "getBadges",
+    "post": "addBadge"
+  },
+  "/badges/:badgeId": {
+    "get": "getBadge",
+    "post": "updateBadge"
+  }
+}
