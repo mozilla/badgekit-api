@@ -1,6 +1,6 @@
 var db = require('../lib/db');
 
-var table = db.table('issuer', {
+var table = db.table('issuers', {
   
 });
 
