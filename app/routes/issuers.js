@@ -4,7 +4,6 @@ const Issuers = require('../models/issuer');
 exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/issuers', showAllIssuers);
-  server.get('/issuers/', showAllIssuers);
   function showAllIssuers(req, res, next) {
     Issuers.get({}, function foundRows(error, rows) {
       if (error)
@@ -16,7 +15,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
   }
 
   server.get('/issuer/:issuerId', showOneIssuer);
-  server.get('/issuers/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
     getIssuer(req, res, next, function (row) {
@@ -26,7 +24,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
   }
 
   server.post('/issuers', saveIssuer);
-  server.post('/issuers/', saveIssuer);
   function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
     const validationErrors = Issuers.validateRow(row);
@@ -46,7 +43,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
   }
 
   server.del('/issuer/:issuerId', deleteIssuer);
-  server.del('/issuers/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
 
@@ -61,7 +57,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
   }
 
   server.put('/issuer/:issuerId', updateIssuer);
-  server.put('/issuers/:issuerId', updateIssuer);
   function updateIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
       const updated = xtend(row, req.body)
