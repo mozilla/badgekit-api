@@ -9,7 +9,8 @@ DROP TABLE IF EXISTS `issuers`;
 CREATE TABLE `issuers` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(50) NOT NULL UNIQUE,
-  `name` VARCHAR(50) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
