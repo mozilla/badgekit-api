@@ -19,7 +19,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.get('/issuers/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
-    findRow(req, res, next, function (row) {
+    getIssuer(req, res, next, function (row) {
       res.send({issuer: issuerFromDb(row)});
       return next();
     });
@@ -50,7 +50,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   function deleteIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
 
-    findRow(req, res, next, function (row) {
+    getIssuer(req, res, next, function (row) {
       Issuers.del(row, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
@@ -63,9 +63,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.put('/issuer/:issuerId', updateIssuer);
   server.put('/issuers/:issuerId', updateIssuer);
   function updateIssuer(req, res, next) {
-    findRow(req, res, next, function (row) {
+    getIssuer(req, res, next, function (row) {
       const updated = xtend(row, req.body)
-      Issuers.put(updated, function (error, result) {
+      Issuers.put(updated, function updatedRow(error, result) {
         if (error)
           return handleError(error, row, res, next)
         res.send({status: 'updated'})
@@ -74,9 +74,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
   }
 };
 
-function findRow(req, res, next, callback) {
+function getIssuer(req, res, next, callback) {
   const query = {slug: req.params.issuerId};
-  Issuers.getOne(query, function foundRow(error, row) {
+  Issuers.getOne(query, function foundIssuer(error, row) {
     if (error)
       return handleError(error, row, res, next)
 
