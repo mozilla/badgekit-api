@@ -1,3 +1,4 @@
+const xtend = require('xtend')
 const Issuers = require('../models/issuer');
 
 exports = module.exports = function applyBadgeRoutes (server) {
@@ -12,25 +13,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
       res.send({issuers: rows.map(issuerFromDb)});
       return next();
     });
-  };
+  }
 
   server.get('/issuer/:issuerId', showOneIssuer);
   server.get('/issuers/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
-    Issuers.getOne(query, function foundRow(error, row) {
-      if (error)
-        return handleError(error, row, res, next)
-
-      if (!row) {
-        res.send(404, {error: 'not found'});
-        return next()
-      }
-
+    findRow(req, res, next, function (row) {
       res.send({issuer: issuerFromDb(row)});
       return next();
     });
-  };
+  }
 
   server.post('/issuers', saveIssuer);
   server.post('/issuers/', saveIssuer);
@@ -50,31 +43,51 @@ exports = module.exports = function applyBadgeRoutes (server) {
       res.send(201, {status: 'created'})
       return next();
     });
-  };
+  }
 
   server.del('/issuer/:issuerId', deleteIssuer);
   server.del('/issuers/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
 
-    Issuers.getOne(query, function foundRow(error, row) {
-      if (error)
-        return handleError(error, row, res, next)
-
-      if (!row) {
-        res.send(404, {error: 'not found'});
-        return next()
-      }
-
+    findRow(req, res, next, function (row) {
       Issuers.del(row, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
 
         res.send({status: 'deleted', row: row});
+      });
+    });
+  }
+
+  server.put('/issuer/:issuerId', updateIssuer);
+  server.put('/issuers/:issuerId', updateIssuer);
+  function updateIssuer(req, res, next) {
+    findRow(req, res, next, function (row) {
+      const updated = xtend(row, req.body)
+      Issuers.put(updated, function (error, result) {
+        if (error)
+          return handleError(error, row, res, next)
+        res.send({status: 'updated'})
       })
     });
-  };
+  }
 };
+
+function findRow(req, res, next, callback) {
+  const query = {slug: req.params.issuerId};
+  Issuers.getOne(query, function foundRow(error, row) {
+    if (error)
+      return handleError(error, row, res, next)
+
+    if (!row) {
+      res.send(404, {error: 'not found'});
+      return next()
+    }
+
+    return callback(row)
+  });
+}
 
 const errorCodes = {
   ER_DUP_ENTRY: [409, {error: 'An issuer with that `slug` already exists'}]
