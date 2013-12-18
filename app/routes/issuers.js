@@ -16,7 +16,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/issuer/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
-    const query = {slug: req.params.issuerId};
     getIssuer(req, res, next, function (row) {
       res.send({issuer: issuerFromDb(row)});
       return next();
@@ -44,13 +43,10 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.del('/issuer/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
-    const query = {slug: req.params.issuerId};
-
     getIssuer(req, res, next, function (row) {
       Issuers.del(row, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
-
         res.send({status: 'deleted', row: row});
       });
     });
