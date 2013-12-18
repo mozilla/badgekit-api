@@ -1,7 +1,7 @@
 const xtend = require('xtend')
 const Issuers = require('../models/issuer');
 
-exports = module.exports = function applyBadgeRoutes (server) {
+exports = module.exports = function applyIssuerRoutes (server) {
 
   server.get('/issuers', showAllIssuers);
   function showAllIssuers(req, res, next) {
