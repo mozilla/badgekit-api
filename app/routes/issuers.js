@@ -5,7 +5,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.get('/issuers', showAllIssuers);
   server.get('/issuers/', showAllIssuers);
   function showAllIssuers(req, res, next) {
-    Issuers.get({}, function (error, rows) {
+    Issuers.get({}, function foundRows(error, rows) {
       if (error)
         return handleError(error, null, res, next)
 
@@ -18,7 +18,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.get('/issuers/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
-    Issuers.getOne(query, function (error, row) {
+    Issuers.getOne(query, function foundRow(error, row) {
       if (error)
         return handleError(error, row, res, next)
 
@@ -43,7 +43,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       return next()
     }
 
-    Issuers.put(row, function (error, result) {
+    Issuers.put(row, function savedRow(error, result) {
       if (error)
         return handleError(error, row, res, next)
 
@@ -56,7 +56,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.del('/issuers/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
     const query = {slug: req.params.issuerId};
-    Issuers.getOne(query, function (error, row) {
+
+    Issuers.getOne(query, function foundRow(error, row) {
       if (error)
         return handleError(error, row, res, next)
 
@@ -65,7 +66,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         return next()
       }
 
-      Issuers.del(row, function (error, result) {
+      Issuers.del(row, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
 
