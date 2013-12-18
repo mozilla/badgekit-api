@@ -12,6 +12,10 @@ server.use(restify.bodyParser({mapParams: false, rejectUnknown: true}));
 
 applyRoutes(server);
 
-server.listen(8080, function () {
-  console.log('%s listening at %s', server.name, server.url);
-});
+module.exports = server;
+
+if (!module.parent) {
+  server.listen(process.env.PORT || 8080, function () {
+    console.log('%s listening at %s', server.name, server.url);
+  });
+}
