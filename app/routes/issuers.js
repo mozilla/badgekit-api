@@ -28,12 +28,25 @@ exports = module.exports = function applyBadgeRoutes (server) {
   });
 
   server.post('/issuers', function saveIssuer(req, res, next) {
-    console.dir(req.body)
-    res.send(req.body);
-    return next();
+    const row = fromPostToRow(req.body);
+    Issuers.put(row, function (error, result) {
+      if (error) return next(error)
+
+      res.send({status: 'created'})
+      return next();
+    })
   });
 
 };
+
+function fromPostToRow(post) {
+  return {
+    slug: post.slug,
+    url: post.url,
+    name: post.name,
+    email: post.email,
+  }
+}
 
 function issuerFromDb(row) {
   return {
