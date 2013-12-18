@@ -1,10 +1,6 @@
+var config = require('./config');
 var streamsql = require('streamsql');
 
-var db = streamsql.connect({
-  driver: 'mysql',
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-});
+var db = streamsql.connect(config.find('db'));
 
 exports = module.exports = db;

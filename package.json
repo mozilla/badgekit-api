@@ -13,6 +13,7 @@
   },
 
   "dependencies": {
+    "config-store": "~0.3.0",
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.0",
     "streamsql": "~0.4.3"
