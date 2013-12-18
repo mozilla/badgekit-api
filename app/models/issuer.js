@@ -5,8 +5,8 @@ const Issuers = db.table('issuers', {
   fields: [
     'id',
     'slug',
-    'url',
     'name',
+    'url',
     'description',
     'email',
     'imageId'
@@ -35,6 +35,9 @@ const validation = {
   },
   slug: function (slug) {
     check(slug).len(1, 50);
+  },
+  name: function (name) {
+    check(name).len(1, 50);
   },
   url: function (url) {
     check(url).isUrl();

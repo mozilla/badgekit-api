@@ -4,7 +4,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/issuers', function showAllIssuers(req, res, next) {
     Issuers.get({}, function (error, rows) {
-      if (error) return next(error);
+      if (error)
+        return next(error);
       res.send({issuers: rows.map(issuerFromDb)});
       return next();
     })
@@ -15,7 +16,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
     const query = {slug: req.params.issuerId};
     Issuers.getOne(query, function (error, row) {
-      if (error) return next(error);
+      if (error)
+        return next(error);
 
       if (!row) {
         res.send(404, {error: 'not found'});
@@ -29,8 +31,19 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.post('/issuers', function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
+    const errors = Issuers.validateRow(row);
+
+    if (errors.length) {
+      res.send(400, {errors: errors})
+      return next()
+    }
+
     Issuers.put(row, function (error, result) {
-      if (error) return next(error)
+      // TODO: attempt error handling so it doesn't bubble up as a 500
+      if (error)
+        return next(error)
+
+      console.dir(result)
 
       res.send({status: 'created'})
       return next();
