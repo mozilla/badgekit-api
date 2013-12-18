@@ -14,8 +14,7 @@ const Issuers = db.table('issuers', {
 });
 
 Issuers.validateRow = function (row) {
-  const errors = []
-  this.fields.forEach(function (field) {
+  return this.fields.reduce(function (errors, field) {
     try {
       const validator = validation[field] || noop
       validator(row[field])
@@ -24,8 +23,8 @@ Issuers.validateRow = function (row) {
       e.field = field
       errors.push(e)
     }
-  })
-  return errors
+    return errors
+  }, [])
 }
 
 const validation = {
