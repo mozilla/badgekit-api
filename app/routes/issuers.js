@@ -39,11 +39,12 @@ exports = module.exports = function applyBadgeRoutes (server) {
     }
 
     Issuers.put(row, function (error, result) {
-      // TODO: attempt error handling so it doesn't bubble up as a 500
-      if (error)
-        return next(error)
-
-      console.dir(result)
+      if (error) {
+        const expected = knownError(error, row)
+        if (!expected) return next(error)
+        res.send.apply(res, expected)
+        return next()
+      }
 
       res.send({status: 'created'})
       return next();
@@ -51,6 +52,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
   });
 
 };
+
+const errorCodes = {
+  ER_DUP_ENTRY: [409, { error: 'An issuer with that `slug` already exists' }]
+}
+
+function knownError(error, row) {
+  const err =  errorCodes[error.code];
+  if (!err) return;
+  err[1].received = row
+  return err;
+}
 
 function fromPostToRow(post) {
   return {
