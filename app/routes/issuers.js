@@ -27,12 +27,19 @@ exports = module.exports = function applyBadgeRoutes (server) {
     })
   });
 
+  server.post('/issuers', function saveIssuer(req, res, next) {
+    console.dir(req.body)
+    res.send(req.body);
+    return next();
+  });
+
 };
 
 function issuerFromDb(row) {
   return {
     id: row.id,
     slug: row.slug,
+    url: row.url,
     name: row.name,
     email: row.email,
   }

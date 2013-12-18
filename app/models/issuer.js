@@ -4,6 +4,7 @@ const table = db.table('issuers', {
   fields: [
     'id',
     'slug',
+    'url',
     'name',
     'description',
     'email',
