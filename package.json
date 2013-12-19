@@ -4,24 +4,23 @@
   "description": "A badge issuing platform",
   "author": "Mozilla OpenBadges",
   "license": "MPLv2",
-
   "main": "app/index.js",
   "scripts": {
     "start": "node app",
     "test": "npm run lint && tap test/*.test.js",
     "lint": "jshint app/*"
   },
-
   "dependencies": {
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.0",
-    "streamsql": "~0.4.3"
+    "streamsql": "~0.4.4",
+    "validator": "~2.0.0",
+    "xtend": "~2.1.1"
   },
   "devDependencies": {
     "jshint": "~2.3.0",
-    "tap": "~0.4.4"
+    "tap": "~0.4.6"
   },
-
   "homepage": "https://github.com/mozilla/badgekit-issue",
   "repository": {
     "type": "git",

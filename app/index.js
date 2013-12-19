@@ -6,12 +6,17 @@ var server = restify.createServer({
   version: '1.0.0'
 });
 
+server.pre(restify.pre.sanitizePath());
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser({mapParams: false}));
 server.use(restify.bodyParser({mapParams: false, rejectUnknown: true}));
 
 applyRoutes(server);
 
-server.listen(8080, function () {
-  console.log('%s listening at %s', server.name, server.url);
-});
+module.exports = server;
+
+if (!module.parent) {
+  server.listen(process.env.PORT || 8080, function () {
+    console.log('%s listening at %s', server.name, server.url);
+  });
+}
