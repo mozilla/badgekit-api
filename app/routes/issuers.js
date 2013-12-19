@@ -14,14 +14,6 @@ exports = module.exports = function applyIssuerRoutes (server) {
     });
   }
 
-  server.get('/issuer/:issuerId', showOneIssuer);
-  function showOneIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
-      res.send({issuer: issuerFromDb(row)});
-      return next();
-    });
-  }
-
   server.post('/issuers', saveIssuer);
   function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
@@ -41,7 +33,15 @@ exports = module.exports = function applyIssuerRoutes (server) {
     });
   }
 
-  server.del('/issuer/:issuerId', deleteIssuer);
+  server.get('/issuers/:issuerId', showOneIssuer);
+  function showOneIssuer(req, res, next) {
+    getIssuer(req, res, next, function (row) {
+      res.send({issuer: issuerFromDb(row)});
+      return next();
+    });
+  }
+
+  server.del('/issuers/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
       Issuers.del(row, function deletedRow(error, result) {
@@ -52,7 +52,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
     });
   }
 
-  server.put('/issuer/:issuerId', updateIssuer);
+  server.put('/issuers/:issuerId', updateIssuer);
   function updateIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
       const updated = xtend(row, req.body)
@@ -63,6 +63,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       })
     });
   }
+
 };
 
 function getIssuer(req, res, next, callback) {
