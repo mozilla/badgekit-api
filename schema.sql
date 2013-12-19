@@ -28,7 +28,7 @@ CREATE TABLE `badges` (
   `imageId` INT NOT NULL REFERENCES `images`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
   PRIMARY KEY (`id`)
-) CHARACTER SET binary
+) CHARACTER SET utf8
   ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `images`;
