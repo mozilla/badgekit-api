@@ -1,7 +1,59 @@
-var db = require('../lib/db');
+const check = require('validator').check;
+const db = require('../lib/db');
 
-var table = db.table('badges', {
-  
+const Badges = db.table('badges', {
+  fields: [
+    'id',
+    'slug',
+    'name',
+    'strapline',
+    'description',
+    'imageId',
+    'issuerId'
+  ],
 });
 
-exports = module.exports = table;
+Badges.validateRow = function (row) {
+  return this.fields.reduce(function (errors, field) {
+    try {
+      const validator = validation[field] || noop;
+      validator(row[field]);
+    }
+    catch(e) {
+      e.field = field;
+      errors.push(e);
+    }
+    return errors;
+  }, []);
+};
+
+const validation = {
+  id: function (id) {
+    if (typeof id == 'undefined') return;
+    check(id).isInt();
+  },
+  slug: function (slug) {
+    check(slug).len(1, 50);
+  },
+  name: function (name) {
+    check(name).len(1, 255);
+  },
+  strapline: function (text) {
+    check(text).len(1, 50);
+  },
+  description: function (desc) {
+    check(desc).len(0, 255);
+  },
+  imageId: function (id) {
+    if (typeof id == 'undefined') return;
+    check(id).isInt();
+  },
+  issuerId: function (id) {
+    if (typeof id == 'undefined') return;
+    check(id).isInt();
+  },
+};
+
+function noop() {}
+
+exports = module.exports = Badges;
