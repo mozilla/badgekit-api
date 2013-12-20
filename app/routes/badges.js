@@ -1,5 +1,9 @@
+const crypto = require('crypto');
+const fs = require('fs');
 const xtend = require('xtend');
-var Badges = require('../models/badge');
+
+const Badges = require('../models/badge');
+const Images = require('../models/image');
 
 exports = module.exports = function applyBadgeRoutes (server) {
 
@@ -17,20 +21,54 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.post('/badges', saveBadge);
   function saveBadge (req, res, next) {
     const row = fromPostToRow(req.body);
-    const validationErrors = Badges.validateRow(row);
+    const image = (req.files || {}).image || {};
+    const imageRow = {
+      slug: 'tmp',
+      url: req.body.image,
+      mimetype: image.type,
+      size: image.size
+    };
+
+    function finish (err, imageId) {
+      if (err)
+        return handleError(err, row, res, next);
+
+      row.imageId = imageId;
+
+      Badges.put(row, function savedRow (error, result) {
+        // Errors raised here will leave orphan images in the database
+        // We probably want to handle those, but now sure how best to do so
+
+        if (error)
+          return handleError(error, row, res, next);
+
+        res.send(201, {status: 'created'});
+        return next();
+      });
+    }
+
+    const validationErrors = []
+      .concat(Badges.validateRow(row))
+      .concat(Images.validateRow(imageRow));
+
+    if (!imageRow.size && !imageRow.url) {
+      validationErrors.push({
+        name: 'ValidatorError',
+        message: "Missing value",
+        field: 'image'
+      });
+    }
 
     if (validationErrors.length) {
       res.send(400, {errors: validationErrors});
       return next();
     }
 
-    Badges.put(row, function savedRow (error, result) {
-      if (error)
-        return handleError(error, row, res, next);
+    if (image.size)
+      return createImageFromFile(image, finish);
 
-      res.send(201, {status: 'created'});
-      return next();
-    });
+    if (req.body.image)
+      return createImageFromUrl(req.body.image, finish);
   }
 
   server.get('/badges/:badgeId', showOneBadge);
@@ -110,10 +148,42 @@ function fromPostToRow (post) {
 
 function badgeFromDb (row) {
   return {
-    id: row.id,
     slug: row.slug,
     name: row.name,
     strapline: row.strapline,
     description: row.description
   };
+}
+
+function hashString (str) {
+  return crypto.createHash('md5').update(str).digest('hex');
+}
+
+function createImageFromFile (file, callback) {
+  fs.readFile(file.path, function (err, data) {
+    if (err)
+      return callback(err);
+
+    const row = {
+      slug: hashString(Date.now() + file.path),
+      mimetype: file.type,
+      data: data
+    };
+
+    Images.put(row, function (err, result) {
+      console.log(err, result);
+      callback(err, result.insertId);
+    });
+  });
+}
+
+function createImageFromUrl (url, callback) {
+  const row = {
+    slug: hashString(Date.now() + url),
+    url: url
+  };
+
+  Images.put(row, function (err, result) {
+    callback(err, result.insertId);
+  });
 }
