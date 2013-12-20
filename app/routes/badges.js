@@ -49,10 +49,10 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.del('/badges/:badgeId', deleteBadge);
   function deleteBadge (req, res, next) {
     getBadge(req, res, next, function (row) {
-      Badges.del(row, function deletedRow (error, result) {
+      Badges.del({id: row.id}, {debug: true}, function deletedRow (error, result) {
         if (error)
           return handleError(error, row, req, next);
-        res.send({status: 'deleted', row: row});
+        res.send({status: 'deleted', badge: badgeFromDb(row)});
       });
     });
   }
