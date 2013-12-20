@@ -11,6 +11,13 @@ const Badges = db.table('badges', {
     'imageId',
     'issuerId'
   ],
+  relationships: {
+    image: {
+      type: 'hasOne',
+      local: 'imageId',
+      foreign: { table: 'images', key: 'id' }
+    }
+  }
 });
 
 Badges.validateRow = function (row) {
