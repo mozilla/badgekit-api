@@ -20,55 +20,22 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.post('/badges', saveBadge);
   function saveBadge (req, res, next) {
-    const row = fromPostToRow(req.body);
-    const image = (req.files || {}).image || {};
-    const imageRow = {
-      slug: 'tmp',
-      url: req.body.image,
-      mimetype: image.type,
-      size: image.size
-    };
+    var row = fromPostToRow(req.body);
+    var image = (req.files || {}).image || {};
+    if (!image.size)
+      image = req.body.image || {};
 
-    function finish (err, imageId) {
-      if (err)
-        return handleError(err, row, res, next);
+    putBadge(row, image, function (err, result) {
+      if (err) {
+        if (!isArray(err))
+          return handleError(err, row, res, next);
 
-      row.imageId = imageId;
-
-      Badges.put(row, function savedRow (error, result) {
-        // Errors raised here will leave orphan images in the database
-        // We probably want to handle those, but now sure how best to do so
-
-        if (error)
-          return handleError(error, row, res, next);
-
-        res.send(201, {status: 'created'});
+        res.send(400, {errors: err});
         return next();
-      });
-    }
+      }
 
-    const validationErrors = []
-      .concat(Badges.validateRow(row))
-      .concat(Images.validateRow(imageRow));
-
-    if (!imageRow.size && !imageRow.url) {
-      validationErrors.push({
-        name: 'ValidatorError',
-        message: "Missing value",
-        field: 'image'
-      });
-    }
-
-    if (validationErrors.length) {
-      res.send(400, {errors: validationErrors});
-      return next();
-    }
-
-    if (image.size)
-      return createImageFromFile(image, finish);
-
-    if (req.body.image)
-      return createImageFromUrl(req.body.image, finish);
+      res.send(201, {status: 'created'});
+    });
   }
 
   server.get('/badges/:badgeId', showOneBadge);
@@ -92,17 +59,81 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.put('/badges/:badgeId', updateBadge);
   function updateBadge (req, res, next) {
-    getBadge(req, res, next, function (row) {
-      const updated = xtend(row, req.body);
-      Badges.put(updated, function updatedRow (error, result) {
-        if (error)
-          return handleError(error, row, res, next);
+    getBadge(req, res, next, function (badge) {
+      var row = xtend(badge, req.body);
+      row.issuerId = row.issuerId || undefined;
+      var image = (req.files || {}).image || {};
+      if (!image.size)
+        image = req.body.image || null;
+
+      putBadge(row, image, function (err, result) {
+        if (err) {
+          if (!isArray(err))
+            return handleError(err, row, res, next);
+
+          res.send(400, {errors: err});
+          return next();
+        }
+
         res.send({status: 'updated'});
       });
     });
   }
 
 };
+
+function isArray (obj) {
+  return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
+function putBadge (data, image, callback) {
+  function finish (err, imageId) {
+    if (err)
+      return callback(err);
+
+    if (imageId)
+      data.imageId = imageId;
+
+    Badges.put(data, callback);
+  }
+
+  var validationErrors = Badges.validateRow(data);
+
+  if (image) {
+    if (typeof image === 'string') {
+      image = {url: image};
+    } else {
+      image = {
+        mimetype: image.type,
+        size: image.size,
+        path: image.path
+      };
+    }
+    image.slug = 'tmp';
+
+    validationErrors = validationErrors.concat(Images.validateRow(image));
+
+    if (!image.size && !image.url) {
+      validationErrors.push({
+        name: 'ValidatorError',
+        message: "Missing value",
+        field: 'image'
+      });
+    }
+  }
+
+  if (validationErrors.length)
+    return finish(validationErrors);
+
+  if (!image)
+    return finish();
+
+  if (image.size)
+    return createImageFromFile(image, finish);
+
+  if (image.url)
+    return createImageFromUrl(image.url, finish);
+}
 
 function getBadge (req, res, next, callback) {
   const query = {slug: req.params.badgeId};
@@ -166,7 +197,7 @@ function createImageFromFile (file, callback) {
 
     const row = {
       slug: hashString(Date.now() + file.path),
-      mimetype: file.type,
+      mimetype: file.mimetype,
       data: data
     };
 
