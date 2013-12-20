@@ -23,7 +23,7 @@ CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(50) NOT NULL UNIQUE,
   `name` VARCHAR(255) NOT NULL,
-  `strapline` VARCHAR(50) NOT NULL,
+  `strapline` VARCHAR(50) NULL,
   `description` TEXT NOT NULL,
   `imageId` INT NOT NULL REFERENCES `images`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),

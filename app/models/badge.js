@@ -46,10 +46,10 @@ const validation = {
     check(name).len(1, 255);
   },
   strapline: function (text) {
-    check(text).len(1, 50);
+    check(text).len(0, 50);
   },
   description: function (desc) {
-    check(desc).len(0, 255);
+    check(desc).len(1, 255);
   },
   imageId: function (id) {
     if (typeof id == 'undefined') return;
