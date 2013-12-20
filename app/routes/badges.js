@@ -137,7 +137,8 @@ function putBadge (data, image, callback) {
 
 function getBadge (req, res, next, callback) {
   const query = {slug: req.params.badgeId};
-  Badges.getOne(query, function foundBadge (error, row) {
+  const options = {relationships: true};
+  Badges.getOne(query, options, function foundBadge (error, row) {
     if (error)
       return handleError(error, row, res, next);
 
@@ -178,11 +179,19 @@ function fromPostToRow (post) {
 }
 
 function badgeFromDb (row) {
+  var image = row.image;
+
+  if (image.url)
+    image = image.url;
+  else
+    image = '/images/' + image.slug;
+
   return {
     slug: row.slug,
     name: row.name,
     strapline: row.strapline,
-    description: row.description
+    description: row.description,
+    image: image
   };
 }
 
