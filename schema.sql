@@ -34,6 +34,7 @@ CREATE TABLE `badges` (
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(50) NOT NULL UNIQUE,
   -- require either URL or mimetype & data
   `url` VARCHAR(255),
   `mimetype` VARCHAR(255),
