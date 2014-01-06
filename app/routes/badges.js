@@ -211,7 +211,6 @@ function createImageFromFile (file, callback) {
     };
 
     Images.put(row, function (err, result) {
-      console.log(err, result);
       callback(err, result.insertId);
     });
   });
