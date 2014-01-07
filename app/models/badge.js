@@ -15,7 +15,8 @@ const Badges = db.table('badges', {
     image: {
       type: 'hasOne',
       local: 'imageId',
-      foreign: { table: 'images', key: 'id' }
+      foreign: { table: 'images', key: 'id' },
+      optional: true
     }
   }
 });
