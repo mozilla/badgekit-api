@@ -27,6 +27,7 @@ CREATE TABLE `badges` (
   `description` TEXT NOT NULL,
   `imageId` INT NOT NULL REFERENCES `images`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
+  `archived` BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;

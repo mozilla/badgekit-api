@@ -9,7 +9,8 @@ const Badges = db.table('badges', {
     'strapline',
     'description',
     'imageId',
-    'issuerId'
+    'issuerId',
+    'archived'
   ],
   relationships: {
     image: {
