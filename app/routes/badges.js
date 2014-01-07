@@ -179,19 +179,12 @@ function fromPostToRow (post) {
 }
 
 function badgeFromDb (row) {
-  var image = row.image;
-
-  if (image.url)
-    image = image.url;
-  else
-    image = '/images/' + image.slug;
-
   return {
     slug: row.slug,
     name: row.name,
     strapline: row.strapline,
     description: row.description,
-    image: image
+    imageUrl: row.image.toUrl()
   };
 }
 
