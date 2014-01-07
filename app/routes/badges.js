@@ -9,7 +9,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/badges', showAllBadges);
   function showAllBadges (req, res, next) {
-    Badges.get({}, function foundRows (error, rows) {
+    const options = {relationships:true};
+
+    Badges.get({}, options, function foundRows (error, rows) {
       if (error)
         return handleError(error, null, res, next);
 
