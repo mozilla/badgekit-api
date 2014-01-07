@@ -11,11 +11,11 @@ const Images = db.table('images', {
   ],
   methods: {
     toUrl: function toUrl () {
-      if (!this.id)
-        return null;
-
       if (this.url)
         return this.url;
+
+      if (!this.slug)
+        return null;
 
       return '/images/' + this.slug;
     }
