@@ -9,9 +9,35 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/badges', showAllBadges);
   function showAllBadges (req, res, next) {
-    const options = {relationships:true};
+    var query;
+    var options = {relationships: true};
 
-    Badges.get({}, options, function foundRows (error, rows) {
+    switch (req.query.archived) {
+      case true:
+      case 'true':
+      case 1:
+      case '1':
+        query = {archived: true};
+        break;
+
+      case false:
+      case 'false':
+      case 0:
+      case '0':
+      case undefined:
+        query = {archived: false};
+        break;
+
+      case 'any':
+      case '':
+        query = {};
+        break;
+
+      default:
+        return handleError(new Error('Invalid `archived` parameter. Expecting one of \'true\', \'false\' or \'any\'.'), null, res, next);
+    }
+
+    Badges.get(query, options, function foundRows (error, rows) {
       if (error)
         return handleError(error, null, res, next);
 
