@@ -9,6 +9,14 @@ const Images = db.table('images', {
     'mimetype',
     'data'
   ],
+  methods: {
+    toUrl: function toUrl () {
+      if (this.url)
+        return this.url;
+
+      return '/images/' + this.slug;
+    }
+  },
 });
 
 Images.validateRow = function (row) {
