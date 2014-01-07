@@ -12,13 +12,13 @@ exports = module.exports = function applyBadgeRoutes (server) {
       }
 
       if (image.url) {
-        var location = image.url.toString();
+        var location = image.url.toString('ascii');
         res.header('Location', location);
         res.send(301, {location: location});
         return next();
       }
 
-      res.header('Content-Type', image.mimetype.toString());
+      res.header('Content-Type', image.mimetype.toString('ascii'));
       res.send(image.data);
       return next();
     });
