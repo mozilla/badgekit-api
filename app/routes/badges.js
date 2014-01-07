@@ -184,7 +184,7 @@ function badgeFromDb (row) {
     name: row.name,
     strapline: row.strapline,
     description: row.description,
-    imageUrl: row.image.toUrl()
+    imageUrl: row.image ? row.image.toUrl() : null
   };
 }
 
