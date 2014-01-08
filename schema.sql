@@ -18,9 +18,24 @@ CREATE TABLE `issuers` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `badges`;
+CREATE TABLE `badges` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `name` VARCHAR(255) NOT NULL,
+  `strapline` VARCHAR(50) NULL,
+  `description` TEXT NOT NULL,
+  `imageId` INT NOT NULL REFERENCES `images`(`id`),
+  `issuerId` INT NULL REFERENCES `issuers`(`id`),
+  `archived` BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(50) NOT NULL UNIQUE,
   -- require either URL or mimetype & data
   `url` VARCHAR(255),
   `mimetype` VARCHAR(255),
