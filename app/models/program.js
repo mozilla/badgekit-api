@@ -5,9 +5,11 @@ const Programs = db.table('programs', {
   fields: [
     'id',
     'slug',
+    'issuerId',
     'name',
     'description',
-    'issuerId',
+    'url',
+    'email',
   ],
   relationships: {
     image: {
@@ -40,6 +42,13 @@ const validation = {
   },
   slug: function (slug) {
     check(slug).len(1, 50);
+  },
+  url: function (url) {
+    check(url).isUrl();
+  },
+  email: function (email) {
+    if (typeof email == 'undefined') return;
+    check(email).isEmail();
   },
   name: function (name) {
     check(name).len(1, 255);
