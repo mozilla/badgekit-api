@@ -12,12 +12,12 @@ const Images = db.table('images', {
   methods: {
     toUrl: function toUrl () {
       if (this.url)
-        return this.url;
+        return this.url.toString('ascii');
 
       if (!this.slug)
         return null;
 
-      return '/images/' + this.slug;
+      return '/images/' + this.slug.toString('ascii');
     }
   },
 });
