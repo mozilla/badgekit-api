@@ -5,11 +5,11 @@ const Programs = db.table('programs', {
   fields: [
     'id',
     'slug',
-    'issuerId',
     'name',
     'description',
     'url',
     'email',
+    'imageId',
   ],
   relationships: {
     image: {

@@ -1,5 +1,6 @@
 var applyBadgeRoutes = require('./badges');
 var applyIssuerRoutes = require('./issuers');
+var applyProgramRoutes = require('./programs');
 var applyImageRoutes = require('./images');
 
 exports = module.exports = function applyAllRoutes (server) {
@@ -11,6 +12,7 @@ exports = module.exports = function applyAllRoutes (server) {
 
   applyBadgeRoutes(server);
   applyIssuerRoutes(server);
+  applyProgramRoutes(server);
   applyImageRoutes(server);
 
 };
