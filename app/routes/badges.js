@@ -55,7 +55,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
     putBadge(row, image, function (err, result) {
       if (err) {
-        if (!isArray(err))
+        if (!Array.isArray(err))
           return handleError(err, row, res, next);
 
         res.send(400, {errors: err});
@@ -96,7 +96,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
       putBadge(row, image, function (err, result) {
         if (err) {
-          if (!isArray(err))
+          if (!Array.isArray(err))
             return handleError(err, row, res, next);
 
           res.send(400, {errors: err});
@@ -109,10 +109,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
   }
 
 };
-
-function isArray (obj) {
-  return Object.prototype.toString.call(obj) === '[object Array]';
-}
 
 function putBadge (data, image, callback) {
   function finish (err, imageId) {
