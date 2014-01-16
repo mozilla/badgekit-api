@@ -23,6 +23,7 @@
     * POST /badges
     * GET /badges/<id>
     * PUT /badges/<id>
+    * POST /badges/<id>/archive
     * DELETE /badges/<id>
   * Assessment
     * GET /badges/<id>/applications
