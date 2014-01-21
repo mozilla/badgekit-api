@@ -15,12 +15,12 @@
     "restify": "~2.6.0",
     "streamsql": "~0.4.4",
     "validator": "~2.0.0",
-    "xtend": "~2.1.1",
-    "request": "~2.33.0",
-    "concat-stream": "~1.4.1",
-    "form-data": "~0.1.2"
+    "xtend": "~2.1.1"
   },
   "devDependencies": {
+    "request": "~2.33.0",
+    "concat-stream": "~1.4.1",
+    "form-data": "~0.1.2",
     "jshint": "~2.3.0",
     "tap": "~0.4.6"
   },
