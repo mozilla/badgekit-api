@@ -134,7 +134,7 @@ Updates an existing issuer.
 ### Expected request
 
 ```
-POST /issuers/<slug> HTTP/1.1
+PUT /issuers/<slug> HTTP/1.1
 
 {
   "name": "New Issuer Name",
@@ -180,9 +180,9 @@ HTTP/1.1 200 OK
   {
     "error": "A issuer with that `slug` already exists",
     "received": {
-      "name": "Issuer Name",
-      "slug": "issuer-slug",
-      "description": "Issuer Description"
+      "name": "New Issuer Name",
+      "slug": "new-issuer-slug",
+      "description": "New Issuer Description"
     }
   }
   ```

@@ -134,7 +134,7 @@ Updates an existing program.
 ### Expected request
 
 ```
-POST /programs/<slug> HTTP/1.1
+PUT /programs/<slug> HTTP/1.1
 
 {
   "name": "New Program Name",
@@ -180,9 +180,9 @@ HTTP/1.1 200 OK
   {
     "error": "A program with that `slug` already exists",
     "received": {
-      "name": "Program Name",
-      "slug": "program-slug",
-      "description": "Program Description"
+      "name": "New Program Name",
+      "slug": "new-program-slug",
+      "description": "New Program Description"
     }
   }
   ```

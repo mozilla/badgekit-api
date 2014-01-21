@@ -134,7 +134,7 @@ Updates an existing system.
 ### Expected request
 
 ```
-POST /systems/<slug> HTTP/1.1
+PUT /systems/<slug> HTTP/1.1
 
 {
   "name": "New System Name",
@@ -180,9 +180,9 @@ HTTP/1.1 200 OK
   {
     "error": "A system with that `slug` already exists",
     "received": {
-      "name": "System Name",
-      "slug": "system-slug",
-      "description": "System Description"
+      "name": "New System Name",
+      "slug": "new-system-slug",
+      "description": "New System Description"
     }
   }
   ```
