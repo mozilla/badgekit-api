@@ -64,7 +64,8 @@ exports = module.exports = function applyProgramRoutes (server) {
   server.del('/programs/:programId', deleteProgram);
   function deleteProgram(req, res, next) {
     getProgram(req, res, next, function (row) {
-      Programs.del(row, function deletedRow(error, result) {
+      const query = {id: row.id, slug: row.slug}
+      Programs.del(query, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
         res.send({status: 'deleted', row: row});
