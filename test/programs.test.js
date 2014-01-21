@@ -25,10 +25,7 @@ spawn(app).then(function (api) {
       image: stream('test-image.png'),
     }
 
-    const createProgram = api.post.bind(api, '/programs', form)
-    const getProgram = api.get.bind(api, '/programs/test-program')
-
-    createProgram().then(function (res) {
+     api.post('/programs', form).then(function (res) {
       t.same(res.status, 'created')
       return api.get('/programs/test-program')
     }).then(function (res) {
