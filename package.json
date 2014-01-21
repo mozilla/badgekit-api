@@ -17,7 +17,8 @@
     "validator": "~2.0.0",
     "xtend": "~2.1.1",
     "request": "~2.33.0",
-    "concat-stream": "~1.4.1"
+    "concat-stream": "~1.4.1",
+    "form-data": "~0.1.2"
   },
   "devDependencies": {
     "jshint": "~2.3.0",

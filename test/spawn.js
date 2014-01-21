@@ -1,5 +1,6 @@
 const http = require('http')
 const request = require('request')
+const FormData = require('form-data')
 const concat = require('concat-stream')
 const Q = require('q')
 const fs = require('fs')
@@ -21,11 +22,27 @@ module.exports = function spawner(app, callback) {
     const baseUrl = 'http://127.0.0.1:'+port
     function requester(method, url, form) {
       const deferred = Q.defer()
-      const r = request[method.toLowerCase()](baseUrl + url, {form: form})
-      r.pipe(concat(function (data) {
-        deferred.resolve(JSON.parse(data))
-      }))
-      r.end()
+      if (form) {
+        const formData = new FormData()
+
+        for (var field in form) {
+          formData.append(field, form[field])
+        }
+
+        formData.submit(baseUrl + url, function (err, res) {
+          res.resume()
+          res.pipe(concat(function (data) {
+            deferred.resolve(JSON.parse(data))
+          }))
+        })
+
+      } else {
+        const r = request[method.toLowerCase()](baseUrl + url)
+        r.pipe(concat(function (data) {
+          deferred.resolve(JSON.parse(data))
+        }))
+        r.end()
+      }
       return deferred.promise
     }
     return {
@@ -33,6 +50,9 @@ module.exports = function spawner(app, callback) {
       post: requester.bind(null, 'post'),
       put: requester.bind(null, 'put'),
       del: requester.bind(null, 'del'),
+      done: function () {
+        db.close()
+      }
     }
   }
 
@@ -40,9 +60,12 @@ module.exports = function spawner(app, callback) {
 
   db.query(sql, function (err, result) {
     if (err) throw err
-    app.listen(0, function () {
+
+    const server = app.listen(0, function () {
       deferred.resolve(makeRequestFn(this.address().port))
     })
+
+    server.unref()
   })
 
   return deferred.promise
