@@ -38,6 +38,22 @@ spawn(app).then(function (api) {
     })
   })
 
+  test('update program', function (t) {
+    const diff = {
+      name: 'Test Program, obvi',
+      description: 'it is still a test!',
+    }
+    var originalImageUrl
+    api.put('/programs/test-program', diff).then(function (res) {
+      t.same(res.status, 'updated')
+      return api.get('/programs/test-program')
+    }).then(function (res) {
+      t.same(res.program.name, diff.name)
+      t.same(res.program.description, diff.description)
+      t.end()
+    })
+  })
+
   test('delete program', function (t) {
     const getProgram = api.get.bind(api, '/programs/test-program')
     api.del('/programs/test-program').then(function (res) {

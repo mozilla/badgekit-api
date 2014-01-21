@@ -77,7 +77,10 @@ exports = module.exports = function applyProgramRoutes (server) {
   function updateProgram(req, res, next) {
     getProgram(req, res, next, function (row) {
       const updated = xtend(row, req.body)
+      delete updated.image
+
       row.issuerId = row.issuerId || undefined;
+
       var image = (req.files || {}).image || {};
       if (!image.size)
         image = req.body.image || null;

@@ -46,12 +46,17 @@ module.exports = function spawner(app, callback) {
           formData.append(field, form[field])
         }
 
-        formData.submit(baseUrl + url, function (err, res) {
-          res.resume()
-          res.pipe(concat(function (data) {
-            deferred.resolve(JSON.parse(data))
-          }))
-        })
+        const options = {
+          url: baseUrl + url,
+          method: method.toUpperCase(),
+          headers: formData.getHeaders(),
+        }
+
+        const req = request(options)
+        formData.pipe(req)
+        req.pipe(concat(function (data) {
+          deferred.resolve(JSON.parse(data))
+        }))
 
       } else {
         request[method.toLowerCase()](baseUrl + url, function (err, res, body) {
