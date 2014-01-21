@@ -6,20 +6,6 @@ const Programs = require('../models/program');
 const Images = require('../models/image');
 
 exports = module.exports = function applyProgramRoutes (server) {
-
-  server.get('/test', function (req, res, next) {
-    console.dir('lol GET')
-    res.send({okay: 'lol'})
-  });
-
-  server.post('/test', function (req, res, next) {
-    console.log('lol POST')
-    console.dir(req.body)
-    console.dir(req.files)
-    res.send({okay: 'lol'})
-  });
-
-
   server.get('/programs', showAllPrograms);
   function showAllPrograms(req, res, next) {
     const query = {}
