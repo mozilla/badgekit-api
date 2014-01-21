@@ -20,12 +20,31 @@ spawn(app).then(function (api) {
       slug: 'test-program',
       name: 'Test Program',
       url: 'http://example.org/test/',
+      email: 'test@example.org',
       description: 'it is a test!',
       image: stream('test-image.png'),
     }
 
-    api.post('/programs', form).then(function (res) {
+    const createProgram = api.post.bind(api, '/programs', form)
+    const getProgram = api.get.bind(api, '/programs/test-program')
+
+    createProgram().then(function (res) {
       t.same(res.status, 'created')
+      return api.get('/programs/test-program')
+    }).then(function (res) {
+      t.same(res.program.name, form.name)
+      t.ok(res.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
+      t.end()
+    })
+  })
+
+  test('delete program', function (t) {
+    const getProgram = api.get.bind(api, '/programs/test-program')
+    api.del('/programs/test-program').then(function (res) {
+      t.same(res.status, 'deleted')
+      return api.get('/programs/test-program')
+    }).then(function (res) {
+      t.same(res.error, 'not found')
       t.end()
     })
   })
