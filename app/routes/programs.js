@@ -148,7 +148,7 @@ function putProgram(data, image, callback) {
 function getProgram(req, res, next, callback) {
   const query = {slug: req.params.programId};
   const options = {relationships: true};
-  Programs.getOne(query, function foundProgram(error, row) {
+  Programs.getOne(query, options, function foundProgram(error, row) {
     if (error)
       return handleError(error, row, res, next)
 
