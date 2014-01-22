@@ -38,17 +38,14 @@ spawn(app).then(function (api) {
       description: 'it is still a test!',
     }
     api.put('/badges/test-badge', diff).then(function (res) {
-      console.dir(res)
       t.same(res.status, 'updated')
-    //   return api.get('/programs/test-badge')
-    // }).then(function (res) {
-    //   t.same(res.badge.name, diff.name)
-    //   t.same(res.badge.description, diff.description)
+      return api.get('/badges/test-badge')
+    }).then(function (res) {
+      t.same(res.badge.name, diff.name)
+      t.same(res.badge.description, diff.description)
       t.end()
     })
   })
-
-
 
   test(':cleanup:', function (t) {
     api.done(); t.end()

@@ -89,6 +89,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
   function updateBadge (req, res, next) {
     getBadge(req, res, next, function (badge) {
       var row = xtend(badge, req.body);
+      delete row.image
+
       row.issuerId = row.issuerId || undefined;
       var image = (req.files || {}).image || {};
       if (!image.size)
