@@ -10,10 +10,9 @@ test('validating rows', function (t) {
     id: 'hi',
     slug: null,
     name: null,
-    strapline: null,
     description: Array(500).join('lo'),
   });
-  t.same(errors.length, 5);
+  t.same(errors.length, 4);
 
   errors = Badges.validateRow({
     id: 1,
@@ -29,7 +28,7 @@ test('validating rows', function (t) {
     name: 'Test Badge',
     strapline: 'A badge for testing',
   });
-  t.same(errors.length, 0);
+  t.same(errors.length, 1);
 
   closeDb(); t.end();
 })
