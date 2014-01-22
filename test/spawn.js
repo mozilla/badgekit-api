@@ -71,7 +71,14 @@ module.exports = function spawner(app, callback) {
       post: requester.bind(null, 'post'),
       put: requester.bind(null, 'put'),
       del: requester.bind(null, 'del'),
-      done: function () {
+      fail: function fail(t) {
+        return function catcher(err) {
+          t.fail('Error: ' + err.message)
+          console.log(err.stack)
+          t.end()
+        }
+      },
+      done: function done() {
         db.close()
       }
     }
