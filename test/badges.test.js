@@ -47,6 +47,17 @@ spawn(app).then(function (api) {
     })
   })
 
+  test('delete badge', function (t) {
+    api.del('/badges/test-badge').then(function (res) {
+      t.same(res.status, 'deleted')
+      return api.get('/programs/test-badge')
+    }).then(function (res) {
+      t.same(res.error, 'not found')
+      t.end()
+    })
+  })
+
+
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })
