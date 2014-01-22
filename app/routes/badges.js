@@ -1,9 +1,8 @@
-const crypto = require('crypto');
-const fs = require('fs');
 const xtend = require('xtend');
-
+const ImageHelper = require('../lib/image-helper')
 const Badges = require('../models/badge');
-const Images = require('../models/image');
+
+const putBadge = ImageHelper.putModel(Badges)
 
 exports = module.exports = function applyBadgeRoutes (server) {
 
@@ -112,55 +111,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
 };
 
-function putBadge (data, image, callback) {
-  function finish (err, imageId) {
-    if (err)
-      return callback(err);
-
-    if (imageId)
-      data.imageId = imageId;
-
-    Badges.put(data, callback);
-  }
-
-  var validationErrors = Badges.validateRow(data);
-
-  if (image) {
-    if (typeof image === 'string') {
-      image = {url: image};
-    } else {
-      image = {
-        mimetype: image.type,
-        size: image.size,
-        path: image.path
-      };
-    }
-    image.slug = 'tmp';
-
-    validationErrors = validationErrors.concat(Images.validateRow(image));
-
-    if (!image.size && !image.url) {
-      validationErrors.push({
-        name: 'ValidatorError',
-        message: "Missing value",
-        field: 'image'
-      });
-    }
-  }
-
-  if (validationErrors.length)
-    return finish(validationErrors);
-
-  if (!image)
-    return finish();
-
-  if (image.size)
-    return createImageFromFile(image, finish);
-
-  if (image.url)
-    return createImageFromUrl(image.url, finish);
-}
-
 function getBadge (req, res, next, callback) {
   const query = {slug: req.params.badgeId};
   const options = {relationships: true};
@@ -213,36 +163,4 @@ function badgeFromDb (row) {
     imageUrl: row.image ? row.image.toUrl() : null,
     archived: !!row.archived
   };
-}
-
-function hashString (str) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
-
-function createImageFromFile (file, callback) {
-  fs.readFile(file.path, function (err, data) {
-    if (err)
-      return callback(err);
-
-    const row = {
-      slug: hashString(Date.now() + file.path),
-      mimetype: file.mimetype,
-      data: data
-    };
-
-    Images.put(row, function (err, result) {
-      callback(err, result.insertId);
-    });
-  });
-}
-
-function createImageFromUrl (url, callback) {
-  const row = {
-    slug: hashString(Date.now() + url),
-    url: url
-  };
-
-  Images.put(row, function (err, result) {
-    callback(err, result.insertId);
-  });
 }

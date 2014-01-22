@@ -1,9 +1,8 @@
-const crypto = require('crypto');
-const fs = require('fs');
-
 const xtend = require('xtend')
 const Programs = require('../models/program');
-const Images = require('../models/image');
+
+const ImageHelper = require('../lib/image-helper')
+const putProgram = ImageHelper.putModel(Programs)
 
 exports = module.exports = function applyProgramRoutes (server) {
   server.get('/programs', showAllPrograms);
@@ -85,54 +84,6 @@ exports = module.exports = function applyProgramRoutes (server) {
     });
   }
 };
-function putProgram(data, image, callback) {
-  function finish(err, imageId) {
-    if (err)
-      return callback(err);
-
-    if (imageId)
-      data.imageId = imageId;
-
-    Programs.put(data, callback);
-  }
-
-  var validationErrors = Programs.validateRow(data);
-
-  if (image) {
-    if (typeof image === 'string') {
-      image = {url: image};
-    } else {
-      image = {
-        mimetype: image.type,
-        size: image.size,
-        path: image.path
-      };
-    }
-    image.slug = 'tmp';
-
-    validationErrors = validationErrors.concat(Images.validateRow(image));
-
-    if (!image.size && !image.url) {
-      validationErrors.push({
-        name: 'ValidatorError',
-        message: "Missing value",
-        field: 'image'
-      });
-    }
-  }
-
-  if (validationErrors.length)
-    return finish(validationErrors);
-
-  if (!image)
-    return finish();
-
-  if (image.size)
-    return createImageFromFile(image, finish);
-
-  if (image.url)
-    return createImageFromUrl(image.url, finish);
-}
 
 function getProgram(req, res, next, callback) {
   const query = {slug: req.params.programId};
@@ -188,36 +139,4 @@ function programFromDb(row) {
     email: row.email,
     imageUrl: row.image ? row.image.toUrl() : null,
   }
-}
-
-function hashString (str) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
-
-function createImageFromFile (file, callback) {
-  fs.readFile(file.path, function (err, data) {
-    if (err)
-      return callback(err);
-
-    const row = {
-      slug: hashString(Date.now() + file.path),
-      mimetype: file.mimetype,
-      data: data
-    };
-
-    Images.put(row, function (err, result) {
-      callback(err, result.insertId);
-    });
-  });
-}
-
-function createImageFromUrl (url, callback) {
-  const row = {
-    slug: hashString(Date.now() + url),
-    url: url
-  };
-
-  Images.put(row, function (err, result) {
-    callback(err, result.insertId);
-  });
 }
