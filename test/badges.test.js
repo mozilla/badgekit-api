@@ -11,7 +11,7 @@ spawn(app).then(function (api) {
       t.ok(res.badges, 'should have badges')
       t.same(res.badges[0].slug, 'chicago-badge')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('add new badge', function (t) {
@@ -29,7 +29,7 @@ spawn(app).then(function (api) {
       t.same(res.badge.name, form.name)
       t.ok(res.badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('update badge', function (t) {
@@ -44,7 +44,7 @@ spawn(app).then(function (api) {
       t.same(res.badge.name, diff.name)
       t.same(res.badge.description, diff.description)
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('delete badge', function (t) {
@@ -54,9 +54,8 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       t.same(res.error, 'not found')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
-
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
