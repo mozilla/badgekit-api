@@ -32,6 +32,19 @@ CREATE TABLE `badges` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `programs`;
+CREATE TABLE `programs` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NULL,
+  `imageId` INT NOT NULL REFERENCES `images`(`id`),
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` INT NOT NULL AUTO_INCREMENT,

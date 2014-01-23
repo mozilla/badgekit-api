@@ -1,59 +1,32 @@
 const crypto = require('crypto');
 const fs = require('fs');
-const xtend = require('xtend');
 
-const Badges = require('../models/badge');
+const xtend = require('xtend')
+const Programs = require('../models/program');
 const Images = require('../models/image');
 
-exports = module.exports = function applyBadgeRoutes (server) {
-
-  server.get('/badges', showAllBadges);
-  function showAllBadges (req, res, next) {
-    var query;
-    var options = {relationships: true};
-
-    switch (req.query.archived) {
-      case true:
-      case 'true':
-      case 1:
-      case '1':
-        query = {archived: true};
-        break;
-
-      case false:
-      case 'false':
-      case 0:
-      case '0':
-      case undefined:
-        query = {archived: false};
-        break;
-
-      case 'any':
-      case '':
-        query = {};
-        break;
-
-      default:
-        return handleError(new Error('Invalid `archived` parameter. Expecting one of \'true\', \'false\' or \'any\'.'), null, res, next);
-    }
-
-    Badges.get(query, options, function foundRows (error, rows) {
+exports = module.exports = function applyProgramRoutes (server) {
+  server.get('/programs', showAllPrograms);
+  function showAllPrograms(req, res, next) {
+    const query = {}
+    const options = {relationships: true};
+    Programs.get(query, options, function foundRows(error, rows) {
       if (error)
-        return handleError(error, null, res, next);
+        return handleError(error, null, res, next)
 
-      res.send({badges: rows.map(badgeFromDb)});
+      res.send({programs: rows.map(programFromDb)});
       return next();
     });
   }
 
-  server.post('/badges', saveBadge);
-  function saveBadge (req, res, next) {
-    var row = fromPostToRow(req.body);
+  server.post('/programs', saveProgram);
+  function saveProgram(req, res, next) {
+    const row = fromPostToRow(req.body);
     var image = (req.files || {}).image || {};
     if (!image.size)
       image = req.body.image || {};
 
-    putBadge(row, image, function (err, result) {
+    putProgram(row, image, function savedRow(err, result) {
       if (err) {
         if (!Array.isArray(err))
           return handleError(err, row, res, next);
@@ -66,35 +39,39 @@ exports = module.exports = function applyBadgeRoutes (server) {
     });
   }
 
-  server.get('/badges/:badgeId', showOneBadge);
-  function showOneBadge (req, res, next) {
-    getBadge(req, res, next, function (row) {
-      res.send({badge: badgeFromDb(row)});
+  server.get('/programs/:programId', showOneProgram);
+  function showOneProgram(req, res, next) {
+    getProgram(req, res, next, function (row) {
+      res.send({program: programFromDb(row)});
       return next();
     });
   }
 
-  server.del('/badges/:badgeId', deleteBadge);
-  function deleteBadge (req, res, next) {
-    getBadge(req, res, next, function (row) {
-      Badges.del({id: row.id}, {debug: true}, function deletedRow (error, result) {
+  server.del('/programs/:programId', deleteProgram);
+  function deleteProgram(req, res, next) {
+    getProgram(req, res, next, function (row) {
+      const query = {id: row.id, slug: row.slug}
+      Programs.del(query, function deletedRow(error, result) {
         if (error)
-          return handleError(error, row, req, next);
-        res.send({status: 'deleted', badge: badgeFromDb(row)});
+          return handleError(error, row, req, next)
+        res.send({status: 'deleted', row: row});
       });
     });
   }
 
-  server.put('/badges/:badgeId', updateBadge);
-  function updateBadge (req, res, next) {
-    getBadge(req, res, next, function (badge) {
-      var row = xtend(badge, req.body);
+  server.put('/programs/:programId', updateProgram);
+  function updateProgram(req, res, next) {
+    getProgram(req, res, next, function (row) {
+      const updated = xtend(row, req.body)
+      delete updated.image
+
       row.issuerId = row.issuerId || undefined;
+
       var image = (req.files || {}).image || {};
       if (!image.size)
         image = req.body.image || null;
 
-      putBadge(row, image, function (err, result) {
+      putProgram(updated, image, function updatedRow(err, result) {
         if (err) {
           if (!Array.isArray(err))
             return handleError(err, row, res, next);
@@ -104,24 +81,22 @@ exports = module.exports = function applyBadgeRoutes (server) {
         }
 
         res.send({status: 'updated'});
-      });
+      })
     });
   }
-
 };
-
-function putBadge (data, image, callback) {
-  function finish (err, imageId) {
+function putProgram(data, image, callback) {
+  function finish(err, imageId) {
     if (err)
       return callback(err);
 
     if (imageId)
       data.imageId = imageId;
 
-    Badges.put(data, callback);
+    Programs.put(data, callback);
   }
 
-  var validationErrors = Badges.validateRow(data);
+  var validationErrors = Programs.validateRow(data);
 
   if (image) {
     if (typeof image === 'string') {
@@ -159,58 +134,60 @@ function putBadge (data, image, callback) {
     return createImageFromUrl(image.url, finish);
 }
 
-function getBadge (req, res, next, callback) {
-  const query = {slug: req.params.badgeId};
+function getProgram(req, res, next, callback) {
+  const query = {slug: req.params.programId};
   const options = {relationships: true};
-  Badges.getOne(query, options, function foundBadge (error, row) {
+  Programs.getOne(query, options, function foundProgram(error, row) {
     if (error)
-      return handleError(error, row, res, next);
+      return handleError(error, row, res, next)
 
     if (!row) {
       res.send(404, {error: 'not found'});
-      return next();
+      return next()
     }
 
-    return callback(row);
+    return callback(row)
   });
 }
 
 const errorCodes = {
-  ER_DUP_ENTRY: [409, {error: 'A badge with that `slug` already exists'}]
-};
-
-function handleError (error, row, res, next) {
-  const expected = knownError(error, row);
-  if (!expected) return next(error);
-  res.send.apply(res, expected);
-  return next();
+  ER_DUP_ENTRY: [409, {error: 'A program with that `slug` already exists'}]
 }
 
-function knownError (error, row) {
+function handleError(error, row, res, next) {
+  const expected = knownError(error, row)
+  if (!expected) return next(error)
+  res.send.apply(res, expected)
+  return next()
+}
+
+function knownError(error, row) {
   const err = errorCodes[error.code];
   if (!err) return;
-  if (row) err[1].received = row;
+  if (row) err[1].received = row
   return err;
 }
 
-function fromPostToRow (post) {
+function fromPostToRow(post) {
   return {
     slug: post.slug,
+    url: post.url,
     name: post.name,
-    strapline: post.strapline,
-    description: post.description
-  };
+    email: post.email,
+    description: post.description,
+  }
 }
 
-function badgeFromDb (row) {
+function programFromDb(row) {
   return {
+    id: row.id,
     slug: row.slug,
+    url: row.url,
     name: row.name,
-    strapline: row.strapline,
     description: row.description,
+    email: row.email,
     imageUrl: row.image ? row.image.toUrl() : null,
-    archived: !!row.archived
-  };
+  }
 }
 
 function hashString (str) {
