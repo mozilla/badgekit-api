@@ -14,6 +14,7 @@ GET /systems HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "systems": [
@@ -45,6 +46,7 @@ GET /systems/<slug> HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "system": {
@@ -61,6 +63,7 @@ HTTP/1.1 200 OK
 
   ```
   HTTP/1.1 404 Not Found
+  Content-Type: application/json
   
   {
     "error": "not found"
@@ -73,8 +76,11 @@ Creates a new system.
 
 ### Expected request
 
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
 ```
 POST /systems HTTP/1.1
+Content-Type: application/json
 
 {
   "name": "System Name",
@@ -83,10 +89,37 @@ POST /systems HTTP/1.1
 }
 ```
 
+```
+POST /systems HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+name=System%20Name&slug=system-slug&description=System%20Description
+```
+
+```
+POST /systems HTTP/1.1
+Content-Type: multipart/form-data; boundary=…
+
+--…
+content-disposition: form-data; name="name"
+
+System Name
+--…
+content-disposition: form-data; name="slug"
+
+system-slug
+--…
+content-disposition: form-data; name="description"
+
+System Description
+--…--
+```
+
 ### Expected response
 
 ```
 HTTP/1.1 201 Created
+Content-Type: application/json
 
 {
   "status": "created"
@@ -99,6 +132,7 @@ HTTP/1.1 201 Created
   
   ```
   HTTP/1.1 400 Bad Request
+  Content-Type: application/json
   
   {
     "errors": [
@@ -116,6 +150,7 @@ HTTP/1.1 201 Created
   
   ```
   HTTP/1.1 409 Conflict
+  Content-Type: application/json
   
   {
     "error": "A system with that `slug` already exists",
@@ -133,8 +168,11 @@ Updates an existing system.
 
 ### Expected request
 
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
 ```
 PUT /systems/<slug> HTTP/1.1
+Content-Type: application/json
 
 {
   "name": "New System Name",
@@ -143,10 +181,37 @@ PUT /systems/<slug> HTTP/1.1
 }
 ```
 
+```
+PUT /systems/<slug> HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+name=New%20System%20Name&slug=new-system-slug&description=New%20System%20Description
+```
+
+```
+PUT /systems/<slug> HTTP/1.1
+Content-Type: multipart/form-data; boundary=…
+
+--…
+content-disposition: form-data; name="name"
+
+New System Name
+--…
+content-disposition: form-data; name="slug"
+
+new-system-slug
+--…
+content-disposition: form-data; name="description"
+
+New System Description
+--…--
+```
+
 ### Expected response
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "status": "updated"
@@ -159,6 +224,7 @@ HTTP/1.1 200 OK
   
   ```
   HTTP/1.1 400 Bad Request
+  Content-Type: application/json
   
   {
     "errors": [
@@ -176,6 +242,7 @@ HTTP/1.1 200 OK
   
   ```
   HTTP/1.1 409 Conflict
+  Content-Type: application/json
   
   {
     "error": "A system with that `slug` already exists",
@@ -201,6 +268,7 @@ DELETE /systems/<slug> HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "status": "deleted"
@@ -213,6 +281,7 @@ HTTP/1.1 200 OK
 
   ```
   HTTP/1.1 404 Not Found
+  Content-Type: application/json
   
   {
     "error": "not found"
