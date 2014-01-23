@@ -14,6 +14,7 @@ GET /programs HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "programs": [
@@ -45,6 +46,7 @@ GET /programs/<slug> HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "program": {
@@ -61,6 +63,7 @@ HTTP/1.1 200 OK
 
   ```
   HTTP/1.1 404 Not Found
+  Content-Type: application/json
   
   {
     "error": "not found"
@@ -73,8 +76,11 @@ Creates a new program.
 
 ### Expected request
 
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
 ```
 POST /programs HTTP/1.1
+Content-Type: application/json
 
 {
   "name": "Program Name",
@@ -83,10 +89,37 @@ POST /programs HTTP/1.1
 }
 ```
 
+```
+POST /programs HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+name=Program%20Name&slug=program-slug&description=Program%20Description
+```
+
+```
+POST /programs HTTP/1.1
+Content-Type: multipart/form-data; boundary=…
+
+--…
+content-disposition: form-data; name="name"
+
+Program Name
+--…
+content-disposition: form-data; name="slug"
+
+program-slug
+--…
+content-disposition: form-data; name="description"
+
+Program Description
+--…--
+```
+
 ### Expected response
 
 ```
 HTTP/1.1 201 Created
+Content-Type: application/json
 
 {
   "status": "created"
@@ -99,6 +132,7 @@ HTTP/1.1 201 Created
   
   ```
   HTTP/1.1 400 Bad Request
+  Content-Type: application/json
   
   {
     "errors": [
@@ -116,6 +150,7 @@ HTTP/1.1 201 Created
   
   ```
   HTTP/1.1 409 Conflict
+  Content-Type: application/json
   
   {
     "error": "A program with that `slug` already exists",
@@ -133,8 +168,11 @@ Updates an existing program.
 
 ### Expected request
 
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
 ```
 PUT /programs/<slug> HTTP/1.1
+Content-Type: application/json
 
 {
   "name": "New Program Name",
@@ -143,10 +181,37 @@ PUT /programs/<slug> HTTP/1.1
 }
 ```
 
+```
+PUT /programs/<slug> HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+name=New%20Program%20Name&slug=new-program-slug&description=New%20Program%20Description
+```
+
+```
+PUT /programs/<slug> HTTP/1.1
+Content-Type: multipart/form-data; boundary=…
+
+--…
+content-disposition: form-data; name="name"
+
+New Program Name
+--…
+content-disposition: form-data; name="slug"
+
+new-program-slug
+--…
+content-disposition: form-data; name="description"
+
+New Program Description
+--…--
+```
+
 ### Expected response
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "status": "updated"
@@ -159,6 +224,7 @@ HTTP/1.1 200 OK
   
   ```
   HTTP/1.1 400 Bad Request
+  Content-Type: application/json
   
   {
     "errors": [
@@ -176,6 +242,7 @@ HTTP/1.1 200 OK
   
   ```
   HTTP/1.1 409 Conflict
+  Content-Type: application/json
   
   {
     "error": "A program with that `slug` already exists",
@@ -201,6 +268,7 @@ DELETE /programs/<slug> HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+Content-Type: application/json
 
 {
   "status": "deleted"
@@ -213,6 +281,7 @@ HTTP/1.1 200 OK
 
   ```
   HTTP/1.1 404 Not Found
+  Content-Type: application/json
   
   {
     "error": "not found"
