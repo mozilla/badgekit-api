@@ -145,6 +145,23 @@ Images can be uploaded and hosted by the issuer API.
 
 ```
 POST /badges HTTP/1.1
+Content-Type: multipart/form-data; boundary=…
+
+--…
+…
+--…
+content-disposition: form-data; name="image"; filename="…"
+Content-Type: image/png
+Content-Transfer-Encoding: binary
+
+…
+--…--
+```
+
+*Currently unsupported, but being considered.*
+
+```
+POST /badges HTTP/1.1
 Content-Type: application/json
 
 {
@@ -158,21 +175,6 @@ POST /badges HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 …&image=data%3Aimage%2Fpng%3Bbase64%2C…
-```
-
-```
-POST /badges HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-…
---…
-content-disposition: form-data; name="image"; filename="…"
-Content-Type: image/png
-Content-Transfer-Encoding: binary
-
-…
---…--
 ```
 
 ### Expected response
