@@ -1,3 +1,4 @@
+const restify = require('restify')
 const xtend = require('xtend');
 const ImageHelper = require('../lib/image-helper')
 const Badges = require('../models/badge');
@@ -119,8 +120,8 @@ function getBadge (req, res, next, callback) {
       return handleError(error, row, res, next);
 
     if (!row) {
-      res.send(404, {error: 'not found'});
-      return next();
+      const notFoundErr = new restify.ResourceNotFoundError('Could not find badge with slug `'+query.slug+'`')
+      return next(notFoundErr);
     }
 
     return callback(row);

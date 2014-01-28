@@ -39,6 +39,11 @@ module.exports = function spawner(app, callback) {
     const baseUrl = 'http://127.0.0.1:'+port
     function requester(method, url, form) {
       const deferred = Q.defer()
+
+      function resolve(status, body) {
+        return deferred.resolve({statusCode: status, body: body})
+      }
+
       if (form) {
         const formData = new FormData()
 
@@ -54,14 +59,14 @@ module.exports = function spawner(app, callback) {
 
         const req = request(options)
         formData.pipe(req)
-        req.pipe(concat(function (data) {
-          deferred.resolve(JSON.parse(data))
+        req.pipe(concat(function (body) {
+          resolve(req.response.statusCode, JSON.parse(body))
         }))
 
       } else {
         request[method.toLowerCase()](baseUrl + url, function (err, res, body) {
           if (err) throw err
-          deferred.resolve(JSON.parse(body))
+          resolve(res.statusCode, JSON.parse(body))
         })
       }
       return deferred.promise
