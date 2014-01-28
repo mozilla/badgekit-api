@@ -11,19 +11,15 @@ exports = module.exports = function applyBadgeRoutes (server) {
     var query;
     var options = {relationships: true};
 
-    switch (req.query.archived) {
-      case true:
+    switch ('' + req.query.archived) {
       case 'true':
-      case 1:
       case '1':
         query = {archived: true};
         break;
 
-      case false:
       case 'false':
-      case 0:
       case '0':
-      case undefined:
+      case 'undefined':
         query = {archived: false};
         break;
 
@@ -37,7 +33,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           code: 'InvalidParameter',
           parameter: 'archived',
           message: 'Invalid `archived` parameter. Expecting one of \'true\', \'false\' or \'any\'.',
-        })
+        });
     }
 
     Badges.get(query, options, function foundRows (error, rows) {

@@ -11,10 +11,12 @@ spawn(app).then(function (api) {
   test('get badge list', function (t) {
 
     function getSlugs(res) {
-      return res.badges.map(function (x) {return x.slug}).sort()
+      return res.badges.map(function (x) {
+        return x.slug
+      }).sort()
     }
 
-    t.plan(9)
+    t.plan(11)
 
     api.get('/badges').then(function (res) {
       const slugs = getSlugs(res)
@@ -49,7 +51,8 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
 
     api.get('/badges?archived=weird-value').then(function(res){
-      console.dir(res)
+      t.same(res.code, 'InvalidParameter')
+      t.same(res.parameter, 'archived')
     }).catch(api.fail(t))
 
   })
