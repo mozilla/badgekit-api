@@ -22,6 +22,12 @@ INSERT INTO `badges` SET
   `name` = 'Pittsburgh Badge',
   `strapline` = 'A badge for Pittsburgh';
 
+INSERT INTO `badges` SET
+  `slug` = 'archived-badge',
+  `name` = 'Archived Badge',
+  `strapline` = 'An archived badge',
+  `archived` = 1;
+
 INSERT INTO `programs` SET
   `slug` = 'mit-scratch',
   `name` = 'MIT Scratch',

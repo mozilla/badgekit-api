@@ -5,13 +5,53 @@ const path = require('path')
 const spawn = require('./spawn')
 
 spawn(app).then(function (api) {
+  const active = ['chicago-badge', 'pittsburgh-badge']
+  const all = active.concat(['archived-badge']).sort()
 
   test('get badge list', function (t) {
+
+    function getSlugs(res) {
+      return res.badges.map(function (x) {return x.slug}).sort()
+    }
+
+    t.plan(9)
+
     api.get('/badges').then(function (res) {
+      const slugs = getSlugs(res)
       t.ok(res.badges, 'should have badges')
-      t.same(res.badges[0].slug, 'chicago-badge')
-      t.end()
+      t.same(slugs, active, 'should have active badges')
+      t.same(slugs.indexOf('archived-badge'), -1, 'should not have archived badge')
     }).catch(api.fail(t))
+
+    api.get('/badges?archived=true').then(function(res){
+      t.same(res.badges.length, 1, 'should have one badge')
+      t.same(res.badges[0].slug, 'archived-badge')
+    }).catch(api.fail(t))
+
+    api.get('/badges?archived=1').then(function(res){
+      t.same(res.badges.length, 1, 'should have one badge')
+      t.same(res.badges[0].slug, 'archived-badge')
+    }).catch(api.fail(t))
+
+    api.get('/badges?archived=false').then(function(res){
+      const slugs = getSlugs(res)
+      t.same(slugs, active, 'should have active badges')
+    }).catch(api.fail(t))
+
+    api.get('/badges?archived=0').then(function(res){
+      const slugs = getSlugs(res)
+      t.same(slugs, active, 'should have active badges')
+    }).catch(api.fail(t))
+
+    api.get('/badges?archived=any').then(function(res){
+      const slugs = getSlugs(res)
+      t.same(slugs, all, 'should have all badges')
+    }).catch(api.fail(t))
+
+    api.get('/badges?archived=weird-value').then(function(res){
+      console.dir(res)
+    }).catch(api.fail(t))
+
   })
 
   test('add new badge', function (t) {
