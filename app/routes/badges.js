@@ -1,5 +1,5 @@
 const restify = require('restify')
-const xtend = require('xtend');
+const safeExtend = require('../lib/safe-extend');
 const ImageHelper = require('../lib/image-helper')
 const Badges = require('../models/badge');
 
@@ -91,7 +91,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.put('/badges/:badgeId', updateBadge);
   function updateBadge (req, res, next) {
     getBadge(req, res, next, function (badge) {
-      var row = xtend(badge, req.body);
+      var row = safeExtend(badge, req.body);
       delete row.image
 
       row.issuerId = row.issuerId || undefined;
