@@ -70,7 +70,6 @@ function putModel(Model) {
 
       if (!image.size && !image.url) {
         validationErrors.push({
-          name: 'ValidatorError',
           message: "Missing value",
           field: 'image'
         });
