@@ -75,7 +75,6 @@ spawn(app).then(function (api) {
         image: stream('test-image.png'),
       })
     }).then(function (res) {
-      console.dir(res.body)
       t.same(res.statusCode, 201)
       t.same(res.body.status, 'created')
       return api.get('/badges/test-badge')
@@ -90,36 +89,33 @@ spawn(app).then(function (api) {
     var form = {garbage:'yep', bs:'yah'}
 
     api.put('/badges/test-badge', form).then(function (res) {
-      console.dir(res.body)
-
-    // const diff = {
-    //   name: 'Test Badge, obvi',
-    //   description: 'it is still a test!',
-    // }
-
-    //   return api.put('/badges/test-badge', diff)
-    // }).then(function (res) {
-    //   t.same(res.statusCode, 200)
-    //   t.same(res.body.status, 'updated')
-    //   return api.get('/badges/test-badge')
-    // }).then(function (res) {
-    //   t.same(res.body.badge.name, diff.name)
-    //   t.same(res.body.badge.description, diff.description)
+      t.same(res.statusCode, 200, 'should not fail')
+      return api.put('/badges/test-badge', form = {
+        name: 'Test Badge, obvi',
+        description: 'it is still a test!',
+      })
+    }).then(function (res) {
+      t.same(res.statusCode, 200)
+      t.same(res.body.status, 'updated')
+      return api.get('/badges/test-badge')
+    }).then(function (res) {
+      t.same(res.body.badge.name, form.name)
+      t.same(res.body.badge.description, form.description)
       t.end()
     }).catch(api.fail(t))
   })
 
-  // test('delete badge', function (t) {
-  //   api.del('/badges/test-badge').then(function (res) {
-  //     t.same(res.statusCode, 200)
-  //     t.same(res.body.status, 'deleted')
-  //     return api.get('/badges/test-badge')
-  //   }).then(function (res) {
-  //     t.same(res.statusCode, 404)
-  //     t.same(res.body.code, 'ResourceNotFound')
-  //     t.end()
-  //   }).catch(api.fail(t))
-  // })
+  test('delete badge', function (t) {
+    api.del('/badges/test-badge').then(function (res) {
+      t.same(res.statusCode, 200)
+      t.same(res.body.status, 'deleted')
+      return api.get('/badges/test-badge')
+    }).then(function (res) {
+      t.same(res.statusCode, 404)
+      t.same(res.body.code, 'ResourceNotFound')
+      t.end()
+    }).catch(api.fail(t))
+  })
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
