@@ -1,5 +1,6 @@
-const check = require('validator').check;
 const db = require('../lib/db');
+const makeValidator = require('../lib/make-validator')
+const check = require('validator').check;
 
 const Images = db.table('images', {
   fields: [
@@ -22,21 +23,7 @@ const Images = db.table('images', {
   },
 });
 
-Images.validateRow = function (row) {
-  return this.fields.reduce(function (errors, field) {
-    try {
-      const validator = validation[field] || noop;
-      validator(row[field]);
-    }
-    catch(e) {
-      e.field = field;
-      errors.push(e);
-    }
-    return errors;
-  }, []);
-};
-
-const validation = {
+Images.validateRow = makeValidator({
   id: function (id) {
     if (typeof id == 'undefined') return;
     check(id).isInt();
@@ -53,8 +40,6 @@ const validation = {
     // Do we need to check this against an actual list somewhere?
     check(type).is(/^[a-z]+\/\w+([-.]\w+)*(\+\w+)?$/i);
   }
-};
-
-function noop() {}
+});
 
 exports = module.exports = Images;
