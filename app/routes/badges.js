@@ -58,8 +58,11 @@ exports = module.exports = function applyBadgeRoutes (server) {
         if (!Array.isArray(err))
           return handleError(err, row, res, next);
 
-        res.send(400, {errors: err});
-        return next();
+        return res.send(400, {
+          code: 'ValidationError',
+          message: 'Could not validate required fields',
+          details: err,
+        });
       }
 
       res.send(201, {status: 'created'});
