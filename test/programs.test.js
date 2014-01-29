@@ -8,9 +8,9 @@ spawn(app).then(function (api) {
 
   test('get program list', function (t) {
     api.get('/programs').then(function (res) {
-      t.ok(res.programs, 'should have programs')
-      t.same(res.programs[0].id, 1)
-      t.same(res.programs[0].slug, 'mit-scratch')
+      t.ok(res.body.programs, 'should have programs')
+      t.same(res.body.programs[0].id, 1)
+      t.same(res.body.programs[0].slug, 'mit-scratch')
       t.end()
     })
   })
@@ -26,11 +26,11 @@ spawn(app).then(function (api) {
     }
 
      api.post('/programs', form).then(function (res) {
-      t.same(res.status, 'created')
+      t.same(res.body.status, 'created')
       return api.get('/programs/test-program')
     }).then(function (res) {
-      t.same(res.program.name, form.name)
-      t.ok(res.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
+      t.same(res.body.program.name, form.name)
+      t.ok(res.body.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
     })
   })
@@ -42,11 +42,11 @@ spawn(app).then(function (api) {
     }
     var originalImageUrl
     api.put('/programs/test-program', diff).then(function (res) {
-      t.same(res.status, 'updated')
+      t.same(res.body.status, 'updated')
       return api.get('/programs/test-program')
     }).then(function (res) {
-      t.same(res.program.name, diff.name)
-      t.same(res.program.description, diff.description)
+      t.same(res.body.program.name, diff.name)
+      t.same(res.body.program.description, diff.description)
       t.end()
     })
   })
@@ -54,10 +54,10 @@ spawn(app).then(function (api) {
   test('delete program', function (t) {
     const getProgram = api.get.bind(api, '/programs/test-program')
     api.del('/programs/test-program').then(function (res) {
-      t.same(res.status, 'deleted')
+      t.same(res.body.status, 'deleted')
       return api.get('/programs/test-program')
     }).then(function (res) {
-      t.same(res.error, 'not found')
+      t.same(res.body.error, 'not found')
       t.end()
     })
   })
