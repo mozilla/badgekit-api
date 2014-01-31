@@ -55,6 +55,10 @@ spawn(app).then(function (api) {
   test('delete issuer', function (t) {
     api.del('/issuers/test-issuer').then(function(res){
       t.same(res.body.status, 'deleted')
+      return api.del('/issuers/test-issuer')
+    }).then(function(res){
+      t.same(res.statusCode, 404)
+      t.same(res.body.code, 'ResourceNotFound')
       t.end()
     }).catch(api.fail(t))
   })
