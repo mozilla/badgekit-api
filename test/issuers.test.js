@@ -15,13 +15,17 @@ spawn(app).then(function (api) {
   })
 
   test('add new issuer', function (t) {
-    const form = {
-      slug: 'test-issuer',
-      name: 'Test Issuer',
-      url: 'https://example.org/issuer',
-      email: 'guy@example.org',
-    }
+    var form = {nonsense:'oajsldkf'}
     api.post('/issuers', form).then(function (res) {
+      t.same(res.statusCode, 400, 'should get 400')
+      t.same(res.body.code, 'ValidationError', 'should have right error code')
+      return api.post('/issuers', form = {
+        slug: 'test-issuer',
+        name: 'Test Issuer',
+        url: 'https://example.org/issuer',
+        email: 'guy@example.org',
+      })
+    }).then(function (res) {
       t.same(res.body.status, 'created', 'should be created')
       return api.get('/issuers/test-issuer')
     }).then(function (res) {
@@ -31,16 +35,19 @@ spawn(app).then(function (api) {
   })
 
   test('update issuer', function (t) {
-    const diff = {
-      name: 'Test Issuer, okay?!',
-      email: 'other-guy@example.org',
-    }
-    api.put('/issuers/test-issuer', diff).then(function (res) {
+    var form = {nonsense:'oajsldkf'}
+    api.put('/issuers/test-issuer', form).then(function (res) {
+      t.same(res.statusCode, 200, 'should not error')
+      return api.put('/issuers/test-issuer', form = {
+        name: 'Test Issuer, okay?!',
+        email: 'other-guy@example.org',
+      })
+    }).then(function (res) {
       t.same(res.body.status, 'updated', 'should be updated')
       return api.get('/issuers/test-issuer')
     }).then(function (res) {
-      t.same(res.body.issuer.name, diff.name)
-      t.same(res.body.issuer.email, diff.email)
+      t.same(res.body.issuer.name, form.name)
+      t.same(res.body.issuer.email, form.email)
       t.end()
     }).catch(api.fail(t))
   })

@@ -1,4 +1,4 @@
-const xtend = require('xtend')
+const safeExtend = require('../lib/safe-extend')
 const Issuers = require('../models/issuer');
 
 exports = module.exports = function applyIssuerRoutes (server) {
@@ -9,8 +9,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       if (error)
         return handleError(error, null, res, next)
 
-      res.send({issuers: rows.map(issuerFromDb)});
-      return next();
+      return res.send({issuers: rows.map(issuerFromDb)});
     });
   }
 
@@ -20,24 +19,25 @@ exports = module.exports = function applyIssuerRoutes (server) {
     const validationErrors = Issuers.validateRow(row);
 
     if (validationErrors.length) {
-      res.send(400, {errors: validationErrors})
-      return next()
+      return res.send(400, {
+        code: 'ValidationError',
+        message: 'Could not validate required fields',
+        details: validationErrors,
+      });
     }
 
     Issuers.put(row, function savedRow(error, result) {
       if (error)
         return handleError(error, row, res, next)
 
-      res.send(201, {status: 'created'})
-      return next();
+      return res.send(201, {status: 'created'})
     });
   }
 
   server.get('/issuers/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
-      res.send({issuer: issuerFromDb(row)});
-      return next();
+      return res.send({issuer: issuerFromDb(row)});
     });
   }
 
@@ -47,7 +47,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       Issuers.del(row, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
-        res.send({status: 'deleted', row: row});
+        return res.send({status: 'deleted', row: row});
       });
     });
   }
@@ -55,11 +55,11 @@ exports = module.exports = function applyIssuerRoutes (server) {
   server.put('/issuers/:issuerId', updateIssuer);
   function updateIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
-      const updated = xtend(row, req.body)
+      const updated = safeExtend(row, req.body)
       Issuers.put(updated, function updatedRow(error, result) {
         if (error)
           return handleError(error, row, res, next)
-        res.send({status: 'updated'})
+        return res.send({status: 'updated'})
       })
     });
   }
@@ -72,10 +72,8 @@ function getIssuer(req, res, next, callback) {
     if (error)
       return handleError(error, row, res, next)
 
-    if (!row) {
-      res.send(404, {error: 'not found'});
-      return next()
-    }
+    if (!row)
+      return res.send(404, {error: 'not found'});
 
     return callback(row)
   });
