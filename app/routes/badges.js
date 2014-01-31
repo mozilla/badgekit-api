@@ -1,9 +1,12 @@
 const restify = require('restify')
 const safeExtend = require('../lib/safe-extend');
-const imageHelper = require('../lib/image-helper')
 const Badges = require('../models/badge');
 
+const imageHelper = require('../lib/image-helper')
+const errorHelper = require('../lib/error-helper')
+
 const putBadge = imageHelper.putModel(Badges)
+const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
 
@@ -39,7 +42,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
     Badges.get(query, options, function foundRows (error, rows) {
       if (error)
-        return handleError(error, null, res, next);
+        return dbErrorHandler(error, null, res, next);
 
       res.send({badges: rows.map(badgeFromDb)});
       return next();
@@ -48,21 +51,14 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.post('/badges', saveBadge);
   function saveBadge (req, res, next) {
-    var row = fromPostToRow(req.body);
-    var image = (req.files || {}).image || {};
-    if (!image.size)
-      image = req.body.image || {};
+    const row = fromPostToRow(req.body);
+    const image = imageHelper.getFromPost(req, {required: true})
 
     putBadge(row, image, function (err, result) {
       if (err) {
         if (!Array.isArray(err))
-          return handleError(err, row, res, next);
-
-        return res.send(400, {
-          code: 'ValidationError',
-          message: 'Could not validate required fields',
-          details: err,
-        });
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
       }
 
       res.send(201, {status: 'created', badge: row});
@@ -82,7 +78,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     getBadge(req, res, next, function (row) {
       Badges.del({id: row.id}, function deletedRow (error, result) {
         if (error)
-          return handleError(error, row, req, next);
+          return dbErrorHandler(error, row, req, next);
         res.send({status: 'deleted', badge: badgeFromDb(row)});
       });
     });
@@ -91,24 +87,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.put('/badges/:badgeId', updateBadge);
   function updateBadge (req, res, next) {
     getBadge(req, res, next, function (badge) {
-      var row = safeExtend(badge, req.body);
-      delete row.image
+      const row = safeExtend(badge, req.body);
+      const image = imageHelper.getFromPost(req)
 
+      delete row.image
       row.issuerId = row.issuerId || undefined;
-      var image = (req.files || {}).image || {};
-      if (!image.size)
-        image = req.body.image || null;
 
       putBadge(row, image, function (err, result) {
         if (err) {
           if (!Array.isArray(err))
-            return handleError(err, row, res, next);
-
-          return res.send(400, {
-            code: 'ValidationError',
-            message: 'Could not validate required fields',
-            details: err,
-          });
+            return dbErrorHandler(err, row, res, next);
+          return res.send(400, errorHelper.validation(err));
         }
 
         res.send({status: 'updated', badge: row});
@@ -123,33 +112,13 @@ function getBadge (req, res, next, callback) {
   const options = {relationships: true};
   Badges.getOne(query, options, function foundBadge (error, row) {
     if (error)
-      return handleError(error, row, res, next);
+      return dbErrorHandler(error, row, res, next);
 
-    if (!row) {
-      const notFoundErr = new restify.ResourceNotFoundError('Could not find badge with slug `'+query.slug+'`')
-      return next(notFoundErr);
-    }
+    if (!row)
+      return next(errorHelper.notFound('Could not find badge with slug `'+query.slug+'`'));
 
     return callback(row);
   });
-}
-
-const errorCodes = {
-  ER_DUP_ENTRY: [409, {error: 'A badge with that `slug` already exists'}]
-};
-
-function handleError (error, row, res, next) {
-  const expected = knownError(error, row);
-  if (!expected) return next(error);
-  res.send.apply(res, expected);
-  return next();
-}
-
-function knownError (error, row) {
-  const err = errorCodes[error.code];
-  if (!err) return;
-  if (row) err[1].received = row;
-  return err;
 }
 
 function fromPostToRow (post) {

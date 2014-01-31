@@ -3,17 +3,19 @@ const safeExtend = require('../lib/safe-extend')
 const Issuers = require('../models/issuer');
 
 const imageHelper = require('../lib/image-helper')
+const errorHelper = require('../lib/error-helper')
+
 const putIssuer = imageHelper.putModel(Issuers)
+const dbErrorHandler = errorHelper.makeDbHandler('issuer')
 
 exports = module.exports = function applyIssuerRoutes (server) {
-
   server.get('/issuers', showAllIssuers);
   function showAllIssuers(req, res, next) {
     const query = {}
     const options = {relationships: true};
     Issuers.get(query, options, function foundRows(error, rows) {
       if (error)
-        return handleError(error, null, res, next)
+        return dbErrorHandler(error, null, res, next)
 
       return res.send({issuers: rows.map(issuerFromDb)});
     });
@@ -22,20 +24,13 @@ exports = module.exports = function applyIssuerRoutes (server) {
   server.post('/issuers', saveIssuer);
   function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
-    var image = (req.files || {}).image || {};
-    if (!image.size)
-      image = req.body.image || null;
+    const image = imageHelper.getFromPost(req)
 
     putIssuer(row, image, function savedRow(err, result) {
       if (err) {
         if (!Array.isArray(err))
-          return handleError(err, row, res, next);
-
-        return res.send(400, {
-          code: 'ValidationError',
-          message: 'Could not validate required fields',
-          details: err,
-        });
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
       }
 
       res.send(201, {status: 'created', issuer: row});
@@ -55,7 +50,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       const query = {id: row.id, slug: row.slug}
       Issuers.del(query, function deletedRow(error, result) {
         if (error)
-          return handleError(error, row, req, next)
+          return dbErrorHandler(error, row, req, next)
         return res.send({status: 'deleted', issuer: row});
       });
     });
@@ -65,18 +60,15 @@ exports = module.exports = function applyIssuerRoutes (server) {
   function updateIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
       const updated = safeExtend(row, req.body)
+      const image = imageHelper.getFromPost(req)
       delete updated.image
 
       row.issuerId = row.issuerId || undefined;
 
-      var image = (req.files || {}).image || {};
-      if (!image.size)
-        image = req.body.image || null;
-
       putIssuer(updated, image, function updatedRow(err, result) {
         if (err) {
           if (!Array.isArray(err))
-            return handleError(err, row, res, next);
+            return dbErrorHandler(err, row, res, next);
 
           return res.send(400, {
             code: 'ValidationError',
@@ -98,33 +90,13 @@ function getIssuer(req, res, next, callback) {
 
   Issuers.getOne(query, options, function foundIssuer(error, row) {
     if (error)
-      return handleError(error, row, res, next)
+      return dbErrorHandler(error, row, res, next)
 
-    if (!row) {
-      const notFoundErr = new restify.ResourceNotFoundError('Could not find issuer with slug `'+query.slug+'`')
-      return next(notFoundErr);
-    }
+    if (!row)
+      return next(errorHelper.notFound('Could not find issuer with slug `'+query.slug+'`'));
 
     return callback(row)
   });
-}
-
-const errorCodes = {
-  ER_DUP_ENTRY: [409, {error: 'An issuer with that `slug` already exists'}]
-}
-
-function handleError(error, row, res, next) {
-  const expected = knownError(error, row)
-  if (!expected) return next(error)
-  res.send.apply(res, expected)
-  return next()
-}
-
-function knownError(error, row) {
-  const err = errorCodes[error.code];
-  if (!err) return;
-  if (row) err[1].received = row
-  return err;
 }
 
 function fromPostToRow(post) {

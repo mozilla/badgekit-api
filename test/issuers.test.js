@@ -28,8 +28,12 @@ spawn(app).then(function (api) {
       })
     }).then(function (res) {
       t.same(res.body.status, 'created', 'should be created')
-      return api.get('/issuers/test-issuer')
+      form.image = stream('test-image.png')
+      return api.post('/issuers', form)
     }).then(function (res) {
+      t.same(res.statusCode, 409, 'should get 409 conflict')
+      return api.get('/issuers/test-issuer')
+    }).then(function(res){
       t.same(res.body.issuer.name, form.name)
       t.end()
     }).catch(api.fail(t))

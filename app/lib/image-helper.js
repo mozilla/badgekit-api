@@ -1,6 +1,7 @@
 module.exports = {
   createFromFile: createFromFile,
   createFromUrl: createFromUrl,
+  getFromPost: getFromPost,
   putModel: putModel,
 }
 
@@ -10,6 +11,21 @@ const Images = require('../models/image')
 
 function hashString (str) {
   return crypto.createHash('md5').update(str).digest('hex');
+}
+
+function getFromPost(req, opts) {
+  opts = opts || {}
+  // first see if we have an uploaded file
+  var image = (req.files || {}).image || {};
+
+  // if there's no size on it, we assume it's a url
+  if (!image.size)
+    image = req.body.image;
+
+  if (opts.required)
+    image = image || {}
+
+  return image
 }
 
 function createFromFile (file, callback) {
