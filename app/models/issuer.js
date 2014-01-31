@@ -1,5 +1,6 @@
-const check = require('validator').check
 const db = require('../lib/db');
+const makeValidator = require('../lib/make-validator')
+const check = require('validator').check;
 
 const Issuers = db.table('issuers', {
   fields: [
@@ -13,21 +14,7 @@ const Issuers = db.table('issuers', {
   ],
 });
 
-Issuers.validateRow = function (row) {
-  return this.fields.reduce(function (errors, field) {
-    try {
-      const validator = validation[field] || noop
-      validator(row[field])
-    }
-    catch(e) {
-      e.field = field
-      errors.push(e)
-    }
-    return errors
-  }, [])
-}
-
-const validation = {
+Issuers.validateRow = makeValidator({
   id: function (id) {
     if (typeof id == 'undefined') return;
     check(id).isInt();
@@ -48,8 +35,6 @@ const validation = {
     if (typeof email == 'undefined') return;
     check(email).isEmail();
   },
-}
-
-function noop() {}
+})
 
 exports = module.exports = Issuers;
