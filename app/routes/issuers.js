@@ -30,7 +30,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       if (error)
         return handleError(error, row, res, next)
 
-      return res.send(201, {status: 'created'})
+      return res.send(201, {status: 'created', issuer: row})
     });
   }
 
@@ -47,7 +47,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       Issuers.del(row, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
-        return res.send({status: 'deleted', row: row});
+        return res.send({status: 'deleted', issuer: row});
       });
     });
   }
@@ -59,7 +59,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
       Issuers.put(updated, function updatedRow(error, result) {
         if (error)
           return handleError(error, row, res, next)
-        return res.send({status: 'updated'})
+        return res.send({status: 'updated', issuer: row})
       })
     });
   }
