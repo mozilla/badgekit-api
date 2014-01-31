@@ -2,8 +2,8 @@ const restify = require('restify')
 const safeExtend = require('../lib/safe-extend')
 const Programs = require('../models/program');
 
-const ImageHelper = require('../lib/image-helper')
-const putProgram = ImageHelper.putModel(Programs)
+const imageHelper = require('../lib/image-helper')
+const putProgram = imageHelper.putModel(Programs)
 
 exports = module.exports = function applyProgramRoutes (server) {
   server.get('/programs', showAllPrograms);

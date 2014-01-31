@@ -1,9 +1,9 @@
 const restify = require('restify')
 const safeExtend = require('../lib/safe-extend');
-const ImageHelper = require('../lib/image-helper')
+const imageHelper = require('../lib/image-helper')
 const Badges = require('../models/badge');
 
-const putBadge = ImageHelper.putModel(Badges)
+const putBadge = imageHelper.putModel(Badges)
 
 exports = module.exports = function applyBadgeRoutes (server) {
 

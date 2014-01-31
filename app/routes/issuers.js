@@ -2,8 +2,8 @@ const restify = require('restify')
 const safeExtend = require('../lib/safe-extend')
 const Issuers = require('../models/issuer');
 
-const ImageHelper = require('../lib/image-helper')
-const putIssuer = ImageHelper.putModel(Issuers)
+const imageHelper = require('../lib/image-helper')
+const putIssuer = imageHelper.putModel(Issuers)
 
 exports = module.exports = function applyIssuerRoutes (server) {
 
