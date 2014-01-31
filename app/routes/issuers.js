@@ -1,3 +1,4 @@
+const restify = require('restify')
 const safeExtend = require('../lib/safe-extend')
 const Issuers = require('../models/issuer');
 
@@ -72,8 +73,10 @@ function getIssuer(req, res, next, callback) {
     if (error)
       return handleError(error, row, res, next)
 
-    if (!row)
-      return res.send(404, {error: 'not found'});
+    if (!row) {
+      const notFoundErr = new restify.ResourceNotFoundError('Could not find issuer with slug `'+query.slug+'`')
+      return next(notFoundErr);
+    }
 
     return callback(row)
   });
