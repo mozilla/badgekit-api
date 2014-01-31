@@ -65,7 +65,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         });
       }
 
-      res.send(201, {status: 'created'});
+      res.send(201, {status: 'created', badge: row});
     });
   }
 
@@ -111,7 +111,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           });
         }
 
-        res.send({status: 'updated'});
+        res.send({status: 'updated', badge: row});
       });
     });
   }
