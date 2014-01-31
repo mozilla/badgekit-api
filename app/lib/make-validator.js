@@ -1,10 +1,12 @@
+const validatorContext = require('validator')
+
 module.exports = function makeValidator(validation) {
   return function (row) {
     return this.fields.reduce(function (errors, field) {
       const value = row[field]
       try {
         const validator = validation[field] || noop;
-        validator(value);
+        validator.call(validatorContext, value);
       }
       catch(e) {
         e.field = field;
@@ -16,4 +18,5 @@ module.exports = function makeValidator(validation) {
     }, []);
   };
 };
+
 function noop() {}
