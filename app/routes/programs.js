@@ -1,4 +1,3 @@
-const restify = require('restify')
 const safeExtend = require('../lib/safe-extend')
 const Programs = require('../models/program');
 
