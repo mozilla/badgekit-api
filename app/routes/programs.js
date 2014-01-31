@@ -1,4 +1,5 @@
-const xtend = require('xtend')
+const restify = require('restify')
+const safeExtend = require('../lib/safe-extend')
 const Programs = require('../models/program');
 
 const ImageHelper = require('../lib/image-helper')
@@ -30,11 +31,14 @@ exports = module.exports = function applyProgramRoutes (server) {
         if (!Array.isArray(err))
           return handleError(err, row, res, next);
 
-        res.send(400, {errors: err});
-        return next();
+        return res.send(400, {
+          code: 'ValidationError',
+          message: 'Could not validate required fields',
+          details: err,
+        });
       }
 
-      res.send(201, {status: 'created'});
+      res.send(201, {status: 'created', program: row});
     });
   }
 
@@ -53,7 +57,7 @@ exports = module.exports = function applyProgramRoutes (server) {
       Programs.del(query, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
-        res.send({status: 'deleted', row: row});
+        res.send({status: 'deleted', program: row});
       });
     });
   }
@@ -61,7 +65,7 @@ exports = module.exports = function applyProgramRoutes (server) {
   server.put('/programs/:programId', updateProgram);
   function updateProgram(req, res, next) {
     getProgram(req, res, next, function (row) {
-      const updated = xtend(row, req.body)
+      const updated = safeExtend(row, req.body)
       delete updated.image
 
       row.issuerId = row.issuerId || undefined;
@@ -75,11 +79,14 @@ exports = module.exports = function applyProgramRoutes (server) {
           if (!Array.isArray(err))
             return handleError(err, row, res, next);
 
-          res.send(400, {errors: err});
-          return next();
+          return res.send(400, {
+            code: 'ValidationError',
+            message: 'Could not validate required fields',
+            details: err,
+          });
         }
 
-        res.send({status: 'updated'});
+        res.send({status: 'updated', program: row});
       })
     });
   }
@@ -93,8 +100,8 @@ function getProgram(req, res, next, callback) {
       return handleError(error, row, res, next)
 
     if (!row) {
-      res.send(404, {error: 'not found'});
-      return next()
+      const notFoundErr = new restify.ResourceNotFoundError('Could not find program with slug `'+query.slug+'`')
+      return next(notFoundErr);
     }
 
     return callback(row)

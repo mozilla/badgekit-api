@@ -16,16 +16,19 @@ spawn(app).then(function (api) {
   })
 
   test('add new program', function (t) {
-    const form = {
-      slug: 'test-program',
-      name: 'Test Program',
-      url: 'http://example.org/test/',
-      email: 'test@example.org',
-      description: 'it is a test!',
-      image: stream('test-image.png'),
-    }
-
-     api.post('/programs', form).then(function (res) {
+    var form = {soAndSoAndSo: 'from wherever wherever'}
+    api.post('/programs', form).then(function (res) {
+      t.same(res.statusCode, 400, 'should have rest error')
+      t.same(res.body.code, 'ValidationError', 'should be a validation error')
+      return api.post('/programs', form = {
+        slug: 'test-program',
+        name: 'Test Program',
+        url: 'http://example.org/test/',
+        email: 'test@example.org',
+        description: 'it is a test!',
+        image: stream('test-image.png'),
+      })
+    }).then(function (res) {
       t.same(res.body.status, 'created')
       return api.get('/programs/test-program')
     }).then(function (res) {
@@ -36,17 +39,19 @@ spawn(app).then(function (api) {
   })
 
   test('update program', function (t) {
-    const diff = {
-      name: 'Test Program, obvi',
-      description: 'it is still a test!',
-    }
-    var originalImageUrl
-    api.put('/programs/test-program', diff).then(function (res) {
+    var form = {soAndSoAndSo: 'from wherever wherever'}
+    api.put('/programs/test-program', form).then(function(res){
+      t.same(res.statusCode, 200, 'no error')
+      return api.put('/programs/test-program', form = {
+        name: 'Test Program, obvi',
+        description: 'it is still a test!',
+      })
+    }).then(function (res) {
       t.same(res.body.status, 'updated')
       return api.get('/programs/test-program')
     }).then(function (res) {
-      t.same(res.body.program.name, diff.name)
-      t.same(res.body.program.description, diff.description)
+      t.same(res.body.program.name, form.name)
+      t.same(res.body.program.description, form.description)
       t.end()
     })
   })
@@ -57,7 +62,7 @@ spawn(app).then(function (api) {
       t.same(res.body.status, 'deleted')
       return api.get('/programs/test-program')
     }).then(function (res) {
-      t.same(res.body.error, 'not found')
+      t.same(res.body.code, 'ResourceNotFound')
       t.end()
     })
   })
