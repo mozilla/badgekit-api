@@ -11,6 +11,14 @@ const Issuers = db.table('issuers', {
     'email',
     'imageId'
   ],
+  relationships: {
+    image: {
+      type: 'hasOne',
+      local: 'imageId',
+      foreign: { table: 'images', key: 'id' },
+      optional: true,
+    }
+  },
 });
 
 Issuers.validateRow = makeValidator({

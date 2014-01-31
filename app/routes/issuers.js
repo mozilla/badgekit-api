@@ -2,11 +2,16 @@ const restify = require('restify')
 const safeExtend = require('../lib/safe-extend')
 const Issuers = require('../models/issuer');
 
+const ImageHelper = require('../lib/image-helper')
+const putIssuer = ImageHelper.putModel(Issuers)
+
 exports = module.exports = function applyIssuerRoutes (server) {
 
   server.get('/issuers', showAllIssuers);
   function showAllIssuers(req, res, next) {
-    Issuers.get({}, function foundRows(error, rows) {
+    const query = {}
+    const options = {relationships: true};
+    Issuers.get(query, options, function foundRows(error, rows) {
       if (error)
         return handleError(error, null, res, next)
 
@@ -17,21 +22,23 @@ exports = module.exports = function applyIssuerRoutes (server) {
   server.post('/issuers', saveIssuer);
   function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
-    const validationErrors = Issuers.validateRow(row);
+    var image = (req.files || {}).image || {};
+    if (!image.size)
+      image = req.body.image || null;
 
-    if (validationErrors.length) {
-      return res.send(400, {
-        code: 'ValidationError',
-        message: 'Could not validate required fields',
-        details: validationErrors,
-      });
-    }
+    putIssuer(row, image, function savedRow(err, result) {
+      if (err) {
+        if (!Array.isArray(err))
+          return handleError(err, row, res, next);
 
-    Issuers.put(row, function savedRow(error, result) {
-      if (error)
-        return handleError(error, row, res, next)
+        return res.send(400, {
+          code: 'ValidationError',
+          message: 'Could not validate required fields',
+          details: err,
+        });
+      }
 
-      return res.send(201, {status: 'created', issuer: row})
+      res.send(201, {status: 'created', issuer: row});
     });
   }
 
@@ -45,7 +52,8 @@ exports = module.exports = function applyIssuerRoutes (server) {
   server.del('/issuers/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
-      Issuers.del(row, function deletedRow(error, result) {
+      const query = {id: row.id, slug: row.slug}
+      Issuers.del(query, function deletedRow(error, result) {
         if (error)
           return handleError(error, row, req, next)
         return res.send({status: 'deleted', issuer: row});
@@ -57,9 +65,26 @@ exports = module.exports = function applyIssuerRoutes (server) {
   function updateIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
       const updated = safeExtend(row, req.body)
-      Issuers.put(updated, function updatedRow(error, result) {
-        if (error)
-          return handleError(error, row, res, next)
+      delete updated.image
+
+      row.issuerId = row.issuerId || undefined;
+
+      var image = (req.files || {}).image || {};
+      if (!image.size)
+        image = req.body.image || null;
+
+      putIssuer(updated, image, function updatedRow(err, result) {
+        if (err) {
+          if (!Array.isArray(err))
+            return handleError(err, row, res, next);
+
+          return res.send(400, {
+            code: 'ValidationError',
+            message: 'Could not validate required fields',
+            details: err,
+          });
+        }
+
         return res.send({status: 'updated', issuer: row})
       })
     });
@@ -69,7 +94,9 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
 function getIssuer(req, res, next, callback) {
   const query = {slug: req.params.issuerId};
-  Issuers.getOne(query, function foundIssuer(error, row) {
+  const options = {relationships: true};
+
+  Issuers.getOne(query, options, function foundIssuer(error, row) {
     if (error)
       return handleError(error, row, res, next)
 
@@ -116,5 +143,6 @@ function issuerFromDb(row) {
     url: row.url,
     name: row.name,
     email: row.email,
+    imageUrl: row.image ? row.image.toUrl() : null
   }
 }

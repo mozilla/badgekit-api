@@ -24,7 +24,7 @@ exports = module.exports = function applyProgramRoutes (server) {
     const row = fromPostToRow(req.body);
     var image = (req.files || {}).image || {};
     if (!image.size)
-      image = req.body.image || {};
+      image = req.body.image || null;
 
     putProgram(row, image, function savedRow(err, result) {
       if (err) {

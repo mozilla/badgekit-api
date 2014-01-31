@@ -24,6 +24,7 @@ spawn(app).then(function (api) {
         name: 'Test Issuer',
         url: 'https://example.org/issuer',
         email: 'guy@example.org',
+        image: stream('test-image.png'),
       })
     }).then(function (res) {
       t.same(res.body.status, 'created', 'should be created')
