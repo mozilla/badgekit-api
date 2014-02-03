@@ -30,8 +30,6 @@ spawn(app).then(function (api) {
       })
     }).then(function (res) {
       t.same(res.body.status, 'created')
-      return api.get('/programs/test-program')
-    }).then(function (res) {
       t.same(res.body.program.name, form.name)
       t.ok(res.body.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
@@ -48,8 +46,6 @@ spawn(app).then(function (api) {
       })
     }).then(function (res) {
       t.same(res.body.status, 'updated')
-      return api.get('/programs/test-program')
-    }).then(function (res) {
       t.same(res.body.program.name, form.name)
       t.same(res.body.program.description, form.description)
       t.end()

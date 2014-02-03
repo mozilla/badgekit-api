@@ -26,14 +26,17 @@ exports = module.exports = function applyProgramRoutes (server) {
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req)
 
-    putProgram(row, image, function savedRow(err, result) {
+    putProgram(row, image, function savedRow(err, program) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
-      res.send(201, {status: 'created', program: row});
+      res.send(201, {
+        status: 'created',
+        program: programFromDb(program)
+      });
     });
   }
 
@@ -67,14 +70,17 @@ exports = module.exports = function applyProgramRoutes (server) {
       row.issuerId = row.issuerId || undefined;
 
 
-      putProgram(updated, image, function updatedRow(err, result) {
+      putProgram(updated, image, function updatedRow(err, program) {
         if (err) {
           if (!Array.isArray(err))
             return dbErrorHandler(err, row, res, next);
           return res.send(400, errorHelper.validation(err));
         }
 
-        res.send({status: 'updated', program: row});
+        res.send({
+          status: 'updated',
+          program: programFromDb(program)
+        });
       })
     });
   }
