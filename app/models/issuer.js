@@ -9,7 +9,7 @@ const Issuers = db.table('issuers', {
     'url',
     'description',
     'email',
-    'imageId'
+    'imageId',
   ],
   relationships: {
     image: {
@@ -17,7 +17,7 @@ const Issuers = db.table('issuers', {
       local: 'imageId',
       foreign: { table: 'images', key: 'id' },
       optional: true,
-    }
+    },
   },
 });
 
@@ -30,7 +30,7 @@ Issuers.validateRow = makeValidator({
     this.check(slug).len(1, 50);
   },
   name: function (name) {
-    this.check(name).len(1, 50);
+    this.check(name).len(1, 255);
   },
   url: function (url) {
     this.check(url).isUrl();
@@ -42,6 +42,10 @@ Issuers.validateRow = makeValidator({
     if (typeof email == 'undefined') return;
     this.check(email).isEmail();
   },
-})
+  imageId: function (id) {
+    if (typeof id == 'undefined') return;
+    this.check(id).isInt();
+  },
+});
 
 exports = module.exports = Issuers;
