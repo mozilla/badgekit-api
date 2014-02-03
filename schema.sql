@@ -27,6 +27,7 @@ CREATE TABLE `issuers` (
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
+  `systemId` INT NULL REFERENCES `systems`(`id`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -39,7 +40,8 @@ CREATE TABLE `programs` (
   `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
-  `imageId` INT NOT NULL REFERENCES `images`(`id`),
+  `imageId` INT NULL REFERENCES `images`(`id`),
+  `issuerId` INT NULL REFERENCES `issuers`(`id`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -52,9 +54,11 @@ CREATE TABLE `badges` (
   `name` VARCHAR(255) NOT NULL,
   `strapline` VARCHAR(50) NULL,
   `description` TEXT NOT NULL,
-  `imageId` INT NOT NULL REFERENCES `images`(`id`),
-  `issuerId` INT NULL REFERENCES `issuers`(`id`),
   `archived` BOOLEAN NOT NULL DEFAULT FALSE,
+  `imageId` INT NOT NULL REFERENCES `images`(`id`),
+  `programId` INT NULL REFERENCES `programs`(`id`),
+  `issuerId` INT NULL REFERENCES `issuers`(`id`),
+  `systemId` INT NULL REFERENCES `systems`(`id`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;

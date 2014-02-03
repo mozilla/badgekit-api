@@ -8,9 +8,11 @@ const Badges = db.table('badges', {
     'name',
     'strapline',
     'description',
+    'archived',
     'imageId',
+    'programId',
     'issuerId',
-    'archived'
+    'systemId',
   ],
   relationships: {
     image: {
@@ -23,10 +25,7 @@ const Badges = db.table('badges', {
 });
 
 Badges.validateRow = makeValidator({
-  id: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
+  id: optionalInt,
   slug: function (slug) {
     this.check(slug).len(1, 50);
   },
@@ -39,15 +38,15 @@ Badges.validateRow = makeValidator({
   description: function (desc) {
     this.check(desc).len(1, 255);
   },
-  imageId: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
-  issuerId: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
+  imageId: optionalInt,
+  programId: optionalInt,
+  issuerId: optionalInt,
+  systemId: optionalInt,
 });
 
+function optionalInt(id) {
+  if (typeof id == 'undefined') return;
+  this.check(id).isInt();
+}
 
 exports = module.exports = Badges;
