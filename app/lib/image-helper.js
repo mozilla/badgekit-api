@@ -65,7 +65,11 @@ function putModel(Model) {
       if (imageId)
         data.imageId = imageId;
 
-      Model.put(data, callback);
+      Model.put(data, function (err, result) {
+        const query = {slug: data.slug};
+        const options = {relationships: true};
+        return Model.getOne(query, options, callback)
+      });
     }
 
     var validationErrors = Model.validateRow(data);

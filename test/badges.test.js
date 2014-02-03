@@ -77,8 +77,6 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       t.same(res.statusCode, 201)
       t.same(res.body.status, 'created')
-      return api.get('/badges/test-badge')
-    }).then(function (res) {
       t.same(res.body.badge.name, form.name)
       t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
@@ -97,10 +95,9 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       t.same(res.statusCode, 200)
       t.same(res.body.status, 'updated')
-      return api.get('/badges/test-badge')
-    }).then(function (res) {
       t.same(res.body.badge.name, form.name)
       t.same(res.body.badge.description, form.description)
+      t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have an image url')
       t.end()
     }).catch(api.fail(t))
   })

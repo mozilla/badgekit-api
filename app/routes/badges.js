@@ -53,14 +53,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req, {required: true})
 
-    putBadge(row, image, function (err, result) {
+    putBadge(row, image, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
-      res.send(201, {status: 'created', badge: row});
+      return res.send(201, {
+        status: 'created',
+        badge: badgeFromDb(badge)
+      });
     });
   }
 
@@ -92,14 +95,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
       delete row.image
       row.issuerId = row.issuerId || undefined;
 
-      putBadge(row, image, function (err, result) {
+      putBadge(row, image, function (err, badge) {
         if (err) {
           if (!Array.isArray(err))
             return dbErrorHandler(err, row, res, next);
           return res.send(400, errorHelper.validation(err));
         }
 
-        res.send({status: 'updated', badge: row});
+        res.send({
+          status: 'updated',
+          badge: badgeFromDb(badge)
+        });
       });
     });
   }
