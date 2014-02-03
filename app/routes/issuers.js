@@ -25,14 +25,17 @@ exports = module.exports = function applyIssuerRoutes (server) {
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req)
 
-    putIssuer(row, image, function savedRow(err, result) {
+    putIssuer(row, image, function savedRow(err, issuer) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
-      res.send(201, {status: 'created', issuer: row});
+      res.send(201, {
+        status: 'created',
+        issuer: issuerFromDb(issuer)
+      });
     });
   }
 
@@ -64,7 +67,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
       row.issuerId = row.issuerId || undefined;
 
-      putIssuer(updated, image, function updatedRow(err, result) {
+      putIssuer(updated, image, function updatedRow(err, issuer) {
         if (err) {
           if (!Array.isArray(err))
             return dbErrorHandler(err, row, res, next);
@@ -76,8 +79,11 @@ exports = module.exports = function applyIssuerRoutes (server) {
           });
         }
 
-        return res.send({status: 'updated', issuer: row})
-      })
+        return res.send({
+          status: 'updated',
+          issuer: issuerFromDb(issuer)
+        });
+      });
     });
   }
 

@@ -28,13 +28,12 @@ spawn(app).then(function (api) {
       })
     }).then(function (res) {
       t.same(res.body.status, 'created', 'should be created')
+      t.same(res.body.issuer.name, form.name)
+      t.ok(res.body.issuer.imageUrl.match(/\/images\/.+/), 'should have right image url')
       form.image = stream('test-image.png')
       return api.post('/issuers', form)
     }).then(function (res) {
       t.same(res.statusCode, 409, 'should get 409 conflict')
-      return api.get('/issuers/test-issuer')
-    }).then(function(res){
-      t.same(res.body.issuer.name, form.name)
       t.end()
     }).catch(api.fail(t))
   })
@@ -49,10 +48,9 @@ spawn(app).then(function (api) {
       })
     }).then(function (res) {
       t.same(res.body.status, 'updated', 'should be updated')
-      return api.get('/issuers/test-issuer')
-    }).then(function (res) {
       t.same(res.body.issuer.name, form.name)
       t.same(res.body.issuer.email, form.email)
+      t.ok(res.body.issuer.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
     }).catch(api.fail(t))
   })
