@@ -66,6 +66,9 @@ function putModel(Model) {
         data.imageId = imageId;
 
       Model.put(data, function (err, result) {
+        if (err)
+          return callback(err)
+
         const query = {slug: data.slug};
         const options = {relationships: true};
         return Model.getOne(query, options, callback)
