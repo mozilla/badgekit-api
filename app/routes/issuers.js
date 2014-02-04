@@ -53,7 +53,10 @@ exports = module.exports = function applyIssuerRoutes (server) {
       Issuers.del(query, function deletedRow(error, result) {
         if (error)
           return dbErrorHandler(error, row, req, next)
-        return res.send({status: 'deleted', issuer: row});
+        return res.send({
+          status: 'deleted',
+          issuer: issuerFromDb(row)
+        });
       });
     });
   }
@@ -71,12 +74,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
         if (err) {
           if (!Array.isArray(err))
             return dbErrorHandler(err, row, res, next);
-
-          return res.send(400, {
-            code: 'ValidationError',
-            message: 'Could not validate required fields',
-            details: err,
-          });
+          return res.send(400, errorHelper.validation(err));
         }
 
         return res.send({

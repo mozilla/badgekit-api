@@ -55,7 +55,11 @@ exports = module.exports = function applyProgramRoutes (server) {
       Programs.del(query, function deletedRow(error, result) {
         if (error)
           return dbErrorHandler(error, row, req, next);
-        res.send({status: 'deleted', program: row});
+
+        res.send({
+          status: 'deleted',
+          program: programFromDb(row)
+        });
       });
     });
   }
@@ -68,7 +72,6 @@ exports = module.exports = function applyProgramRoutes (server) {
       delete updated.image
 
       row.issuerId = row.issuerId || undefined;
-
 
       putProgram(updated, image, function updatedRow(err, program) {
         if (err) {

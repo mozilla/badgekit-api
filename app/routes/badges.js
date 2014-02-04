@@ -81,7 +81,11 @@ exports = module.exports = function applyBadgeRoutes (server) {
       Badges.del({id: row.id}, function deletedRow (error, result) {
         if (error)
           return dbErrorHandler(error, row, req, next);
-        res.send({status: 'deleted', badge: badgeFromDb(row)});
+
+        res.send({
+          status: 'deleted',
+          badge: badgeFromDb(row)
+        });
       });
     });
   }
