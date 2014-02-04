@@ -1,5 +1,5 @@
-const check = require('validator').check;
 const db = require('../lib/db');
+const makeValidator = require('../lib/make-validator')
 
 const Badges = db.table('badges', {
   fields: [
@@ -22,47 +22,32 @@ const Badges = db.table('badges', {
   }
 });
 
-Badges.validateRow = function (row) {
-  return this.fields.reduce(function (errors, field) {
-    try {
-      const validator = validation[field] || noop;
-      validator(row[field]);
-    }
-    catch(e) {
-      e.field = field;
-      errors.push(e);
-    }
-    return errors;
-  }, []);
-};
-
-const validation = {
+Badges.validateRow = makeValidator({
   id: function (id) {
     if (typeof id == 'undefined') return;
-    check(id).isInt();
+    this.check(id).isInt();
   },
   slug: function (slug) {
-    check(slug).len(1, 50);
+    this.check(slug).len(1, 50);
   },
   name: function (name) {
-    check(name).len(1, 255);
+    this.check(name).len(1, 255);
   },
   strapline: function (text) {
-    check(text).len(0, 50);
+    this.check(text).len(0, 50);
   },
   description: function (desc) {
-    check(desc).len(1, 255);
+    this.check(desc).len(1, 255);
   },
   imageId: function (id) {
     if (typeof id == 'undefined') return;
-    check(id).isInt();
+    this.check(id).isInt();
   },
   issuerId: function (id) {
     if (typeof id == 'undefined') return;
-    check(id).isInt();
+    this.check(id).isInt();
   },
-};
+});
 
-function noop() {}
 
 exports = module.exports = Badges;

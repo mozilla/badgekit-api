@@ -1,5 +1,5 @@
-const check = require('validator').check
 const db = require('../lib/db');
+const makeValidator = require('../lib/make-validator')
 
 const Issuers = db.table('issuers', {
   fields: [
@@ -11,45 +11,37 @@ const Issuers = db.table('issuers', {
     'email',
     'imageId'
   ],
+  relationships: {
+    image: {
+      type: 'hasOne',
+      local: 'imageId',
+      foreign: { table: 'images', key: 'id' },
+      optional: true,
+    }
+  },
 });
 
-Issuers.validateRow = function (row) {
-  return this.fields.reduce(function (errors, field) {
-    try {
-      const validator = validation[field] || noop
-      validator(row[field])
-    }
-    catch(e) {
-      e.field = field
-      errors.push(e)
-    }
-    return errors
-  }, [])
-}
-
-const validation = {
+Issuers.validateRow = makeValidator({
   id: function (id) {
     if (typeof id == 'undefined') return;
-    check(id).isInt();
+    this.check(id).isInt();
   },
   slug: function (slug) {
-    check(slug).len(1, 50);
+    this.check(slug).len(1, 50);
   },
   name: function (name) {
-    check(name).len(1, 50);
+    this.check(name).len(1, 50);
   },
   url: function (url) {
-    check(url).isUrl();
+    this.check(url).isUrl();
   },
   description: function (desc) {
-    check(desc).len(0, 255);
+    this.check(desc).len(0, 255);
   },
   email: function (email) {
     if (typeof email == 'undefined') return;
-    check(email).isEmail();
+    this.check(email).isEmail();
   },
-}
-
-function noop() {}
+})
 
 exports = module.exports = Issuers;

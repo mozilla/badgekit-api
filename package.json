@@ -7,7 +7,7 @@
   "main": "app/index.js",
   "scripts": {
     "start": "node app",
-    "test": "npm run lint && tap test/*.test.js",
+    "test": "tap test/*.test.js",
     "lint": "jshint app/*"
   },
   "dependencies": {

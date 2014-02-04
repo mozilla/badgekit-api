@@ -1,53 +1,62 @@
-const xtend = require('xtend')
+const safeExtend = require('../lib/safe-extend')
 const Issuers = require('../models/issuer');
 
-exports = module.exports = function applyIssuerRoutes (server) {
+const imageHelper = require('../lib/image-helper')
+const errorHelper = require('../lib/error-helper')
 
+const putIssuer = imageHelper.putModel(Issuers)
+const dbErrorHandler = errorHelper.makeDbHandler('issuer')
+
+exports = module.exports = function applyIssuerRoutes (server) {
   server.get('/issuers', showAllIssuers);
   function showAllIssuers(req, res, next) {
-    Issuers.get({}, function foundRows(error, rows) {
+    const query = {}
+    const options = {relationships: true};
+    Issuers.get(query, options, function foundRows(error, rows) {
       if (error)
-        return handleError(error, null, res, next)
+        return dbErrorHandler(error, null, res, next)
 
-      res.send({issuers: rows.map(issuerFromDb)});
-      return next();
+      return res.send({issuers: rows.map(issuerFromDb)});
     });
   }
 
   server.post('/issuers', saveIssuer);
   function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
-    const validationErrors = Issuers.validateRow(row);
+    const image = imageHelper.getFromPost(req)
 
-    if (validationErrors.length) {
-      res.send(400, {errors: validationErrors})
-      return next()
-    }
+    putIssuer(row, image, function savedRow(err, issuer) {
+      if (err) {
+        if (!Array.isArray(err))
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
+      }
 
-    Issuers.put(row, function savedRow(error, result) {
-      if (error)
-        return handleError(error, row, res, next)
-
-      res.send(201, {status: 'created'})
-      return next();
+      res.send(201, {
+        status: 'created',
+        issuer: issuerFromDb(issuer)
+      });
     });
   }
 
   server.get('/issuers/:issuerId', showOneIssuer);
   function showOneIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
-      res.send({issuer: issuerFromDb(row)});
-      return next();
+      return res.send({issuer: issuerFromDb(row)});
     });
   }
 
   server.del('/issuers/:issuerId', deleteIssuer);
   function deleteIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
-      Issuers.del(row, function deletedRow(error, result) {
+      const query = {id: row.id, slug: row.slug}
+      Issuers.del(query, function deletedRow(error, result) {
         if (error)
-          return handleError(error, row, req, next)
-        res.send({status: 'deleted', row: row});
+          return dbErrorHandler(error, row, req, next)
+        return res.send({
+          status: 'deleted',
+          issuer: issuerFromDb(row)
+        });
       });
     });
   }
@@ -55,12 +64,24 @@ exports = module.exports = function applyIssuerRoutes (server) {
   server.put('/issuers/:issuerId', updateIssuer);
   function updateIssuer(req, res, next) {
     getIssuer(req, res, next, function (row) {
-      const updated = xtend(row, req.body)
-      Issuers.put(updated, function updatedRow(error, result) {
-        if (error)
-          return handleError(error, row, res, next)
-        res.send({status: 'updated'})
-      })
+      const updated = safeExtend(row, req.body)
+      const image = imageHelper.getFromPost(req)
+      delete updated.image
+
+      row.issuerId = row.issuerId || undefined;
+
+      putIssuer(updated, image, function updatedRow(err, issuer) {
+        if (err) {
+          if (!Array.isArray(err))
+            return dbErrorHandler(err, row, res, next);
+          return res.send(400, errorHelper.validation(err));
+        }
+
+        return res.send({
+          status: 'updated',
+          issuer: issuerFromDb(issuer)
+        });
+      });
     });
   }
 
@@ -68,35 +89,17 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
 function getIssuer(req, res, next, callback) {
   const query = {slug: req.params.issuerId};
-  Issuers.getOne(query, function foundIssuer(error, row) {
-    if (error)
-      return handleError(error, row, res, next)
+  const options = {relationships: true};
 
-    if (!row) {
-      res.send(404, {error: 'not found'});
-      return next()
-    }
+  Issuers.getOne(query, options, function foundIssuer(error, row) {
+    if (error)
+      return dbErrorHandler(error, row, res, next)
+
+    if (!row)
+      return next(errorHelper.notFound('Could not find issuer with slug `'+query.slug+'`'));
 
     return callback(row)
   });
-}
-
-const errorCodes = {
-  ER_DUP_ENTRY: [409, {error: 'An issuer with that `slug` already exists'}]
-}
-
-function handleError(error, row, res, next) {
-  const expected = knownError(error, row)
-  if (!expected) return next(error)
-  res.send.apply(res, expected)
-  return next()
-}
-
-function knownError(error, row) {
-  const err = errorCodes[error.code];
-  if (!err) return;
-  if (row) err[1].received = row
-  return err;
 }
 
 function fromPostToRow(post) {
@@ -115,5 +118,6 @@ function issuerFromDb(row) {
     url: row.url,
     name: row.name,
     email: row.email,
+    imageUrl: row.image ? row.image.toUrl() : null
   }
 }

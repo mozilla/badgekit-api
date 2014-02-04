@@ -8,45 +8,46 @@ spawn(app).then(function (api) {
 
   test('get program list', function (t) {
     api.get('/programs').then(function (res) {
-      t.ok(res.programs, 'should have programs')
-      t.same(res.programs[0].id, 1)
-      t.same(res.programs[0].slug, 'mit-scratch')
+      t.ok(res.body.programs, 'should have programs')
+      t.same(res.body.programs[0].id, 1)
+      t.same(res.body.programs[0].slug, 'mit-scratch')
       t.end()
     })
   })
 
   test('add new program', function (t) {
-    const form = {
-      slug: 'test-program',
-      name: 'Test Program',
-      url: 'http://example.org/test/',
-      email: 'test@example.org',
-      description: 'it is a test!',
-      image: stream('test-image.png'),
-    }
-
-     api.post('/programs', form).then(function (res) {
-      t.same(res.status, 'created')
-      return api.get('/programs/test-program')
+    var form = {soAndSoAndSo: 'from wherever wherever'}
+    api.post('/programs', form).then(function (res) {
+      t.same(res.statusCode, 400, 'should have rest error')
+      t.same(res.body.code, 'ValidationError', 'should be a validation error')
+      return api.post('/programs', form = {
+        slug: 'test-program',
+        name: 'Test Program',
+        url: 'http://example.org/test/',
+        email: 'test@example.org',
+        description: 'it is a test!',
+        image: stream('test-image.png'),
+      })
     }).then(function (res) {
-      t.same(res.program.name, form.name)
-      t.ok(res.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
+      t.same(res.body.status, 'created')
+      t.same(res.body.program.name, form.name)
+      t.ok(res.body.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
     })
   })
 
   test('update program', function (t) {
-    const diff = {
-      name: 'Test Program, obvi',
-      description: 'it is still a test!',
-    }
-    var originalImageUrl
-    api.put('/programs/test-program', diff).then(function (res) {
-      t.same(res.status, 'updated')
-      return api.get('/programs/test-program')
+    var form = {soAndSoAndSo: 'from wherever wherever'}
+    api.put('/programs/test-program', form).then(function(res){
+      t.same(res.statusCode, 200, 'no error')
+      return api.put('/programs/test-program', form = {
+        name: 'Test Program, obvi',
+        description: 'it is still a test!',
+      })
     }).then(function (res) {
-      t.same(res.program.name, diff.name)
-      t.same(res.program.description, diff.description)
+      t.same(res.body.status, 'updated')
+      t.same(res.body.program.name, form.name)
+      t.same(res.body.program.description, form.description)
       t.end()
     })
   })
@@ -54,10 +55,10 @@ spawn(app).then(function (api) {
   test('delete program', function (t) {
     const getProgram = api.get.bind(api, '/programs/test-program')
     api.del('/programs/test-program').then(function (res) {
-      t.same(res.status, 'deleted')
+      t.same(res.body.status, 'deleted')
       return api.get('/programs/test-program')
     }).then(function (res) {
-      t.same(res.error, 'not found')
+      t.same(res.body.code, 'ResourceNotFound')
       t.end()
     })
   })
