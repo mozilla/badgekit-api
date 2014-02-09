@@ -150,6 +150,7 @@ function fromPostToRow (post) {
 
 function badgeFromDb (row) {
   return {
+    id: row.id,
     slug: row.slug,
     name: row.name,
     strapline: row.strapline,
