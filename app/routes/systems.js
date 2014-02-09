@@ -107,6 +107,7 @@ function fromPostToRow(post) {
     slug: post.slug,
     url: post.url,
     name: post.name,
+    description: post.description,
     email: post.email,
   }
 }

@@ -107,7 +107,9 @@ function fromPostToRow(post) {
     slug: post.slug,
     url: post.url,
     name: post.name,
+    description: post.description,
     email: post.email,
+    systemId: post.systemId,
   }
 }
 
@@ -117,6 +119,7 @@ function issuerFromDb(row) {
     slug: row.slug,
     url: row.url,
     name: row.name,
+    description: row.description,
     email: row.email,
     imageUrl: row.image ? row.image.toUrl() : null
   }
