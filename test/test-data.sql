@@ -1,9 +1,16 @@
-INSERT INTO `issuers` SET
+INSERT INTO `systems` SET
   `slug` = 'chicago',
   `name` = 'Chicago',
   `url` = 'http://cityofchicago.org',
   `description` = 'The City of Chicago',
   `email` = 'mayor-emanuel@cityofchicago.org';
+
+INSERT INTO `issuers` SET
+  `slug` = 'chicago-library',
+  `name` = 'Chicago Public Library',
+  `url` = 'http://www.chipublib.org/',
+  `description` = 'Chicago Public Library',
+  `email` = 'eratosthenes@chipublib.org';
 
 INSERT INTO `issuers` SET
   `slug` = 'pittsburgh',
