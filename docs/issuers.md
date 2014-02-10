@@ -80,7 +80,8 @@ Creates a new issuer.
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 
-<a id="post-parameters"></a>
+<a name="post-parameters"></a>
+
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|-------------------------|
 | **slug** | required | Short, computer-friendly name for the issuer. Good slugs are lowercase and use dashes instead of spaces, e.g. `chicago-public-library`. Maximum of 50 characters and each issuer must have a unique slug.
