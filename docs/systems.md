@@ -64,9 +64,10 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find system with slug `<attempted slug>`"
   }
   ```
 
@@ -78,42 +79,16 @@ Creates a new system.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-```
-POST /systems HTTP/1.1
-Content-Type: application/json
 
-{
-  "name": "System Name",
-  "slug": "system-slug",
-  "description": "System Description"
-}
-```
-
-```
-POST /systems HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-name=System%20Name&slug=system-slug&description=System%20Description
-```
-
-```
-POST /systems HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-System Name
---…
-content-disposition: form-data; name="slug"
-
-system-slug
---…
-content-disposition: form-data; name="description"
-
-System Description
---…--
-```
+<a id="post-parameters"></a>
+| Parameters             | Required        | Description              |
+|:-----------------------|-----------------|-------------------------|
+| **slug** | required | Short, computer-friendly name for the system. Good slugs are lowercase and use dashes instead of spaces, e.g. `city-of-chicago`. Maximum of 50 characters and each system must have a unique slug.
+| **name** | required | Name of the system. Maximum of 255 characters.
+| **url** | required | URL for the system. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | optional | A short, human-friendly description of the system. Maximum of 255 characters
+| **email** | optional | Email address associated with the badge administrator of the system.
+| **image** | optional | Image for the system. Should be either multipart data or a URL.
 
 ### Expected response
 
@@ -122,24 +97,33 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-  "status": "created"
+  "status": "created",
+  "system": {
+    "slug": "system-slug",
+    "name": "System Name",
+    "url": "https://example.org/system/",
+    "email": "system-badges@example.org",
+    "description": "System Description"
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -147,16 +131,19 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "A system with that `slug` already exists",
-    "received": {
-      "name": "System Name",
+    "code": "ResourceConflict",
+    "error": system with that `slug` already exists",
+    "details": {
       "slug": "system-slug",
+      "name": "System Name",
+      "url": "https://example.org/system/",
+      "email": "system-badges@example.org",
       "description": "System Description"
     }
   }
@@ -170,42 +157,7 @@ Updates an existing system.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-```
-PUT /systems/<slug> HTTP/1.1
-Content-Type: application/json
-
-{
-  "name": "New System Name",
-  "slug": "new-system-slug",
-  "description": "New System Description"
-}
-```
-
-```
-PUT /systems/<slug> HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-name=New%20System%20Name&slug=new-system-slug&description=New%20System%20Description
-```
-
-```
-PUT /systems/<slug> HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-New System Name
---…
-content-disposition: form-data; name="slug"
-
-new-system-slug
---…
-content-disposition: form-data; name="description"
-
-New System Description
---…--
-```
+<a href="#post-parameters">See above for parameters.</a> You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
 ### Expected response
 
@@ -214,24 +166,33 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "updated"
+  "status": "updated",
+  "system": {
+    "slug": "system-slug",
+    "name": Updated System Name",
+    "url": "https://example.org/system/",
+    "email": "system-badges@example.org",
+    "description": "Updated System Description"
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -239,17 +200,20 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "A system with that `slug` already exists",
-    "received": {
-      "name": "New System Name",
-      "slug": "new-system-slug",
-      "description": "New System Description"
+    "code": "ResourceConflict",
+    "error": "system with that `slug` already exists",
+    "details": {
+      "slug": "system-slug",
+      "name": "System Name",
+      "url": "https://example.org/system/",
+      "email": "system-badges@example.org",
+      "description": "System Description"
     }
   }
   ```
@@ -271,7 +235,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "deleted"
+  "status": "deleted",
+  "system": {
+    "slug": "system-slug",
+    "name": "System Name",
+    "url": "https://example.org/system/",
+    "email": "system-badges@example.org",
+    "description": "System Description"
+  }
 }
 ```
 
@@ -282,8 +253,9 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find system with slug `<attempted slug>`"
   }
   ```
