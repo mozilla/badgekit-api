@@ -12,7 +12,7 @@ GET /badges HTTP/1.1
 
 #### Available request parameters
 
-* **`archived`:** `[true|false|any]`  
+* **`archived`:** `[true|false|any]`
   Whether to include archived badges.
   * `true` will return only archived badges
   * `false` (default) will return only unarchived badges
@@ -65,7 +65,7 @@ Content-Type: application/json
     "slug": "badge-slug",
     "strapline": "Badge Strapline",
     "description": "Badge Description",
-    "imageURL": "http://example.org/badge.png",
+    "imageUrl": "http://example.org/badge.png",
     "archived": false
   }
 }
@@ -78,9 +78,10 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find badge with slug `<attempted slug>`"
   }
   ```
 
@@ -101,7 +102,7 @@ Content-Type: application/json
   "slug": "badge-slug",
   "strapline": "Badge Strapline",
   "description": "Badge Description",
-  "image": "http://example.org/image.png"
+  "imageUrl": "http://example.org/image.png"
 }
 ```
 
@@ -109,7 +110,7 @@ Content-Type: application/json
 POST /badges HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
-name=Badge%20Name&slug=badge-slug&strapline=Badge%20Strapline&description=Badge%20Description&image=http%3A%2F%2Fexample.org%2Fimage.png
+name=Badge%20Name&slug=badge-slug&strapline=Badge%20Strapline&description=Badge%20Description&imageUrl=http%3A%2F%2Fexample.org%2Fimage.png
 ```
 
 ```
@@ -133,7 +134,7 @@ content-disposition: form-data; name="description"
 
 Badge Description
 --…
-content-disposition: form-data; name="image"
+content-disposition: form-data; name="imageUrl"
 
 http://example.org/image.png
 --…--
@@ -184,24 +185,34 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-  "status": "created"
+  "status": "created",
+  "badge": {
+    "name": "Badge Name",
+    "slug": "badge-slug",
+    "strapline": "Badge Strapline",
+    "description": "Badge Description",
+    "imageUrl": "http://example.org/badge.png",
+    "archived": false
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -209,19 +220,20 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "A badge with that `slug` already exists",
-    "received": {
+    "code": "ResourceConflict",
+    "error": "badge with that `slug` already exists",
+    "details": {
       "name": "Badge Name",
       "slug": "badge-slug",
       "strapline": "Badge Strapline",
       "description": "Badge Description",
-      "image": "http://example.org/image.png"
+      "imageUrl": "http://example.org/image.png"
     }
   }
   ```
@@ -243,7 +255,7 @@ Content-Type: application/json
   "slug": "new-badge-slug",
   "strapline": "New Badge Strapline",
   "description": "New Badge Description",
-  "image": "http://example.org/new-image.png"
+  "imageUrl": "http://example.org/new-image.png"
 }
 ```
 
@@ -292,24 +304,33 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "updated"
+  "status": "updated",
+  "badge": {
+    "name": "New Badge Name",
+    "slug": "new-badge-slug",
+    "strapline": "New Badge Strapline",
+    "description": "New Badge Description",
+    "imageUrl": "http://example.org/new-image.png"
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -317,19 +338,20 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "A badge with that `slug` already exists",
-    "received": {
+    "code": "ResourceConflict",
+    "error": "badge with that `slug` already exists",
+    "details": {
       "name": "New Badge Name",
       "slug": "new-badge-slug",
       "strapline": "New Badge Strapline",
       "description": "New Badge Description",
-      "image": "http://example.org/new-image.png"
+      "imageUrl": "http://example.org/new-image.png"
     }
   }
   ```
@@ -351,7 +373,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "deleted"
+  "status": "deleted",
+  "badge": {
+    "name": "New Badge Name",
+    "slug": "new-badge-slug",
+    "strapline": "New Badge Strapline",
+    "description": "New Badge Description",
+    "imageUrl": "http://example.org/new-image.png"
+  }
 }
 ```
 
@@ -362,8 +391,9 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find badge with slug `<attempted slug>`"
   }
   ```
