@@ -80,9 +80,10 @@ Creates a new program.
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 
-| **Parameters**                      | Description              |
-|:------------------------------------|--------------------------|
-| **name**<br><small>required</small> | Name of the program. Maximum of 255 characters.
+| Parameters             | Required        | Description              |
+|:-----------------------|-----------------|-------------------------:|
+| **name** | &#x2611; | Name of the program. Maximum of 255 characters.
+| **image** | &#x2610; | Image for the program. Should be either multipart data or a URL.
 
 ### Expected response
 
