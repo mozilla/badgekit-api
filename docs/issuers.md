@@ -64,9 +64,10 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find issuer with slug `<attempted slug>`"
   }
   ```
 
@@ -78,42 +79,16 @@ Creates a new issuer.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-```
-POST /issuers HTTP/1.1
-Content-Type: application/json
 
-{
-  "name": "Issuer Name",
-  "slug": "issuer-slug",
-  "description": "Issuer Description"
-}
-```
-
-```
-POST /issuers HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-name=Issuer%20Name&slug=issuer-slug&description=Issuer%20Description
-```
-
-```
-POST /issuers HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-Issuer Name
---…
-content-disposition: form-data; name="slug"
-
-issuer-slug
---…
-content-disposition: form-data; name="description"
-
-Issuer Description
---…--
-```
+<a id="post-parameters"></a>
+| Parameters             | Required        | Description              |
+|:-----------------------|-----------------|-------------------------|
+| **slug** | required | Short, computer-friendly name for the issuer. Good slugs are lowercase and use dashes instead of spaces, e.g. `chicago-public-library`. Maximum of 50 characters and each issuer must have a unique slug.
+| **name** | required | Name of the issuer. Maximum of 255 characters.
+| **url** | required | URL for the issuer. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | optional | A short, human-friendly description of the issuer. Maximum of 255 characters
+| **email** | optional | Email address associated with the badge administrator of the issuer.
+| **image** | optional | Image for the issuer. Should be either multipart data or a URL.
 
 ### Expected response
 
@@ -122,24 +97,33 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-  "status": "created"
+  "status": "created",
+  "issuer": {
+    "slug": "issuer-slug",
+    "name": "Issuer Name",
+    "url": "https://example.org/issuer/",
+    "email": "issuer-badges@example.org",
+    "description": "Issuer Description"
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -147,16 +131,19 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "An issuer with that `slug` already exists",
-    "received": {
-      "name": "Issuer Name",
+    "code": "ResourceConflict",
+    "error": issuer with that `slug` already exists",
+    "details": {
       "slug": "issuer-slug",
+      "name": "Issuer Name",
+      "url": "https://example.org/issuer/",
+      "email": "issuer-badges@example.org",
       "description": "Issuer Description"
     }
   }
@@ -170,42 +157,7 @@ Updates an existing issuer.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-```
-PUT /issuers/<slug> HTTP/1.1
-Content-Type: application/json
-
-{
-  "name": "New Issuer Name",
-  "slug": "new-issuer-slug",
-  "description": "New Issuer Description"
-}
-```
-
-```
-PUT /issuers/<slug> HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-name=New%20Issuer%20Name&slug=new-issuer-slug&description=New%20Issuer%20Description
-```
-
-```
-PUT /issuers/<slug> HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-New Issuer Name
---…
-content-disposition: form-data; name="slug"
-
-new-issuer-slug
---…
-content-disposition: form-data; name="description"
-
-New Issuer Description
---…--
-```
+<a href="#post-parameters">See above for parameters.</a> You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
 ### Expected response
 
@@ -214,24 +166,33 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "updated"
+  "status": "updated",
+  "issuer": {
+    "slug": "issuer-slug",
+    "name": Updated Issuer Name",
+    "url": "https://example.org/issuer/",
+    "email": "issuer-badges@example.org",
+    "description": "Updated Issuer Description"
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -239,17 +200,20 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "An issuer with that `slug` already exists",
-    "received": {
-      "name": "New Issuer Name",
-      "slug": "new-issuer-slug",
-      "description": "New Issuer Description"
+    "code": "ResourceConflict",
+    "error": "issuer with that `slug` already exists",
+    "details": {
+      "slug": "issuer-slug",
+      "name": "Issuer Name",
+      "url": "https://example.org/issuer/",
+      "email": "issuer-badges@example.org",
+      "description": "Issuer Description"
     }
   }
   ```
@@ -271,7 +235,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "deleted"
+  "status": "deleted",
+  "issuer": {
+    "slug": "issuer-slug",
+    "name": "Issuer Name",
+    "url": "https://example.org/issuer/",
+    "email": "issuer-badges@example.org",
+    "description": "Issuer Description"
+  }
 }
 ```
 
@@ -282,8 +253,9 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find issuer with slug `<attempted slug>`"
   }
   ```
