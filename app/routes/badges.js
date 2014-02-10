@@ -1,4 +1,4 @@
-const safeExtend = require('../lib/safe-extend');
+const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
 
 const imageHelper = require('../lib/image-helper')
@@ -94,10 +94,19 @@ exports = module.exports = function applyBadgeRoutes (server) {
   function updateBadge (req, res, next) {
     getBadge(req, res, next, function (badge) {
       const row = safeExtend(badge, req.body);
-      const image = imageHelper.getFromPost(req)
+      const image = imageHelper.getFromPost(req);
 
-      delete row.image
+      // TODO: This is kind of silly. We need a better way to handle
+      // updates. Maybe streamsql should throw back `undefined` instead
+      // of `null` when the fields don't exist. Also, `getBadge` should
+      // have an option for *not* fulfilling relationships, so we don't
+      // have to delete `image`. Either that or streamsql can have an
+      // option for ignoring fields it doesn't recognize, which is
+      // probably the sanest option.
+      delete row.image;
+      row.systemId = row.systemId || undefined;
       row.issuerId = row.issuerId || undefined;
+      row.programId = row.programId || undefined;
 
       putBadge(row, image, function (err, badge) {
         if (err) {
@@ -141,6 +150,7 @@ function fromPostToRow (post) {
 
 function badgeFromDb (row) {
   return {
+    id: row.id,
     slug: row.slug,
     name: row.name,
     strapline: row.strapline,

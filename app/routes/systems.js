@@ -1,31 +1,31 @@
 const safeExtend = require('../lib/safe-extend')
-const Issuers = require('../models/issuer');
+const Systems = require('../models/system');
 
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 
-const putIssuer = imageHelper.putModel(Issuers)
-const dbErrorHandler = errorHelper.makeDbHandler('issuer')
+const putSystem = imageHelper.putModel(Systems)
+const dbErrorHandler = errorHelper.makeDbHandler('system')
 
-exports = module.exports = function applyIssuerRoutes (server) {
-  server.get('/issuers', showAllIssuers);
-  function showAllIssuers(req, res, next) {
+exports = module.exports = function applySystemRoutes (server) {
+  server.get('/systems', showAllSystems);
+  function showAllSystems(req, res, next) {
     const query = {}
     const options = {relationships: true};
-    Issuers.get(query, options, function foundRows(error, rows) {
+    Systems.get(query, options, function foundRows(error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
 
-      return res.send({issuers: rows.map(issuerFromDb)});
+      return res.send({systems: rows.map(systemFromDb)});
     });
   }
 
-  server.post('/issuers', saveIssuer);
-  function saveIssuer(req, res, next) {
+  server.post('/systems', saveSystem);
+  function saveSystem(req, res, next) {
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req)
 
-    putIssuer(row, image, function savedRow(err, issuer) {
+    putSystem(row, image, function savedRow(err, system) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -34,43 +34,43 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
       res.send(201, {
         status: 'created',
-        issuer: issuerFromDb(issuer)
+        system: systemFromDb(system)
       });
     });
   }
 
-  server.get('/issuers/:issuerId', showOneIssuer);
-  function showOneIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
-      return res.send({issuer: issuerFromDb(row)});
+  server.get('/systems/:systemId', showOneSystem);
+  function showOneSystem(req, res, next) {
+    getSystem(req, res, next, function (row) {
+      return res.send({system: systemFromDb(row)});
     });
   }
 
-  server.del('/issuers/:issuerId', deleteIssuer);
-  function deleteIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
+  server.del('/systems/:systemId', deleteSystem);
+  function deleteSystem(req, res, next) {
+    getSystem(req, res, next, function (row) {
       const query = {id: row.id, slug: row.slug}
-      Issuers.del(query, function deletedRow(error, result) {
+      Systems.del(query, function deletedRow(error, result) {
         if (error)
           return dbErrorHandler(error, row, req, next)
         return res.send({
           status: 'deleted',
-          issuer: issuerFromDb(row)
+          system: systemFromDb(row)
         });
       });
     });
   }
 
-  server.put('/issuers/:issuerId', updateIssuer);
-  function updateIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
+  server.put('/systems/:systemId', updateSystem);
+  function updateSystem(req, res, next) {
+    getSystem(req, res, next, function (row) {
       const updated = safeExtend(row, req.body)
       const image = imageHelper.getFromPost(req)
       delete updated.image
 
-      row.issuerId = row.issuerId || undefined;
+      row.systemId = row.systemId || undefined;
 
-      putIssuer(updated, image, function updatedRow(err, issuer) {
+      putSystem(updated, image, function updatedRow(err, system) {
         if (err) {
           if (!Array.isArray(err))
             return dbErrorHandler(err, row, res, next);
@@ -79,7 +79,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
         return res.send({
           status: 'updated',
-          issuer: issuerFromDb(issuer)
+          system: systemFromDb(system)
         });
       });
     });
@@ -87,16 +87,16 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
 };
 
-function getIssuer(req, res, next, callback) {
-  const query = {slug: req.params.issuerId};
+function getSystem(req, res, next, callback) {
+  const query = {slug: req.params.systemId};
   const options = {relationships: true};
 
-  Issuers.getOne(query, options, function foundIssuer(error, row) {
+  Systems.getOne(query, options, function foundSystem(error, row) {
     if (error)
       return dbErrorHandler(error, row, res, next)
 
     if (!row)
-      return next(errorHelper.notFound('Could not find issuer with slug `'+query.slug+'`'));
+      return next(errorHelper.notFound('Could not find system with slug `'+query.slug+'`'));
 
     return callback(row)
   });
@@ -109,17 +109,15 @@ function fromPostToRow(post) {
     name: post.name,
     description: post.description,
     email: post.email,
-    systemId: post.systemId,
   }
 }
 
-function issuerFromDb(row) {
+function systemFromDb(row) {
   return {
     id: row.id,
     slug: row.slug,
     url: row.url,
     name: row.name,
-    description: row.description,
     email: row.email,
     imageUrl: row.image ? row.image.toUrl() : null
   }

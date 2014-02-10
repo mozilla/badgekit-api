@@ -1,7 +1,7 @@
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
 
-const Issuers = db.table('issuers', {
+const Systems = db.table('systems', {
   fields: [
     'id',
     'slug',
@@ -21,7 +21,7 @@ const Issuers = db.table('issuers', {
   },
 });
 
-Issuers.validateRow = makeValidator({
+Systems.validateRow = makeValidator({
   id: function (id) {
     if (typeof id == 'undefined') return;
     this.check(id).isInt();
@@ -48,4 +48,4 @@ Issuers.validateRow = makeValidator({
   },
 });
 
-exports = module.exports = Issuers;
+exports = module.exports = Systems;
