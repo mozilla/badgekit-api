@@ -81,9 +81,10 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 
 
 | Parameters             | Required        | Description              |
-|:-----------------------|-----------------|-------------------------:|
-| **name** | required | Name of the program. Maximum of 255 characters. |
-| **image** | optional | Image for the program. Should be either multipart data or a URL. |
+|:-----------------------|-----------------|-------------------------|
+| **name** | required | Name of the program. Maximum of 255 characters.
+| **
+| **image** | optional | Image for the program. Should be either multipart data or a URL.
 
 ### Expected response
 
