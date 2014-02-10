@@ -80,10 +80,14 @@ Creates a new program.
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 
+<a id="post-parameters"></a>
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|-------------------------|
+| **slug** | required | Short, computer-friendly name for the program. Good slugs are lowercase and use dashes instead of spaces, e.g. `cpl-rahms-readers`. Maximum of 50 characters and each program must have a unique slug.
 | **name** | required | Name of the program. Maximum of 255 characters.
-| **
+| **url** | required | URL for the program. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | optional | A short, human-friendly description of the program. Maximum of 255 characters
+| **email** | optional | Email address associated with the badge administrator of the program.
 | **image** | optional | Image for the program. Should be either multipart data or a URL.
 
 ### Expected response
@@ -95,8 +99,10 @@ Content-Type: application/json
 {
   "status": "created",
   "program": {
-    "name": "Program Name",
     "slug": "program-slug",
+    "name": "Program Name",
+    "url": "https://example.org/program/",
+    "email": "program-badges@example.org",
     "description": "Program Description"
   }
 }
@@ -134,8 +140,10 @@ Content-Type: application/json
     "code": "ResourceConflict",
     "error": program with that `slug` already exists",
     "details": {
-      "name": "Program Name",
       "slug": "program-slug",
+      "name": "Program Name",
+      "url": "https://example.org/program/",
+      "email": "program-badges@example.org",
       "description": "Program Description"
     }
   }
@@ -149,42 +157,7 @@ Updates an existing program.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-```
-PUT /programs/<slug> HTTP/1.1
-Content-Type: application/json
-
-{
-  "name": "New Program Name",
-  "slug": "new-program-slug",
-  "description": "New Program Description"
-}
-```
-
-```
-PUT /programs/<slug> HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-name=New%20Program%20Name&slug=new-program-slug&description=New%20Program%20Description
-```
-
-```
-PUT /programs/<slug> HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-New Program Name
---…
-content-disposition: form-data; name="slug"
-
-new-program-slug
---…
-content-disposition: form-data; name="description"
-
-New Program Description
---…--
-```
+<a href="#post-parameters">See above for parameters.</a> You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
 ### Expected response
 
@@ -193,7 +166,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "updated"
+  "status": "updated",
+  "program": {
+    "slug": "program-slug",
+    "name": Updated Program Name",
+    "url": "https://example.org/program/",
+    "email": "program-badges@example.org",
+    "description": "Updated Program Description"
+  }
 }
 ```
 
@@ -226,11 +206,14 @@ Content-Type: application/json
   Content-Type: application/json
 
   {
-    "error": "A program with that `slug` already exists",
-    "received": {
-      "name": "New Program Name",
-      "slug": "new-program-slug",
-      "description": "New Program Description"
+    "code": "ResourceConflict",
+    "error": "program with that `slug` already exists",
+    "details": {
+      "slug": "program-slug",
+      "name": "Program Name",
+      "url": "https://example.org/program/",
+      "email": "program-badges@example.org",
+      "description": "Program Description"
     }
   }
   ```
@@ -252,7 +235,14 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "status": "deleted"
+  "status": "deleted",
+  "program": {
+    "slug": "program-slug",
+    "name": "Program Name",
+    "url": "https://example.org/program/",
+    "email": "program-badges@example.org",
+    "description": "Program Description"
+  }
 }
 ```
 
