@@ -64,9 +64,10 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find program with slug `<attempted slug>`"
   }
   ```
 
@@ -78,42 +79,10 @@ Creates a new program.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-```
-POST /programs HTTP/1.1
-Content-Type: application/json
 
-{
-  "name": "Program Name",
-  "slug": "program-slug",
-  "description": "Program Description"
-}
-```
-
-```
-POST /programs HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
-name=Program%20Name&slug=program-slug&description=Program%20Description
-```
-
-```
-POST /programs HTTP/1.1
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-Program Name
---…
-content-disposition: form-data; name="slug"
-
-program-slug
---…
-content-disposition: form-data; name="description"
-
-Program Description
---…--
-```
+| **Parameters**                      | Description              |
+|:------------------------------------|--------------------------|
+| **name**<br><small>required</small> | Name of the program. Maximum of 255 characters.
 
 ### Expected response
 
@@ -122,24 +91,31 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 
 {
-  "status": "created"
+  "status": "created",
+  "program": {
+    "name": "Program Name",
+    "slug": "program-slug",
+    "description": "Program Description"
+  }
 }
 ```
 
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -147,14 +123,15 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
-    "error": "A program with that `slug` already exists",
-    "received": {
+    "code": "ResourceConflict",
+    "error": program with that `slug` already exists",
+    "details": {
       "name": "Program Name",
       "slug": "program-slug",
       "description": "Program Description"
@@ -221,17 +198,19 @@ Content-Type: application/json
 ### Potential errors
 
 * **Invalid data**
-  
+
   ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
-  
+
   {
-    "errors": [
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
       {
-        "name": "ValidatorError",
         "message": "String is not in range",
-        "field": "name"
+        "field": "name",
+        "value": "..."
       },
       ...
     ]
@@ -239,11 +218,11 @@ Content-Type: application/json
   ```
 
 * **Duplicate entry**
-  
+
   ```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
-  
+
   {
     "error": "A program with that `slug` already exists",
     "received": {
@@ -282,8 +261,9 @@ Content-Type: application/json
   ```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
-  
+
   {
-    "error": "not found"
+    "code": "ResourceNotFound",
+    "message": "Could not find program with slug `<attempted slug>`"
   }
   ```
