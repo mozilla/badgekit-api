@@ -20,7 +20,7 @@ function getFromPost(req, opts) {
 
   // if there's no size on it, we assume it's a url
   if (!image.size)
-    image = req.body.image;
+    image = req.body.image || req.body.imageUrl;
 
   if (opts.required)
     image = image || {}

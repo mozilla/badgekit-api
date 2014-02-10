@@ -56,6 +56,26 @@ spawn(app).then(function (api) {
 
   })
 
+  test('get a single badge', function (t) {
+    api.get('/badges/chicago-badge').then(function (res) {
+      t.same(res.body.badge, {
+        id: 1,
+        slug: 'chicago-badge',
+        name: 'Chicago Badge',
+        strapline: 'A badge for Chicago',
+        description: 'A longer description of the badge',
+        imageUrl: null,
+        archived: false,
+      })
+      return api.get('/badges/badge-does-not-exist')
+    }).then(function (res) {
+      console.dir(res.body)
+      t.same(res.statusCode, 404)
+      t.same(res.body.code, 'ResourceNotFound')
+      t.end()
+    })
+  })
+
   test('add new badge', function (t) {
     var form;
 
@@ -79,6 +99,11 @@ spawn(app).then(function (api) {
       t.same(res.body.status, 'created')
       t.same(res.body.badge.name, form.name)
       t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
+
+      form.image = stream('test-image.png')
+      return api.post('/badges', form)
+    }).then(function(res){
+      console.dir(res)
       t.end()
     }).catch(api.fail(t))
   })

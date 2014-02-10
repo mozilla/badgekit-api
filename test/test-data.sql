@@ -53,6 +53,7 @@ INSERT INTO `badges` SET
   `issuerId` = 1,
   `slug` = 'chicago-badge',
   `name` = 'Chicago Badge',
+  `description` = 'A longer description of the badge',
   `strapline` = 'A badge for Chicago';
 
 INSERT INTO `badges` SET

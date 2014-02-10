@@ -12,8 +12,19 @@ spawn(app).then(function (api) {
       t.same(res.body.programs[0].id, 1)
       t.same(res.body.programs[0].slug, 'mit-scratch')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
+
+  test('get one program', function (t) {
+    api.get('/programs/mit-scratch').then(function(res){
+      console.dir(res)
+      return api.get('/programs/not-a-program')
+    }).then(function(res){
+      console.dir(res)
+      t.end()
+    }).catch(api.fail(t))
+  })
+
 
   test('add new program', function (t) {
     var form = {soAndSoAndSo: 'from wherever wherever'}
@@ -33,7 +44,7 @@ spawn(app).then(function (api) {
       t.same(res.body.program.name, form.name)
       t.ok(res.body.program.imageUrl.match(/\/images\/.+/), 'should have right image url')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('update program', function (t) {
@@ -49,7 +60,7 @@ spawn(app).then(function (api) {
       t.same(res.body.program.name, form.name)
       t.same(res.body.program.description, form.description)
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('delete program', function (t) {
@@ -60,7 +71,7 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       t.same(res.body.code, 'ResourceNotFound')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test(':cleanup:', function (t) {
@@ -71,7 +82,4 @@ spawn(app).then(function (api) {
 
 function stream(file) {
   return fs.createReadStream(path.join(__dirname, file))
-}
-function read(file) {
-  return fs.readFileSync(path.join(__dirname, file))
 }
