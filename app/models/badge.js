@@ -63,7 +63,7 @@ Badges.validateRow = makeValidator({
 });
 
 function optionalInt(id) {
-  if (typeof id == 'undefined') return;
+  if (typeof id == 'undefined' || id === null) return;
   this.check(id).isInt();
 }
 

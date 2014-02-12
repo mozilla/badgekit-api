@@ -22,10 +22,7 @@ const Systems = db.table('systems', {
 });
 
 Systems.validateRow = makeValidator({
-  id: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
+  id: optionalInt,
   slug: function (slug) {
     this.check(slug).len(1, 50);
   },
@@ -42,10 +39,12 @@ Systems.validateRow = makeValidator({
     if (typeof email == 'undefined') return;
     this.check(email).isEmail();
   },
-  imageId: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
+  imageId: optionalInt,
 });
+
+function optionalInt(id) {
+  if (typeof id == 'undefined' || id === null) return;
+  this.check(id).isInt();
+}
 
 exports = module.exports = Systems;

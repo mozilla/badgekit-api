@@ -69,9 +69,9 @@ exports = module.exports = function applyProgramRoutes (server) {
     getProgram(req, res, next, function (row) {
       const updated = safeExtend(row, req.body)
       const image = imageHelper.getFromPost(req)
-      delete updated.image
 
-      row.issuerId = row.issuerId || undefined;
+      delete updated.image
+      delete updated.issuer
 
       putProgram(updated, image, function updatedRow(err, program) {
         if (err) {

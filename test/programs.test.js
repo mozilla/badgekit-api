@@ -17,10 +17,19 @@ spawn(app).then(function (api) {
 
   test('get one program', function (t) {
     api.get('/programs/mit-scratch').then(function(res){
-      console.dir(res)
+      t.same(res.body.program, {
+        id: 1,
+        slug: 'mit-scratch',
+        url: 'http://scratch.mit.edu/',
+        name: 'MIT Scratch',
+        description: 'Create stories, games, and animations. Share with others around the world',
+        email: 'admin@scratch.mit.edu',
+        imageUrl: null,
+      })
       return api.get('/programs/not-a-program')
     }).then(function(res){
-      console.dir(res)
+      t.same(res.statusCode, 404)
+      t.same(res.body.code, 'ResourceNotFound')
       t.end()
     }).catch(api.fail(t))
   })
@@ -56,6 +65,7 @@ spawn(app).then(function (api) {
         description: 'it is still a test!',
       })
     }).then(function (res) {
+      console.dir(res.body)
       t.same(res.body.status, 'updated')
       t.same(res.body.program.name, form.name)
       t.same(res.body.program.description, form.description)

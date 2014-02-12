@@ -66,9 +66,9 @@ exports = module.exports = function applyIssuerRoutes (server) {
     getIssuer(req, res, next, function (row) {
       const updated = safeExtend(row, req.body)
       const image = imageHelper.getFromPost(req)
-      delete updated.image
 
-      row.issuerId = row.issuerId || undefined;
+      delete updated.image
+      delete updated.system
 
       putIssuer(updated, image, function updatedRow(err, issuer) {
         if (err) {
