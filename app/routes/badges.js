@@ -144,7 +144,10 @@ function fromPostToRow (post) {
     slug: post.slug,
     name: post.name,
     strapline: post.strapline,
-    description: post.description
+    description: post.description,
+    systemId: post.systemId,
+    issuerId: post.issuerId,
+    programId: post.programId,
   };
 }
 
