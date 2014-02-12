@@ -10,6 +10,7 @@ const Programs = db.table('programs', {
     'description',
     'email',
     'imageId',
+    'issuerId',
   ],
   relationships: {
     image: {
@@ -18,14 +19,17 @@ const Programs = db.table('programs', {
       foreign: { table: 'images', key: 'id' },
       optional: true,
     },
+    issuer: {
+      type: 'hasOne',
+      local: 'issuerId',
+      foreign: { table: 'issuers', key: 'id' },
+      optional: true,
+    },
   },
 });
 
 Programs.validateRow = makeValidator({
-  id: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
+  id: optionalInt,
   slug: function (slug) {
     this.check(slug).len(1, 50);
   },
@@ -42,10 +46,13 @@ Programs.validateRow = makeValidator({
     if (typeof email == 'undefined') return;
     this.check(email).isEmail();
   },
-  imageId: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
+  imageId: optionalInt,
+  issuerId: optionalInt,
 });
+
+function optionalInt(id) {
+  if (typeof id == 'undefined') return;
+  this.check(id).isInt();
+}
 
 exports = module.exports = Programs;
