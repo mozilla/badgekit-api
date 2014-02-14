@@ -19,6 +19,12 @@ const Systems = db.table('systems', {
       foreign: { table: 'images', key: 'id' },
       optional: true,
     },
+    issuers: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'issuers', key: 'systemId' },
+      optional: true,
+    },
   },
 });
 

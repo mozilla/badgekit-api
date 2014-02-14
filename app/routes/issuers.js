@@ -69,6 +69,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
       delete updated.image
       delete updated.system
+      delete updated.programs
 
       putIssuer(updated, image, function updatedRow(err, issuer) {
         if (err) {

@@ -66,9 +66,9 @@ exports = module.exports = function applySystemRoutes (server) {
     getSystem(req, res, next, function (row) {
       const updated = safeExtend(row, req.body)
       const image = imageHelper.getFromPost(req)
-      delete updated.image
 
-      row.systemId = row.systemId || undefined;
+      delete updated.image
+      delete updated.issuers
 
       putSystem(updated, image, function updatedRow(err, system) {
         if (err) {
@@ -119,6 +119,7 @@ function systemFromDb(row) {
     url: row.url,
     name: row.name,
     email: row.email,
-    imageUrl: row.image ? row.image.toUrl() : null
+    imageUrl: row.image ? row.image.toUrl() : null,
+    issuers: row.issuers,
   }
 }

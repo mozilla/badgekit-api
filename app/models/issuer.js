@@ -25,6 +25,12 @@ const Issuers = db.table('issuers', {
       foreign: { table: 'systems', key: 'id' },
       optional: true,
     },
+    programs: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'programs', key: 'issuerId' },
+      optional: true,
+    },
   },
 });
 
