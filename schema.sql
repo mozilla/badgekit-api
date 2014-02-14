@@ -7,6 +7,7 @@ CREATE TABLE `systems` (
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
+  `webhook` VARCHAR(255) NULL,
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
