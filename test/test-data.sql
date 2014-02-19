@@ -17,6 +17,7 @@ INSERT INTO `systems` SET
 INSERT INTO `issuers` SET
   `id` = 1,
   `systemId` = 1,
+  `imageId` = 1,
   `slug` = 'chicago-library',
   `name` = 'Chicago Public Library',
   `url` = 'http://www.chipublib.org/',
@@ -69,3 +70,8 @@ INSERT INTO `badges` SET
   `name` = 'Archived Badge',
   `strapline` = 'An archived badge',
   `archived` = 1;
+
+INSERT INTO `images` SET
+  `id` = 1,
+  `slug` = 'some-image',
+  `url` = 'http://example.org/test.png';

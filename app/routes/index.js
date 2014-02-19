@@ -3,6 +3,7 @@ var applySystemRoutes = require('./systems');
 var applyIssuerRoutes = require('./issuers');
 var applyProgramRoutes = require('./programs');
 var applyImageRoutes = require('./images');
+var applyRelationshipRoutes = require('./relationships');
 
 exports = module.exports = function applyAllRoutes (server) {
 
@@ -16,5 +17,6 @@ exports = module.exports = function applyAllRoutes (server) {
   applyIssuerRoutes(server);
   applyProgramRoutes(server);
   applyImageRoutes(server);
+  applyRelationshipRoutes(server);
 
 };

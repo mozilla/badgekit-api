@@ -1,4 +1,5 @@
 const db = require('../lib/db');
+const Systems = require('./system')
 const makeValidator = require('../lib/make-validator')
 
 const Issuers = db.table('issuers', {
@@ -33,6 +34,16 @@ const Issuers = db.table('issuers', {
     },
   },
 });
+
+Issuers.getBySystem = function (systemSlug, callback) {
+  Systems.getOne({slug: systemSlug}, function (err, system) {
+    if (err) return callback(err)
+    if (!system) return callback()
+    const query = {systemId: system.id}
+    const opts = {relationships: true}
+    Issuers.get(query, opts, callback)
+  })
+}
 
 Issuers.validateRow = makeValidator({
   id: optionalInt,
