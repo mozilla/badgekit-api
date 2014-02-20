@@ -65,8 +65,30 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
+  test('get issuer/badges list', function (t) {
+    api.get('/issuers/chicago-library/badges').then(function (res) {
+      t.same(res.body.badges.map(value('slug')), [
+        'chicago-badge',
+        'chicago-library-badge',
+        'chicago-scratch-badge'
+      ])
+      t.same()
+      return api.get('/issuers/bogus/badges')
+    }).then(function (res) {
+      t.same(res.statusCode, 404, 'should get a 404')
+      t.same(res.body.code, 'ResourceNotFound')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })
 })
+
+function value(name) {
+  return function getValue(obj) {
+    return obj[name]
+  }
+}

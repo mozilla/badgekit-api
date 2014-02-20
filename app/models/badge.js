@@ -54,6 +54,34 @@ Badges.getByProgram = function getByProgram(programSlug, callback) {
     Badges.get(query, opts, callback)
   })
 }
+Badges.getByIssuer = function getByIssuer(issuerSlug, callback) {
+  // should include all program badges as well
+  const query = {slug: issuerSlug}
+  const opts = {relationships: true}
+  Issuers.getOne(query, opts, function (err, issuer) {
+    if (err) return callback(err)
+    if (!issuer) return callback()
+
+    const programIds = issuer.programs.map(function (o) { return o.id })
+
+    const query = {issuerId: issuer.id}
+    const opts = {relationships: true}
+    Badges.get(query, opts, function (err, issuerBadges) {
+      if (err) return callback(err)
+
+      const query = {programId: programIds}
+      const opts = {relationships: true}
+      Badges.get(query, opts, function (err, programBadges) {
+        if (err) return callback(err)
+
+        const allBadges = issuerBadges.concat(programBadges)
+        return callback(null, allBadges)
+      })
+    })
+  })
+}
+
+
 
 Badges.validateRow = makeValidator({
   id: optionalInt,

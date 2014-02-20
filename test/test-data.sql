@@ -80,6 +80,13 @@ INSERT INTO `badges` SET
   `description` = 'A longer description of the badge',
   `strapline` = 'A badge for doing Scratch in Chicago';
 
+INSERT INTO `badges` SET
+  `id` = 5,
+  `issuerId` = 1,
+  `slug` = 'chicago-library-badge',
+  `name` = 'Chicago Library Badge',
+  `description` = 'A longer description of the badge',
+  `strapline` = 'A badge for doing Library in Chicago';
 
 INSERT INTO `images` SET
   `id` = 1,

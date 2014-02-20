@@ -31,6 +31,18 @@ exports = module.exports = function applyRelationshipRoutes (server) {
     });
   }
 
+  server.get('/issuers/:issuerSlug/badges', showIssuerBadges);
+  function showIssuerBadges(req, res, next) {
+    const issuerSlug = req.params.issuerSlug
+    Badges.getByIssuer(issuerSlug, function (error, rows) {
+      if (error)
+        return dbErrorHandler(error, null, res, next)
+      if (!rows)
+        return next(errorHelper.notFound('Could not find issuer with slug `'+issuerSlug+'`'))
+      return res.send({badges: rows.map(badgeFromDb)});
+    });
+  }
+
   server.get('/programs/:programSlug/badges', showProgramBadges);
   function showProgramBadges(req, res, next) {
     const programSlug = req.params.programSlug
@@ -42,6 +54,7 @@ exports = module.exports = function applyRelationshipRoutes (server) {
       return res.send({badges: rows.map(badgeFromDb)});
     });
   }
+
 
 
 }
