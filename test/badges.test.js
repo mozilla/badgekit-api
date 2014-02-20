@@ -5,7 +5,12 @@ const path = require('path')
 const spawn = require('./spawn')
 
 spawn(app).then(function (api) {
-  const active = ['chicago-badge', 'pittsburgh-badge']
+  const active = [
+    'chicago-badge',
+    'pittsburgh-badge',
+    'chicago-library-badge',
+    'chicago-scratch-badge'
+  ].sort()
   const all = active.concat(['archived-badge']).sort()
 
   test('get badge list', function (t) {
@@ -69,7 +74,6 @@ spawn(app).then(function (api) {
       })
       return api.get('/badges/badge-does-not-exist')
     }).then(function (res) {
-      console.dir(res.body)
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
       t.end()
@@ -103,7 +107,7 @@ spawn(app).then(function (api) {
       form.image = stream('test-image.png')
       return api.post('/badges', form)
     }).then(function(res){
-      console.dir(res)
+      t.same(res.statusCode, 409)
       t.end()
     }).catch(api.fail(t))
   })
