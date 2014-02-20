@@ -35,7 +35,7 @@ const Issuers = db.table('issuers', {
   },
 });
 
-Issuers.getBySystem = function (systemSlug, callback) {
+Issuers.getBySystem = function getBySystem(systemSlug, callback) {
   Systems.getOne({slug: systemSlug}, function (err, system) {
     if (err) return callback(err)
     if (!system) return callback()

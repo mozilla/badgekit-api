@@ -29,7 +29,7 @@ const Programs = db.table('programs', {
   },
 });
 
-Programs.getByIssuer = function (issuerSlug, callback) {
+Programs.getByIssuer = function getByIssuer(issuerSlug, callback) {
   Issuers.getOne({slug: issuerSlug}, function (err, issuer) {
     if (err) return callback(err)
     if (!issuer) return callback()

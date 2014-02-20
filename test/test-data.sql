@@ -72,6 +72,15 @@ INSERT INTO `badges` SET
   `strapline` = 'An archived badge',
   `archived` = 1;
 
+INSERT INTO `badges` SET
+  `id` = 4,
+  `programId` = 1,
+  `slug` = 'chicago-scratch-badge',
+  `name` = 'Chicago Scratch Badge',
+  `description` = 'A longer description of the badge',
+  `strapline` = 'A badge for doing Scratch in Chicago';
+
+
 INSERT INTO `images` SET
   `id` = 1,
   `slug` = 'some-image',

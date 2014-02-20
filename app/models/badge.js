@@ -1,3 +1,6 @@
+const Programs = require('./program')
+const Systems = require('./system')
+const Issuers = require('./issuer')
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
 
@@ -41,6 +44,16 @@ const Badges = db.table('badges', {
     },
   }
 });
+
+Badges.getByProgram = function getByProgram(programSlug, callback) {
+  Programs.getOne({slug: programSlug}, function (err, program) {
+    if (err) return callback(err)
+    if (!program) return callback()
+    const query = {programId: program.id}
+    const opts = {relationships: true}
+    Badges.get(query, opts, callback)
+  })
+}
 
 Badges.validateRow = makeValidator({
   id: optionalInt,
