@@ -13,7 +13,9 @@ function findSystem(opts) {
   opts = opts || {}
   const param = opts.param || 'systemSlug'
   const key = opts.key || 'system'
-  const relationships = opts.relationships || true
+  const relationships = typeof opts.relationships !== 'undefined'
+    ? opts.relationships
+    : true
   return function finder(req, res, next) {
     const slug = req.params[param]
     const query = {slug: slug}

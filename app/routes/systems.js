@@ -48,9 +48,10 @@ exports = module.exports = function applySystemRoutes (server) {
     }
   ]);
 
-  server.del('/systems/:systemId', deleteSystem);
-  function deleteSystem(req, res, next) {
-    getSystem(req, res, next, function (row) {
+  server.del('/systems/:systemSlug', [
+    middleware.findSystem({relationships: false}),
+    function deleteSystem(req, res, next) {
+      const row = req.system
       const query = {id: row.id, slug: row.slug}
       Systems.del(query, function deletedRow(error, result) {
         if (error)
@@ -60,17 +61,15 @@ exports = module.exports = function applySystemRoutes (server) {
           system: systemFromDb(row)
         });
       });
-    });
-  }
+    }
+  ]);
 
-  server.put('/systems/:systemId', updateSystem);
-  function updateSystem(req, res, next) {
-    getSystem(req, res, next, function (row) {
+  server.put('/systems/:systemSlug', [
+    middleware.findSystem({relationships: false}),
+    function updateSystem(req, res, next) {
+      const row = req.system
       const updated = safeExtend(row, req.body)
       const image = imageHelper.getFromPost(req)
-
-      delete updated.image
-      delete updated.issuers
 
       putSystem(updated, image, function updatedRow(err, system) {
         if (err) {
@@ -84,25 +83,9 @@ exports = module.exports = function applySystemRoutes (server) {
           system: systemFromDb(system)
         });
       });
-    });
-  }
-
+    }
+  ]);
 };
-
-function getSystem(req, res, next, callback) {
-  const query = {slug: req.params.systemId};
-  const options = {relationships: true};
-
-  Systems.getOne(query, options, function foundSystem(error, row) {
-    if (error)
-      return dbErrorHandler(error, row, res, next)
-
-    if (!row)
-      return next(errorHelper.notFound('Could not find system with slug `'+query.slug+'`'));
-
-    return callback(row)
-  });
-}
 
 function fromPostToRow(post) {
   return {
