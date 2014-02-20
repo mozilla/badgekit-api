@@ -3,27 +3,42 @@ const Issuers = require('../models/issuer');
 
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
+const middleware = require('../lib/middleware')
 
 const putIssuer = imageHelper.putModel(Issuers)
 const dbErrorHandler = errorHelper.makeDbHandler('issuer')
 
 exports = module.exports = function applyIssuerRoutes (server) {
-  server.get('/issuers', showAllIssuers);
+  server.get('/systems/:systemSlug/issuers', [
+    middleware.findSystem(),
+    showAllIssuers,
+  ]);
   function showAllIssuers(req, res, next) {
-    const query = {}
     const options = {relationships: true};
-    Issuers.get(query, options, function foundRows(error, rows) {
+    Issuers.get({}, options, function foundRows(error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
-
       return res.send({issuers: rows.map(issuerFromDb)});
     });
   }
 
-  server.post('/issuers', saveIssuer);
+  server.get('/systems/:systemSlug/issuers/:issuerSlug', [
+    middleware.findSystem(),
+    middleware.findIssuer({relationships: true}),
+    showOneIssuer,
+  ]);
+  function showOneIssuer(req, res, next) {
+    return res.send({issuer: issuerFromDb(req.issuer)});
+  }
+
+  server.post('/systems/:systemSlug/issuers', [
+    middleware.findSystem(),
+    saveIssuer,
+  ]);
   function saveIssuer(req, res, next) {
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req)
+    row.systemId = req.system.id
 
     putIssuer(row, image, function savedRow(err, issuer) {
       if (err) {
@@ -39,24 +54,20 @@ exports = module.exports = function applyIssuerRoutes (server) {
     });
   }
 
-  server.get('/issuers/:issuerId', showOneIssuer);
-  function showOneIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
-      return res.send({issuer: issuerFromDb(row)});
-    });
-  }
-
-  server.del('/issuers/:issuerId', deleteIssuer);
+  server.del('/systems/:systemSlug/issuers/:issuerSlug', [
+    middleware.findSystem(),
+    middleware.findIssuer(),
+    deleteIssuer
+  ]);
   function deleteIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
-      const query = {id: row.id, slug: row.slug}
-      Issuers.del(query, function deletedRow(error, result) {
-        if (error)
-          return dbErrorHandler(error, row, req, next)
-        return res.send({
-          status: 'deleted',
-          issuer: issuerFromDb(row)
-        });
+    const row = req.issuer
+    const query = {id: row.id, slug: row.slug}
+    Issuers.del(query, function deletedRow(error, result) {
+      if (error)
+        return dbErrorHandler(error, row, req, next)
+      return res.send({
+        status: 'deleted',
+        issuer: issuerFromDb(row)
       });
     });
   }
