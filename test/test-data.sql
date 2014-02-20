@@ -35,6 +35,7 @@ INSERT INTO `issuers` SET
 
 INSERT INTO `programs` SET
   `id` = 1,
+  `issuerId` = 1,
   `slug` = 'mit-scratch',
   `name` = 'MIT Scratch',
   `url` = 'http://scratch.mit.edu/',

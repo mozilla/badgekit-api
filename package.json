@@ -13,7 +13,7 @@
   "dependencies": {
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.0",
-    "streamsql": "~0.4.4",
+    "streamsql": "~0.4.5",
     "validator": "~2.0.0",
     "xtend": "~2.1.1"
   },

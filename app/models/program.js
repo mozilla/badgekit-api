@@ -1,5 +1,6 @@
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
+const Issuers = require('./issuer')
 
 const Programs = db.table('programs', {
   fields: [
@@ -27,6 +28,17 @@ const Programs = db.table('programs', {
     },
   },
 });
+
+Programs.getByIssuer = function (issuerSlug, callback) {
+  Issuers.getOne({slug: issuerSlug}, function (err, issuer) {
+    if (err) return callback(err)
+    if (!issuer) return callback()
+    const query = {issuerId: issuer.id}
+    const opts = {relationships: true}
+    Programs.get(query, opts, callback)
+  })
+}
+
 
 Programs.validateRow = makeValidator({
   id: optionalInt,

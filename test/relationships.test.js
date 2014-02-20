@@ -5,7 +5,6 @@ const path = require('path')
 const spawn = require('./spawn')
 
 spawn(app).then(function (api) {
-
   test('get system/issuer list', function (t) {
     api.get('/systems/chicago/issuers').then(function (res) {
       t.same(res.body.issuers, [
@@ -27,21 +26,26 @@ spawn(app).then(function (api) {
   })
 
   test('get issuer/program list', function (t) {
-
     api.get('/issuers/chicago-library/programs').then(function (res) {
-      console.dir(res)
+      t.same(res.body.programs, [
+        { id: 1,
+          slug: 'mit-scratch',
+          url: 'http://scratch.mit.edu/',
+          name: 'MIT Scratch',
+          description: 'Create stories, games, and animations. Share with others around the world',
+          email: 'admin@scratch.mit.edu',
+          imageUrl: null
+        },
+      ])
       return api.get('/issuers/bogus/programs')
     }).then(function (res) {
       t.same(res.statusCode, 404, 'should get a 404')
       t.same(res.body.code, 'ResourceNotFound')
       t.end()
     }).catch(api.fail(t))
-
   })
-
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })
-
 })

@@ -12,11 +12,21 @@ exports = module.exports = function applyRelationshipRoutes (server) {
     Issuers.getBySystem(systemSlug, function (error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
-
       if (!rows)
         return next(errorHelper.notFound('Could not find system with slug `'+systemSlug+'`'))
-
       return res.send({issuers: rows.map(itemFromDb)});
+    });
+  }
+
+  server.get('/issuers/:issuerSlug/programs', showIssuerPrograms);
+  function showIssuerPrograms(req, res, next) {
+    const issuerSlug = req.params.issuerSlug
+    Programs.getByIssuer(issuerSlug, function (error, rows) {
+      if (error)
+        return dbErrorHandler(error, null, res, next)
+      if (!rows)
+        return next(errorHelper.notFound('Could not find system with slug `'+issuerSlug+'`'))
+      return res.send({programs: rows.map(itemFromDb)});
     });
   }
 
