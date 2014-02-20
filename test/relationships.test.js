@@ -47,16 +47,7 @@ spawn(app).then(function (api) {
 
   test('get program/badges list', function (t) {
     api.get('/programs/mit-scratch/badges').then(function (res) {
-      t.same(res.body.badges, [
-        { id: 4,
-          slug: 'chicago-scratch-badge',
-          name: 'Chicago Scratch Badge',
-          strapline: 'A badge for doing Scratch in Chicago',
-          description: 'A longer description of the badge',
-          imageUrl: null,
-          archived: false
-        },
-      ])
+      t.same(res.body.badges.map(value('slug')), ['chicago-scratch-badge',])
       return api.get('/programs/bogus/badges')
     }).then(function (res) {
       t.same(res.statusCode, 404, 'should get a 404')

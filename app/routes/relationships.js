@@ -72,6 +72,14 @@ function itemFromDb(row) {
 }
 
 function badgeFromDb (row) {
+  function basicInfo(obj) {
+    if (!obj) return null
+    return {
+      id: obj.id,
+      slug: obj.slug,
+      name: obj.name,
+    }
+  }
   return {
     id: row.id,
     slug: row.slug,
@@ -79,6 +87,9 @@ function badgeFromDb (row) {
     strapline: row.strapline,
     description: row.description,
     imageUrl: row.image ? row.image.toUrl() : null,
-    archived: !!row.archived
+    archived: !!row.archived,
+    system: basicInfo(row.system),
+    issuer: basicInfo(row.issuer),
+    program: basicInfo(row.program),
   };
 }
