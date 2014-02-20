@@ -54,6 +54,7 @@ Badges.getByProgram = function getByProgram(programSlug, callback) {
     Badges.get(query, opts, callback)
   })
 }
+
 Badges.getByIssuer = function getByIssuer(issuerSlug, callback) {
   // should include all program badges as well
   const query = {slug: issuerSlug}
@@ -80,8 +81,6 @@ Badges.getByIssuer = function getByIssuer(issuerSlug, callback) {
     })
   })
 }
-
-
 
 Badges.validateRow = makeValidator({
   id: optionalInt,
