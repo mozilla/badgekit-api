@@ -41,7 +41,7 @@ exports = module.exports = function applySystemRoutes (server) {
   }
 
   server.get('/systems/:systemSlug', [
-    middleware.findSystem(),
+    middleware.findSystem({relationships: true}),
     function showOneSystem(req, res, next) {
       res.send({system: systemFromDb(req.system)})
       return res.next()
@@ -49,7 +49,7 @@ exports = module.exports = function applySystemRoutes (server) {
   ]);
 
   server.del('/systems/:systemSlug', [
-    middleware.findSystem({relationships: false}),
+    middleware.findSystem(),
     function deleteSystem(req, res, next) {
       const row = req.system
       const query = {id: row.id, slug: row.slug}
@@ -65,7 +65,7 @@ exports = module.exports = function applySystemRoutes (server) {
   ]);
 
   server.put('/systems/:systemSlug', [
-    middleware.findSystem({relationships: false}),
+    middleware.findSystem(),
     function updateSystem(req, res, next) {
       const row = req.system
       const updated = safeExtend(row, req.body)
