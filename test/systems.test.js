@@ -14,6 +14,18 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
+  test('get a single system', function (t) {
+    api.get('/systems/chicago').then(function (res) {
+      t.same(res.body.system.slug, 'chicago')
+      return api.get('/systems/bogus')
+    }).then(function(res){
+      t.same(res.statusCode, 404)
+      t.same(res.body.code, 'ResourceNotFound')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
+
   test('add new system', function (t) {
     var form = {nonsense:'oajsldkf'}
     api.post('/systems', form).then(function (res) {

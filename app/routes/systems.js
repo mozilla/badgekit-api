@@ -3,6 +3,7 @@ const Systems = require('../models/system');
 
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
+const middleware = require('../lib/middleware')
 
 const putSystem = imageHelper.putModel(Systems)
 const dbErrorHandler = errorHelper.makeDbHandler('system')
@@ -39,12 +40,13 @@ exports = module.exports = function applySystemRoutes (server) {
     });
   }
 
-  server.get('/systems/:systemId', showOneSystem);
-  function showOneSystem(req, res, next) {
-    getSystem(req, res, next, function (row) {
-      return res.send({system: systemFromDb(row)});
-    });
-  }
+  server.get('/systems/:systemSlug', [
+    middleware.findSystem(),
+    function showOneSystem(req, res, next) {
+      res.send({system: systemFromDb(req.system)})
+      return res.next()
+    }
+  ]);
 
   server.del('/systems/:systemId', deleteSystem);
   function deleteSystem(req, res, next) {

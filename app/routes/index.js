@@ -12,11 +12,19 @@ exports = module.exports = function applyAllRoutes (server) {
     return next();
   });
 
-  applyBadgeRoutes(server);
-  applySystemRoutes(server);
-  applyIssuerRoutes(server);
-  applyProgramRoutes(server);
-  applyImageRoutes(server);
-  applyRelationshipRoutes(server);
+  [ applyBadgeRoutes,
+    applySystemRoutes,
+    applyIssuerRoutes,
+    applyProgramRoutes,
+    applyImageRoutes,
+    applyRelationshipRoutes,
+  ].forEach(callWith(server));
 
 };
+
+function callWith(_) {
+  const args = arguments
+  return function (fn) {
+    return fn.apply(null, args)
+  }
+}
