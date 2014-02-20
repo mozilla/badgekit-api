@@ -42,49 +42,52 @@ exports = module.exports = function applySystemRoutes (server) {
 
   server.get('/systems/:systemSlug', [
     middleware.findSystem({relationships: true}),
-    function showOneSystem(req, res, next) {
-      res.send({system: systemFromDb(req.system)})
-      return res.next()
-    }
+    showOneSystem,
   ]);
+  function showOneSystem(req, res, next) {
+    res.send({system: systemFromDb(req.system)})
+    return res.next()
+  }
 
   server.del('/systems/:systemSlug', [
     middleware.findSystem(),
-    function deleteSystem(req, res, next) {
-      const row = req.system
-      const query = {id: row.id, slug: row.slug}
-      Systems.del(query, function deletedRow(error, result) {
-        if (error)
-          return dbErrorHandler(error, row, req, next)
-        return res.send({
-          status: 'deleted',
-          system: systemFromDb(row)
-        });
-      });
-    }
+    deleteSystem,
   ]);
+  function deleteSystem(req, res, next) {
+    const row = req.system
+    const query = {id: row.id, slug: row.slug}
+    Systems.del(query, function deletedRow(error, result) {
+      if (error)
+        return dbErrorHandler(error, row, req, next)
+      return res.send({
+        status: 'deleted',
+        system: systemFromDb(row)
+      });
+    });
+  }
 
   server.put('/systems/:systemSlug', [
     middleware.findSystem(),
-    function updateSystem(req, res, next) {
-      const row = req.system
-      const updated = safeExtend(row, req.body)
-      const image = imageHelper.getFromPost(req)
-
-      putSystem(updated, image, function updatedRow(err, system) {
-        if (err) {
-          if (!Array.isArray(err))
-            return dbErrorHandler(err, row, res, next);
-          return res.send(400, errorHelper.validation(err));
-        }
-
-        return res.send({
-          status: 'updated',
-          system: systemFromDb(system)
-        });
-      });
-    }
+    updateSystem,
   ]);
+  function updateSystem(req, res, next) {
+    const row = req.system
+    const updated = safeExtend(row, req.body)
+    const image = imageHelper.getFromPost(req)
+
+    putSystem(updated, image, function updatedRow(err, system) {
+      if (err) {
+        if (!Array.isArray(err))
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
+      }
+
+      return res.send({
+        status: 'updated',
+        system: systemFromDb(system)
+      });
+    });
+  }
 };
 
 function fromPostToRow(post) {
