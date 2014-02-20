@@ -72,7 +72,6 @@ spawn(app).then(function (api) {
         'chicago-library-badge',
         'chicago-scratch-badge'
       ])
-      t.same()
       return api.get('/issuers/bogus/badges')
     }).then(function (res) {
       t.same(res.statusCode, 404, 'should get a 404')
@@ -80,7 +79,6 @@ spawn(app).then(function (api) {
       t.end()
     }).catch(api.fail(t))
   })
-
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
