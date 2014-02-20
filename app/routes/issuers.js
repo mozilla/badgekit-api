@@ -72,47 +72,34 @@ exports = module.exports = function applyIssuerRoutes (server) {
     });
   }
 
-  server.put('/issuers/:issuerId', updateIssuer);
+  server.put('/systems/:systemSlug/issuers/:issuerSlug', [
+    middleware.findSystem(),
+    middleware.findIssuer(),
+    updateIssuer,
+  ]);
   function updateIssuer(req, res, next) {
-    getIssuer(req, res, next, function (row) {
-      const updated = safeExtend(row, req.body)
-      const image = imageHelper.getFromPost(req)
+    const row = req.issuer
+    const updated = safeExtend(row, req.body)
+    const image = imageHelper.getFromPost(req)
 
-      delete updated.image
-      delete updated.system
-      delete updated.programs
+    delete updated.image
+    delete updated.system
+    delete updated.programs
 
-      putIssuer(updated, image, function updatedRow(err, issuer) {
-        if (err) {
-          if (!Array.isArray(err))
-            return dbErrorHandler(err, row, res, next);
-          return res.send(400, errorHelper.validation(err));
-        }
+    putIssuer(updated, image, function updatedRow(err, issuer) {
+      if (err) {
+        if (!Array.isArray(err))
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
+      }
 
-        return res.send({
-          status: 'updated',
-          issuer: issuerFromDb(issuer)
-        });
+      return res.send({
+        status: 'updated',
+        issuer: issuerFromDb(issuer)
       });
     });
   }
-
 };
-
-function getIssuer(req, res, next, callback) {
-  const query = {slug: req.params.issuerId};
-  const options = {relationships: true};
-
-  Issuers.getOne(query, options, function foundIssuer(error, row) {
-    if (error)
-      return dbErrorHandler(error, row, res, next)
-
-    if (!row)
-      return next(errorHelper.notFound('Could not find issuer with slug `'+query.slug+'`'));
-
-    return callback(row)
-  });
-}
 
 function fromPostToRow(post) {
   return {

@@ -58,22 +58,22 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
-  // test('update issuer', function (t) {
-  //   var form = {nonsense:'oajsldkf'}
-  //   api.put('/issuers/test-issuer', form).then(function (res) {
-  //     t.same(res.statusCode, 200, 'should not error')
-  //     return api.put('/issuers/test-issuer', form = {
-  //       name: 'Test Issuer, okay?!',
-  //       email: 'other-guy@example.org',
-  //     })
-  //   }).then(function (res) {
-  //     t.same(res.body.status, 'updated', 'should be updated')
-  //     t.same(res.body.issuer.name, form.name)
-  //     t.same(res.body.issuer.email, form.email)
-  //     t.ok(res.body.issuer.imageUrl.match(/\/images\/.+/), 'should have right image url')
-  //     t.end()
-  //   }).catch(api.fail(t))
-  // })
+  test('update issuer', function (t) {
+    var form = {nonsense:'oajsldkf'}
+    api.put('/systems/chicago/issuers/test-issuer', form).then(function (res) {
+      t.same(res.statusCode, 200, 'should not error')
+      return api.put('/systems/chicago/issuers/test-issuer', form = {
+        name: 'Test Issuer, okay?!',
+        email: 'other-guy@example.org',
+      })
+    }).then(function (res) {
+      t.same(res.body.status, 'updated', 'should be updated')
+      t.same(res.body.issuer.name, form.name)
+      t.same(res.body.issuer.email, form.email)
+      t.ok(res.body.issuer.imageUrl.match(/\/images\/.+/), 'should have right image url')
+      t.end()
+    }).catch(api.fail(t))
+  })
 
   test('delete issuer', function (t) {
     api.del('/systems/chicago/issuers/test-issuer').then(function(res){
