@@ -63,18 +63,17 @@ Badges.getByIssuer = function getByIssuer(issuerSlug, callback) {
     if (err) return callback(err)
     if (!issuer) return callback()
 
-    const programIds = issuer.programs.map(function (o) { return o.id })
+    const programIds = issuer.programs.map(value('id'))
 
     const query = {issuerId: issuer.id}
     const opts = {relationships: true}
+    // TODO: this can be parallelized
     Badges.get(query, opts, function (err, issuerBadges) {
       if (err) return callback(err)
-
       const query = {programId: programIds}
       const opts = {relationships: true}
       Badges.get(query, opts, function (err, programBadges) {
         if (err) return callback(err)
-
         const allBadges = issuerBadges.concat(programBadges)
         return callback(null, allBadges)
       })
@@ -105,6 +104,12 @@ Badges.validateRow = makeValidator({
 function optionalInt(id) {
   if (typeof id == 'undefined' || id === null) return;
   this.check(id).isInt();
+}
+
+function value(name) {
+  return function (obj) {
+    return obj[name]
+  }
 }
 
 exports = module.exports = Badges;
