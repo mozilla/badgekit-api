@@ -1,10 +1,10 @@
 * Containers
   * Systems
-    * `GET /systems`
-    * `POST /systems`
-    * `GET /systems/:slug`
-    * `PUT /systems/:slug`
-    * `DELETE /systems/:slug`
+    * **GET** /systems
+    * **POST** /systems
+    * **GET** /systems/*:slug*
+    * **PUT** /systems/*:slug*
+    * **DELETE** /systems/*:slug*
   * Issuers
     * `GET /systems/:slug/issuers`
     * `POST /systems/:slug/issuers`
