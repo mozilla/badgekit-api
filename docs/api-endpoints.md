@@ -35,9 +35,9 @@
     * `DELETE /systems/:slug/issuers/:slug/badges/:slug`
     * `DELETE /systems/:slug/issuers/:slug/programs/:slug/badges/:slug`
   * Claim Codes
-    * `GET /systems/:slug/codes
-    * `GET /systems/:slug/issuers/:slug/codes
-    * `GET /systems/:slug/issuers/:slug/programs/:slug/codes
+    * `GET /systems/:slug/codes`
+    * `GET /systems/:slug/issuers/:slug/codes`
+    * `GET /systems/:slug/issuers/:slug/programs/:slug/codes`
     * `GET /systems/:slug/badges/:slug/codes`
     * `GET /systems/:slug/issuers/:slug/badges/:slug/codes`
     * `GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes`
