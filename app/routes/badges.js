@@ -157,6 +157,13 @@ function badgeFromDb (row) {
     strapline: row.strapline,
     description: row.description,
     imageUrl: row.image ? row.image.toUrl() : null,
-    archived: !!row.archived
+    archived: !!row.archived,
+    system: maybeObject(row.system),
+    issuer: maybeObject(row.issuer),
+    program: maybeObject(row.program),
   };
+}
+
+function maybeObject(obj) {
+  return (obj && obj.id) ? obj : null
 }
