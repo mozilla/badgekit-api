@@ -2,6 +2,7 @@ module.exports = {
   findSystem: createFinder('system'),
   findIssuer: createFinder('issuer'),
   findProgram: createFinder('program'),
+  findBadge: createFinder('badge'),
 }
 
 const log = require('../lib/logger')
@@ -10,6 +11,7 @@ const models = {
   system: require('../models/system'),
   issuer: require('../models/issuer'),
   program: require('../models/program'),
+  badge: require('../models/badge'),
 }
 
 const http404 = restify.ResourceNotFoundError

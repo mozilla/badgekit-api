@@ -26,7 +26,6 @@ exports = module.exports = function applyProgramRoutes (server) {
     });
   }
 
-
   server.get('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),

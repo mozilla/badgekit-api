@@ -5,55 +5,64 @@ const path = require('path')
 const spawn = require('./spawn')
 
 spawn(app).then(function (api) {
-  const active = [
-    'chicago-badge',
-    'pittsburgh-badge',
-    'chicago-library-badge',
-    'chicago-scratch-badge'
-  ].sort()
-  const all = active.concat(['archived-badge']).sort()
-
   test('get badge list', function (t) {
+    var active = {}
 
     function getSlugs(body) {
       return body.badges.map(prop('slug')).sort()
     }
 
-    t.plan(12)
+    t.plan(22)
 
-    api.get('/badges').then(function (res) {
+    api.get('/systems/chicago/badges').then(function (res) {
+      const slugs = getSlugs(res.body)
+      active = res.body.badges
+      t.same(res.statusCode, 200, 'should have HTTP 200')
+      t.same(slugs.length, 3)
+      t.same(slugs.indexOf('archived-badge'), -1, 'should not have archived badge')
+      t.same(slugs.indexOf('pittsburgh-badge'), -1, 'should not find pittsburgh badge')
+    }).catch(api.fail(t))
+
+    api.get('/systems/chicago/issuers/chicago-library/badges').then(function (res) {
       const slugs = getSlugs(res.body)
       t.same(res.statusCode, 200, 'should have HTTP 200')
-      t.same(slugs, active, 'should have active badges')
-      t.same(slugs.indexOf('archived-badge'), -1, 'should not have archived badge')
+      t.same(slugs.length, 2)
+      t.same(slugs.indexOf('chicago-badge'), -1, 'should not find system level badge')
     }).catch(api.fail(t))
 
-    api.get('/badges?archived=true').then(function(res){
+    api.get('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges').then(function (res) {
+      const slugs = getSlugs(res.body)
+      t.same(res.statusCode, 200, 'should have HTTP 200')
+      t.same(slugs.length, 1)
+      t.same(slugs.indexOf('chicago-badge'), -1, 'should not find system level badge')
+      t.same(slugs.indexOf('chicago-library-badge'), -1, 'should not find issuerlevel badge')
+    }).catch(api.fail(t))
+
+    api.get('/systems/chicago/badges?archived=true').then(function(res){
       t.same(res.body.badges.length, 1, 'should have one badge')
       t.same(res.body.badges[0].slug, 'archived-badge')
     }).catch(api.fail(t))
 
-    api.get('/badges?archived=1').then(function(res){
+    api.get('/systems/chicago/badges?archived=1').then(function(res){
       t.same(res.body.badges.length, 1, 'should have one badge')
       t.same(res.body.badges[0].slug, 'archived-badge')
     }).catch(api.fail(t))
 
-    api.get('/badges?archived=false').then(function(res){
-      const slugs = getSlugs(res.body)
-      t.same(slugs, active, 'should have active badges')
+    api.get('/systems/chicago/badges?archived=false').then(function(res){
+      t.same(res.body.badges, active, 'should have active badges')
     }).catch(api.fail(t))
 
-    api.get('/badges?archived=0').then(function(res){
-      const slugs = getSlugs(res.body)
-      t.same(slugs, active, 'should have active badges')
+    api.get('/systems/chicago/badges?archived=0').then(function(res){
+      t.same(res.body.badges, active, 'should have active badges')
     }).catch(api.fail(t))
 
-    api.get('/badges?archived=any').then(function(res){
+    api.get('/systems/chicago/badges?archived=any').then(function(res){
       const slugs = getSlugs(res.body)
-      t.same(slugs, all, 'should have all badges')
+      t.ok(slugs.indexOf('archived-badge') > -1, 'should not have archived badge')
+      t.ok(slugs.indexOf('chicago-badge') > -1, 'should not have archived badge')
     }).catch(api.fail(t))
 
-    api.get('/badges?archived=weird-value').then(function(res){
+    api.get('/systems/chicago/badges?archived=weird-value').then(function(res){
       t.same(res.statusCode, 400)
       t.same(res.body.code, 'InvalidParameter')
       t.same(res.body.parameter, 'archived')
@@ -62,17 +71,9 @@ spawn(app).then(function (api) {
   })
 
   test('get a single badge', function (t) {
-    api.get('/badges/chicago-badge').then(function (res) {
-      t.same(res.body.badge, {
-        id: 1,
-        slug: 'chicago-badge',
-        name: 'Chicago Badge',
-        strapline: 'A badge for Chicago',
-        description: 'A longer description of the badge',
-        imageUrl: null,
-        archived: false,
-      })
-      return api.get('/badges/badge-does-not-exist')
+    api.get('/systems/chicago/badges/chicago-badge').then(function (res) {
+      t.same(res.body.badge.slug, 'chicago-badge')
+      return api.get('/systems/chicago/badges/badge-does-not-exist')
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
@@ -83,7 +84,7 @@ spawn(app).then(function (api) {
   test('add new badge', function (t) {
     var form;
 
-    api.post('/badges', {whatever: 'lol'}).then(function (res) {
+    api.post('/systems/chicago/issuers/chicago-library/badges', {whatever: 'lol'}).then(function (res) {
       const expect = ['description', 'image', 'name', 'slug']
       const found = res.body.details.map(prop('field')).sort()
 
@@ -91,7 +92,7 @@ spawn(app).then(function (api) {
       t.same(res.body.code, 'ValidationError', 'should have ValidationError code')
       t.same(found, expect, 'should have right errored fields')
 
-      return api.post('/badges', form = {
+      return api.post('/systems/chicago/issuers/chicago-library/badges', form = {
         slug: 'test-badge',
         name: 'Test Badge',
         strapline: 'A badge for testing',
@@ -102,10 +103,12 @@ spawn(app).then(function (api) {
       t.same(res.statusCode, 201)
       t.same(res.body.status, 'created')
       t.same(res.body.badge.name, form.name)
+      t.same(res.body.badge.system.slug, 'chicago')
+      t.same(res.body.badge.issuer.slug, 'chicago-library')
       t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
 
       form.image = stream('test-image.png')
-      return api.post('/badges', form)
+      return api.post('/systems/chicago/issuers/chicago-library/badges', form)
     }).then(function(res){
       t.same(res.statusCode, 409)
       t.end()
@@ -115,9 +118,9 @@ spawn(app).then(function (api) {
   test('update badge', function (t) {
     var form = {garbage:'yep', bs:'yah'}
 
-    api.put('/badges/test-badge', form).then(function (res) {
+    api.put('/systems/chicago/issuers/chicago-library/badges/test-badge', form).then(function (res) {
       t.same(res.statusCode, 200, 'should not fail')
-      return api.put('/badges/test-badge', form = {
+      return api.put('/systems/chicago/issuers/chicago-library/badges/test-badge', form = {
         name: 'Test Badge, obvi',
         description: 'it is still a test!',
       })
@@ -132,10 +135,10 @@ spawn(app).then(function (api) {
   })
 
   test('delete badge', function (t) {
-    api.del('/badges/test-badge').then(function (res) {
+    api.del('/systems/chicago/issuers/chicago-library/badges/test-badge').then(function (res) {
       t.same(res.statusCode, 200)
       t.same(res.body.status, 'deleted')
-      return api.get('/badges/test-badge')
+      return api.get('/systems/chicago/issuers/chicago-library/badges/test-badge')
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')

@@ -52,7 +52,7 @@ INSERT INTO `programs` SET
 
 INSERT INTO `badges` SET
   `id` = 1,
-  `issuerId` = 1,
+  `systemId` = 1,
   `slug` = 'chicago-badge',
   `name` = 'Chicago Badge',
   `description` = 'A longer description of the badge',
@@ -67,6 +67,7 @@ INSERT INTO `badges` SET
 
 INSERT INTO `badges` SET
   `id` = 3,
+  `systemId` = 1,
   `slug` = 'archived-badge',
   `name` = 'Archived Badge',
   `strapline` = 'An archived badge',
@@ -74,6 +75,8 @@ INSERT INTO `badges` SET
 
 INSERT INTO `badges` SET
   `id` = 4,
+  `systemId` = 1,
+  `issuerId` = 1,
   `programId` = 1,
   `slug` = 'chicago-scratch-badge',
   `name` = 'Chicago Scratch Badge',
@@ -82,6 +85,7 @@ INSERT INTO `badges` SET
 
 INSERT INTO `badges` SET
   `id` = 5,
+  `systemId` = 1,
   `issuerId` = 1,
   `slug` = 'chicago-library-badge',
   `name` = 'Chicago Library Badge',
