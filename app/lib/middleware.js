@@ -5,7 +5,7 @@ module.exports = {
 
 const log = require('../lib/logger')
 const restify = require('restify')
-const Models = {
+const models = {
   system: require('../models/system'),
   issuer: require('../models/issuer')
 }
@@ -14,7 +14,7 @@ const http404 = restify.ResourceNotFoundError
 const http500 = restify.InternalError
 
 function createFinder(modelName) {
-  return function findIssuer(opts) {
+  return function findModel(opts) {
     opts = opts || {}
     const param = opts.param || modelName + 'Slug'
     const key = opts.key || modelName
@@ -25,7 +25,7 @@ function createFinder(modelName) {
       const slug = req.params[param]
       const query = {slug: slug}
       const opts = {relationships: relationships}
-      Models[modelName].getOne(query, opts, function (error, issuer) {
+      models[modelName].getOne(query, opts, function (error, issuer) {
         if (error) {
           log.error(error)
           return next(new http500('An internal error occured'))
