@@ -14,8 +14,9 @@ exports = module.exports = function applyIssuerRoutes (server) {
     showAllIssuers,
   ]);
   function showAllIssuers(req, res, next) {
-    const options = {relationships: true};
-    Issuers.get({}, options, function foundRows(error, rows) {
+    const options = {relationships: true}
+    const query = {systemId: req.system.id}
+    Issuers.get(query, options, function foundRows(error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
       return res.send({issuers: rows.map(issuerFromDb)});
@@ -24,7 +25,10 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
   server.get('/systems/:systemSlug/issuers/:issuerSlug', [
     middleware.findSystem(),
-    middleware.findIssuer({relationships: true}),
+    middleware.findIssuer({
+      relationships: true,
+      where: {systemId: ['system', 'id']}
+    }),
     showOneIssuer,
   ]);
   function showOneIssuer(req, res, next) {
@@ -56,7 +60,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
   server.del('/systems/:systemSlug/issuers/:issuerSlug', [
     middleware.findSystem(),
-    middleware.findIssuer(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     deleteIssuer
   ]);
   function deleteIssuer(req, res, next) {
@@ -74,7 +78,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
   server.put('/systems/:systemSlug/issuers/:issuerSlug', [
     middleware.findSystem(),
-    middleware.findIssuer(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     updateIssuer,
   ]);
   function updateIssuer(req, res, next) {

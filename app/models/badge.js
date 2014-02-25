@@ -1,6 +1,3 @@
-const Programs = require('./program')
-const Systems = require('./system')
-const Issuers = require('./issuer')
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
 
@@ -44,42 +41,6 @@ const Badges = db.table('badges', {
     },
   }
 });
-
-Badges.getByProgram = function getByProgram(programSlug, callback) {
-  Programs.getOne({slug: programSlug}, function (err, program) {
-    if (err) return callback(err)
-    if (!program) return callback()
-    const query = {programId: program.id}
-    const opts = {relationships: true}
-    Badges.get(query, opts, callback)
-  })
-}
-
-Badges.getByIssuer = function getByIssuer(issuerSlug, callback) {
-  // should include all program badges as well
-  const query = {slug: issuerSlug}
-  const opts = {relationships: true}
-  Issuers.getOne(query, opts, function (err, issuer) {
-    if (err) return callback(err)
-    if (!issuer) return callback()
-
-    const programIds = issuer.programs.map(value('id'))
-
-    const query = {issuerId: issuer.id}
-    const opts = {relationships: true}
-    // TODO: this can be parallelized
-    Badges.get(query, opts, function (err, issuerBadges) {
-      if (err) return callback(err)
-      const query = {programId: programIds}
-      const opts = {relationships: true}
-      Badges.get(query, opts, function (err, programBadges) {
-        if (err) return callback(err)
-        const allBadges = issuerBadges.concat(programBadges)
-        return callback(null, allBadges)
-      })
-    })
-  })
-}
 
 Badges.validateRow = makeValidator({
   id: optionalInt,
