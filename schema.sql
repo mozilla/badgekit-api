@@ -42,7 +42,6 @@ CREATE TABLE `programs` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-
 DROP TABLE IF EXISTS `badges`;
 CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
