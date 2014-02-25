@@ -7,7 +7,7 @@ const spawn = require('./spawn')
 spawn(app).then(function (api) {
 
   test('get program list', function (t) {
-    api.get('/programs').then(function (res) {
+    api.get('/systems/chicago/issuers/chicago-library/programs').then(function (res) {
       t.ok(res.body.programs, 'should have programs')
       t.same(res.body.programs[0].id, 1)
       t.same(res.body.programs[0].slug, 'mit-scratch')
@@ -16,7 +16,8 @@ spawn(app).then(function (api) {
   })
 
   test('get one program', function (t) {
-    api.get('/programs/mit-scratch').then(function(res){
+    const path = '/systems/chicago/issuers/chicago-library/programs/mit-scratch'
+    api.get(path).then(function(res){
       t.same(res.body.program, {
         id: 1,
         slug: 'mit-scratch',
@@ -26,7 +27,7 @@ spawn(app).then(function (api) {
         email: 'admin@scratch.mit.edu',
         imageUrl: null,
       })
-      return api.get('/programs/not-a-program')
+      return api.get('/systems/chicago/issuers/chicago-library/programs/not-a-program')
     }).then(function(res){
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
@@ -37,10 +38,11 @@ spawn(app).then(function (api) {
 
   test('add new program', function (t) {
     var form = {soAndSoAndSo: 'from wherever wherever'}
-    api.post('/programs', form).then(function (res) {
+    const path = '/systems/chicago/issuers/chicago-library/programs/'
+    api.post(path, form).then(function (res) {
       t.same(res.statusCode, 400, 'should have rest error')
       t.same(res.body.code, 'ValidationError', 'should be a validation error')
-      return api.post('/programs', form = {
+      return api.post(path, form = {
         slug: 'test-program',
         name: 'Test Program',
         url: 'http://example.org/test/',
@@ -58,14 +60,14 @@ spawn(app).then(function (api) {
 
   test('update program', function (t) {
     var form = {soAndSoAndSo: 'from wherever wherever'}
-    api.put('/programs/test-program', form).then(function(res){
+    const path = '/systems/chicago/issuers/chicago-library/programs/test-program'
+    api.put(path, form).then(function(res){
       t.same(res.statusCode, 200, 'no error')
-      return api.put('/programs/test-program', form = {
+      return api.put(path, form = {
         name: 'Test Program, obvi',
         description: 'it is still a test!',
       })
     }).then(function (res) {
-      console.dir(res.body)
       t.same(res.body.status, 'updated')
       t.same(res.body.program.name, form.name)
       t.same(res.body.program.description, form.description)
@@ -74,10 +76,10 @@ spawn(app).then(function (api) {
   })
 
   test('delete program', function (t) {
-    const getProgram = api.get.bind(api, '/programs/test-program')
-    api.del('/programs/test-program').then(function (res) {
+    const path = '/systems/chicago/issuers/chicago-library/programs/test-program'
+    api.del(path).then(function (res) {
       t.same(res.body.status, 'deleted')
-      return api.get('/programs/test-program')
+      return api.get(path)
     }).then(function (res) {
       t.same(res.body.code, 'ResourceNotFound')
       t.end()
