@@ -174,7 +174,18 @@ spawn(app).then(function (api) {
       }))
     })
 
-    t.plan(8)
+    const pittsurl = api.makeUrl('/systems/pittsburgh')
+    jwsOpts = makeJwsOpts()
+    jwsOpts.payload.path = '/systems/pittsburgh'
+    opts = reqOpts(pittsurl, jws.sign(jwsOpts))
+    http.get(opts, function (res) {
+      res.pipe(concat(function (data) {
+        const result = JSON.parse(data)
+        t.same(res.statusCode, 403, 'should get 403')
+      }))
+    })
+
+    t.plan(9)
   })
 
 
