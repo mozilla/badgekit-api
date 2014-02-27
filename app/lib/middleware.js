@@ -116,7 +116,11 @@ function verifyRequest() {
         return next(new http403('Missing JWT claim: body.alg'))
 
       const givenHash = auth.body.hash
-      const computedHash = hash(auth.body.alg, req._body)
+      try {
+        const computedHash = hash(auth.body.alg, req._body)
+      } catch (e) {
+        return next(new http403('Could not calculate hash, unsupported algorithm: '+auth.body.alg))
+      }
       if (givenHash !== computedHash)
         return next(new http403('Computed hash does not match given hash: '+givenHash+' != '+computedHash+''))
     }
