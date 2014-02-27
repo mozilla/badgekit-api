@@ -12,7 +12,7 @@ CREATE TABLE `consumers` (
 DROP TABLE IF EXISTS `systems`;
 CREATE TABLE `systems` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `slug` VARCHAR(255) NOT NULL UNIQUE,
   `name` VARCHAR(255) NOT NULL,
   `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE `webhooks` (
 DROP TABLE IF EXISTS `issuers`;
 CREATE TABLE `issuers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE `issuers` (
 DROP TABLE IF EXISTS `programs`;
 CREATE TABLE `programs` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE `programs` (
 DROP TABLE IF EXISTS `badges`;
 CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `strapline` VARCHAR(140) NULL,
   `earnerDescription` TEXT NOT NULL,
@@ -91,13 +91,15 @@ CREATE TABLE `badges` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `badgesInstances`;
-CREATE TABLE `badgesInstances` (
+DROP TABLE IF EXISTS `badgeInstances`;
+CREATE TABLE `badgeInstances` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(255) NOT NULL UNIQUE,
   `email` VARCHAR(255) NOT NULL,
   `issuedOn` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `exipres` TIMESTAMP NULL,
+  `expires` TIMESTAMP NULL,
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  UNIQUE KEY `email_and_badge` (`email`, `badgeId`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -105,7 +107,7 @@ CREATE TABLE `badgesInstances` (
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `slug` VARCHAR(255) NOT NULL UNIQUE,
   -- require either URL or mimetype & data
   `url` VARCHAR(255),
   `mimetype` VARCHAR(255),
