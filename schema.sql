@@ -58,8 +58,15 @@ CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(50) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `strapline` VARCHAR(50) NULL,
-  `description` TEXT NOT NULL,
+  `strapline` VARCHAR(140) NULL,
+  `earnerDescription` TEXT NOT NULL,
+  `consumerDescription` TEXT NOT NULL,
+  `issuerUrl` VARCHAR(255),
+  `rubricUrl` VARCHAR(255),
+  `timeValue` INT,
+  `timeUnits` ENUM('minutes', 'hours', 'days', 'weeks'),
+  `limit` INT,
+  `unique` BOOL NOT NULL DEFAULT FALSE,
   `archived` BOOLEAN NOT NULL DEFAULT FALSE,
   `imageId` INT NOT NULL REFERENCES `images`(`id`),
   `programId` INT NULL REFERENCES `programs`(`id`),
@@ -68,6 +75,7 @@ CREATE TABLE `badges` (
   UNIQUE KEY `slug_and_system` (`slug`, `systemId`),
   UNIQUE KEY `slug_and_issuer` (`slug`, `issuerId`),
   UNIQUE KEY `slug_and_program` (`slug`, `programId`),
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -83,3 +91,15 @@ CREATE TABLE `images` (
   PRIMARY KEY (`id`)
 ) CHARACTER SET binary
   ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `criteria`;
+CREATE TABLE `criteria` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  `description` TEXT NOT NULL,
+  `note` TEXT NOT NULL,
+  `required` BOOL NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (`id`)
+) CHARACTER SET binary
+  ENGINE=InnoDB;
+

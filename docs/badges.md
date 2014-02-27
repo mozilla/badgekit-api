@@ -30,8 +30,15 @@ Content-Type: application/json
       "name": "Badge Name",
       "slug": "badge-slug",
       "strapline": "Badge Strapline",
-      "description": "Badge Description",
-      "imageURL": "http://example.org/badge.png",
+      "earnerDescription": "Badge Description",
+      "consumerDescription": "Badge Description for Consumers",
+      "issuerUrl": "http://example.org/issuer",
+      "rubricUrl": "http://example.org/rubric",
+      "timeValue": 10,
+      "timeUnits": "minutes",
+      "limit": 5,
+      "unique": false,
+      "imageUrl": "http://example.org/badge.png",
       "archived": false
     },
     ...
@@ -64,7 +71,14 @@ Content-Type: application/json
     "name": "Badge Name",
     "slug": "badge-slug",
     "strapline": "Badge Strapline",
-    "description": "Badge Description",
+    "earnerDescription": "Badge Description",
+    "consumerDescription": "Badge Description for Consumers",
+    "issuerUrl": "http://example.org/issuer",
+    "rubricUrl": "http://example.org/rubric",
+    "timeValue": 10,
+    "timeUnits": "minutes",
+    "limit": 5,
+    "unique": false,
     "imageUrl": "http://example.org/badge.png",
     "archived": false
   }
@@ -101,8 +115,16 @@ Content-Type: application/json
   "name": "Badge Name",
   "slug": "badge-slug",
   "strapline": "Badge Strapline",
-  "description": "Badge Description",
-  "imageUrl": "http://example.org/image.png"
+  "earnerDescription": "Badge Description",
+  "consumerDescription": "Badge Description for Consumers",
+  "issuerUrl": "http://example.org/issuer",
+  "rubricUrl": "http://example.org/rubric",
+  "timeValue": 10,
+  "timeUnits": "minutes",
+  "limit": 5,
+  "unique": false,
+  "imageUrl": "http://example.org/image.png",
+  "archived": false
 }
 ```
 
@@ -190,7 +212,14 @@ Content-Type: application/json
     "name": "Badge Name",
     "slug": "badge-slug",
     "strapline": "Badge Strapline",
-    "description": "Badge Description",
+    "earnerDescription": "Badge Description",
+    "consumerDescription": "Badge Description for Consumers",
+    "issuerUrl": "http://example.org/issuer",
+    "rubricUrl": "http://example.org/rubric",
+    "timeValue": 10,
+    "timeUnits": "minutes",
+    "limit": 5,
+    "unique": false,
     "imageUrl": "http://example.org/badge.png",
     "archived": false
   }
@@ -232,8 +261,16 @@ Content-Type: application/json
       "name": "Badge Name",
       "slug": "badge-slug",
       "strapline": "Badge Strapline",
-      "description": "Badge Description",
-      "imageUrl": "http://example.org/image.png"
+      "earnerDescription": "Badge Description",
+      "consumerDescription": "Badge Description for Consumers",
+      "issuerUrl": "http://example.org/issuer",
+      "rubricUrl": "http://example.org/rubric",
+      "timeValue": 10,
+      "timeUnits": "minutes",
+      "limit": 5,
+      "unique": false,
+      "imageUrl": "http://example.org/badge.png",
+      "archived": false
     }
   }
   ```
@@ -251,11 +288,19 @@ PUT /badges/<slug> HTTP/1.1
 Content-Type: application/json
 
 {
-  "name": "New Badge Name",
-  "slug": "new-badge-slug",
-  "strapline": "New Badge Strapline",
-  "description": "New Badge Description",
-  "imageUrl": "http://example.org/new-image.png"
+  "name": "Badge Name",
+  "slug": "badge-slug",
+  "strapline": "Badge Strapline",
+  "earnerDescription": "Badge Description",
+  "consumerDescription": "Badge Description for Consumers",
+  "issuerUrl": "http://example.org/issuer",
+  "rubricUrl": "http://example.org/rubric",
+  "timeValue": 10,
+  "timeUnits": "minutes",
+  "limit": 5,
+  "unique": false,
+  "imageUrl": "http://example.org/badge.png",
+  "archived": false
 }
 ```
 
@@ -306,11 +351,19 @@ Content-Type: application/json
 {
   "status": "updated",
   "badge": {
-    "name": "New Badge Name",
-    "slug": "new-badge-slug",
-    "strapline": "New Badge Strapline",
-    "description": "New Badge Description",
-    "imageUrl": "http://example.org/new-image.png"
+    "name": "Badge Name",
+    "slug": "badge-slug",
+    "strapline": "Badge Strapline",
+    "earnerDescription": "Badge Description",
+    "consumerDescription": "Badge Description for Consumers",
+    "issuerUrl": "http://example.org/issuer",
+    "rubricUrl": "http://example.org/rubric",
+    "timeValue": 10,
+    "timeUnits": "minutes",
+    "limit": 5,
+    "unique": false,
+    "imageUrl": "http://example.org/badge.png",
+    "archived": false
   }
 }
 ```
@@ -347,11 +400,19 @@ Content-Type: application/json
     "code": "ResourceConflict",
     "error": "badge with that `slug` already exists",
     "details": {
-      "name": "New Badge Name",
-      "slug": "new-badge-slug",
-      "strapline": "New Badge Strapline",
-      "description": "New Badge Description",
-      "imageUrl": "http://example.org/new-image.png"
+      "name": "Badge Name",
+      "slug": "badge-slug",
+      "strapline": "Badge Strapline",
+      "earnerDescription": "Badge Description",
+      "consumerDescription": "Badge Description for Consumers",
+      "issuerUrl": "http://example.org/issuer",
+      "rubricUrl": "http://example.org/rubric",
+      "timeValue": 10,
+      "timeUnits": "minutes",
+      "limit": 5,
+      "unique": false,
+      "imageUrl": "http://example.org/badge.png",
+      "archived": false
     }
   }
   ```
@@ -375,11 +436,19 @@ Content-Type: application/json
 {
   "status": "deleted",
   "badge": {
-    "name": "New Badge Name",
-    "slug": "new-badge-slug",
-    "strapline": "New Badge Strapline",
-    "description": "New Badge Description",
-    "imageUrl": "http://example.org/new-image.png"
+    "name": "Badge Name",
+    "slug": "badge-slug",
+    "strapline": "Badge Strapline",
+    "earnerDescription": "Badge Description",
+    "consumerDescription": "Badge Description for Consumers",
+    "issuerUrl": "http://example.org/issuer",
+    "rubricUrl": "http://example.org/rubric",
+    "timeValue": 10,
+    "timeUnits": "minutes",
+    "limit": 5,
+    "unique": false,
+    "imageUrl": "http://example.org/badge.png",
+    "archived": false
   }
 }
 ```

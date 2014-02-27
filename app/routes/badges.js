@@ -5,7 +5,7 @@ const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 
-const putBadge = imageHelper.putModel(Badges)
+const putBadgeHelper = imageHelper.putModel(Badges)
 const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
@@ -83,6 +83,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     saveBadge,
   ]);
   function saveBadge (req, res, next) {
+    const criteria = req.body.criteria || [];
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req, {required: true})
 
@@ -90,7 +91,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (req.issuer) row.issuerId = req.issuer.id
     if (req.program) row.programId = req.program.id
 
-    putBadge(row, image, function (err, badge) {
+    putBadge(row, image, criteria, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -221,8 +222,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
   function updateBadge (req, res, next) {
     const row = safeExtend(req.badge, req.body);
     const image = imageHelper.getFromPost(req);
-
-    putBadge(row, image, function (err, badge) {
+    const criteria = row.criteria;
+    putBadge(row, image, criteria, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -238,12 +239,32 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
 };
 
+function putBadge (row, image, criteria, callback) {
+  putBadgeHelper(row, image, function(err, row) {
+    if (err)
+      return callback(err);
+
+    return row.setCriteria(criteria, callback);
+  });
+};
+
+
 function fromPostToRow (post) {
   return {
     slug: post.slug,
     name: post.name,
     strapline: post.strapline,
-    description: post.description,
+    systemId: post.systemId,
+    issuerId: post.issuerId,
+    programId: post.programId,
+    earnerDescription: post.earnerDescription,
+    consumerDescription: post.consumerDescription,
+    issuerUrl: post.issuerUrl,
+    rubricUrl: post.rubricUrl,
+    timeValue: post.timeValue,
+    timeUnits: post.timeUnits,
+    limit: post.limit,
+    unique: post.unique
   };
 }
 
@@ -253,12 +274,27 @@ function badgeFromDb (row) {
     slug: row.slug,
     name: row.name,
     strapline: row.strapline,
-    description: row.description,
+    earnerDescription: row.earnerDescription,
+    consumerDescription: row.consumerDescription,
+    issuerUrl: row.issuerUrl,
+    rubricUrl: row.rubricUrl,
+    timeValue: row.timeValue,
+    timeUnits: row.timeUnits,
+    limit: row.limit,
+    unique: row.unique,
+    created: row.created,
     imageUrl: row.image ? row.image.toUrl() : null,
     archived: !!row.archived,
     system: maybeObject(row.system),
     issuer: maybeObject(row.issuer),
     program: maybeObject(row.program),
+    criteria: row.criteria.map(function(criterion) {
+      return { 
+        description: criterion.description.toString(),
+        required: criterion.required,
+        note: criterion.note.toString()
+      }
+    })
   };
 }
 

@@ -61,7 +61,14 @@ INSERT INTO `badges` SET
   `systemId` = 1,
   `slug` = 'chicago-badge',
   `name` = 'Chicago Badge',
-  `description` = 'A longer description of the badge',
+  `earnerDescription` = 'An earner description of the Chicago Badge',
+  `consumerDescription` = 'A consumer description of the Chicago Badge',
+  `rubricUrl` = 'http://example.org/chicagoRubric',
+  `issuerUrl` = 'http://example.org/chicagoIssuer',
+  `timeValue` = 10,
+  `timeUnits` = 'minutes',
+  `limit` = 5,
+  `unique` = 1,
   `strapline` = 'A badge for Chicago';
 
 INSERT INTO `badges` SET
@@ -69,6 +76,14 @@ INSERT INTO `badges` SET
   `systemId` = 2,
   `slug` = 'pittsburgh-badge',
   `name` = 'Pittsburgh Badge',
+  `earnerDescription` = 'An earner description of the Pittsburgh Badge',
+  `consumerDescription` = 'A consumer description of the Pittsburgh Badge',
+  `rubricUrl` = 'http://example.org/pittsburghRubric',
+  `issuerUrl` = 'http://example.org/pittsburghIssuer',
+  `timeValue` = 9,
+  `timeUnits` = 'hours',
+  `limit` = null,
+  `unique` = 0,
   `strapline` = 'A badge for Pittsburgh';
 
 INSERT INTO `badges` SET
@@ -76,6 +91,14 @@ INSERT INTO `badges` SET
   `systemId` = 1,
   `slug` = 'archived-badge',
   `name` = 'Archived Badge',
+  `earnerDescription` = 'An earner description of the Archived Badge',
+  `consumerDescription` = 'A consumer description of the Archived Badge',
+  `rubricUrl` = 'http://example.org/archivedRubric',
+  `issuerUrl` = 'http://example.org/archivedIssuer',
+  `timeValue` = 5,
+  `timeUnits` = 'seconds',
+  `limit` = 2,
+  `unique` = 1,
   `strapline` = 'An archived badge',
   `archived` = 1;
 
