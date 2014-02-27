@@ -54,15 +54,18 @@
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/codes/:code
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code
     * **POST** /systems/:slug/badges/:slug/codes/:code/claim
-    * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/claim
-    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/claim
+    * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/claim
+    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/badges/:slug/codes/:code/unclaim
-    * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/unclaim
-    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/unclaim
+    * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/unclaim
+    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/unclaim
   * Issuing
     * **GET** /systems/:slug/badges/:slug/instances
     * **GET** /systems/:slug/issuers/:slug/badges/:slug/instances
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances
+    * **GET** /systems/:slug/badges/:slug/instances/:id
+    * **GET** /systems/:slug/issuers/:slug/badges/:slug/instances/:id
+    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:id
     * **POST** /systems/:slug/badges/:slug/instances
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/instances
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances
