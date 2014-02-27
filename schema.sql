@@ -91,7 +91,6 @@ CREATE TABLE `badgeInstances` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-
 DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` INT NOT NULL AUTO_INCREMENT,
