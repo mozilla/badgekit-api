@@ -7,7 +7,7 @@ const fs = require('fs')
 const db = require('../app/lib/db')
 const path = require('path')
 
-if (process.env.NODE_ENV !== 'test') {
+if (!/test$/.exec(process.env.NODE_ENV)) {
   console.error('Must be in test environment: expected, NODE_ENV=test, got NODE_ENV='+process.env.NODE_ENV)
   process.exit(1)
 }
@@ -72,6 +72,7 @@ module.exports = function spawner(app, callback) {
       return deferred.promise
     }
     return {
+      makeUrl: function (url) {return baseUrl + url},
       get: requester.bind(null, 'get'),
       post: requester.bind(null, 'post'),
       put: requester.bind(null, 'put'),
