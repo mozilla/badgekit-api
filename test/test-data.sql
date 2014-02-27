@@ -11,12 +11,6 @@ INSERT INTO `systems` SET
   `description` = 'The City of Chicago',
   `email` = 'mayor-emanuel@cityofchicago.org';
 
-INSERT INTO `consumers` SET
-  `id` = 1,
-  `apiKey` = 'radical',
-  `apiSecret` = 'At9p1PVNW5jQAV8LnvfGdpbnuAcxq765pBNNhV9Kjnvgyn4S7YEs7KgVla1OGyny',
-  `systemId` = 1;
-
 INSERT INTO `systems` SET
   `id` = 2,
   `slug` = 'pittsburgh',
@@ -24,6 +18,18 @@ INSERT INTO `systems` SET
   `url` = 'http://pittsburghpa.gov',
   `description` = 'The City of Pittsburgh',
   `email` = 'mayor-ravenstahl@pittsburghpa.gov';
+
+INSERT INTO `webhooks` SET
+  `id` = 1,
+  `systemId` = 1,
+  `url` = 'http://example.org/',
+  `secret` = 'n+MMi/xDLqB8qu94om10newruRh+4R+z28s4h6xnQrx9XUnjia7V7JJNstdknwbq';
+
+INSERT INTO `consumers` SET
+  `id` = 1,
+  `apiKey` = 'radical',
+  `apiSecret` = 'At9p1PVNW5jQAV8LnvfGdpbnuAcxq765pBNNhV9Kjnvgyn4S7YEs7KgVla1OGyny',
+  `systemId` = 1;
 
 INSERT INTO `issuers` SET
   `id` = 1,
@@ -64,6 +70,7 @@ INSERT INTO `programs` SET
 INSERT INTO `badges` SET
   `id` = 1,
   `systemId` = 1,
+  `imageId` = 1,
   `slug` = 'chicago-badge',
   `name` = 'Chicago Badge',
   `earnerDescription` = 'An earner description of the Chicago Badge',

@@ -10,7 +10,6 @@ const Systems = db.table('systems', {
     'description',
     'email',
     'imageId',
-    'webhook',
   ],
   relationships: {
     image: {
@@ -47,11 +46,6 @@ Systems.validateRow = makeValidator({
     this.check(email).isEmail();
   },
   imageId: optionalInt,
-  webhook: function (url) {
-    if (typeof url == 'undefined' || url === null) return;
-    this.check(url).isUrl();
-  },
-
 });
 
 function optionalInt(id) {

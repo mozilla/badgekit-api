@@ -18,7 +18,17 @@ CREATE TABLE `systems` (
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
-  `webhook` VARCHAR(255) NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `webhooks`;
+CREATE TABLE `webhooks` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `url` VARCHAR(255) NOT NULL,
+  `secret` VARCHAR(255) NOT NULL,
+  `systemId` INT NOT NULL REFERENCES `systems`(`id`),
+  UNIQUE KEY `url_and_system` (`url`, `systemId`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -82,11 +92,12 @@ CREATE TABLE `badges` (
   ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `badgesInstances`;
-CREATE TABLE `badgeInstances` (
+CREATE TABLE `badgesInstances` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL,
   `issuedOn` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `exipres` TIMESTAMP NULL,
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
