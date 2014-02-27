@@ -7,6 +7,7 @@ module.exports = {
 }
 
 const jws = require('jws')
+const crypto = require('crypto')
 const restify = require('restify')
 const log = require('../lib/logger')
 const models = {
@@ -101,6 +102,25 @@ function verifyRequest() {
     if (auth.exp && auth.exp <= now)
       return next(new http403('Token is expired (token expiry: '+auth.exp+', server time: '+now))
 
+    if (!(/GET|DELETE|HEAD/.exec(req.method))) {
+      if (!auth.body)
+        return next(new http403('Missing JWT claim: body'))
+
+      if (!auth.body.alg)
+        return next(new http403('Missing JWT claim: body.alg'))
+
+      if (!auth.body.hash)
+        return next(new http403('Missing JWT claim: body.hash'))
+
+      if (!auth.body.alg)
+        return next(new http403('Missing JWT claim: body.alg'))
+
+      const givenHash = auth.body.hash
+      const computedHash = hash(auth.body.alg, req._body)
+      if (givenHash !== computedHash)
+        return next(new http403('Computed hash does not match given hash: '+givenHash+' != '+computedHash+''))
+    }
+
     if (auth.key === 'master') {
       const masterSecret = process.env.MASTER_SECRET
       if (!jws.verify(token, masterSecret))
@@ -135,4 +155,8 @@ function getAuthToken(req) {
   if (!match) return
 
   return match[1]
+}
+
+function hash(alg, body) {
+  return crypto.createHash(alg).update(body).digest('hex')
 }

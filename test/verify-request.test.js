@@ -3,12 +3,13 @@ const env = process.env.NODE_ENV='auth-test'
 
 const test = require('tap').test
 const jws = require('jws')
-const app = require('../')
-const spawn = require('./spawn')
 const http = require('http')
 const uri = require('url')
 const util = require('util')
 const concat = require('concat-stream')
+const crypto = require('crypto')
+const app = require('../')
+const spawn = require('./spawn')
 
 spawn(app).then(function (api) {
   test('GET request, missing auth', function (t) {
@@ -44,6 +45,39 @@ spawn(app).then(function (api) {
         t.end()
       }))
     })
+  })
+
+  test('POST request, master key', function (t) {
+    const url = api.makeUrl('/systems')
+    const body = '{"slug": "test-system", "name": "Test System", "url":"http://example.org"}'
+    const token = jws.sign({
+      secret: secret,
+      header: {typ: "JWT", alg: "HS256"},
+      payload: {
+        key: 'master',
+        path: '/systems',
+        method: 'POST',
+        exp: (Date.now()/1000|0) + 60,
+        body: {
+          alg: 'sha256',
+          hash: sha256(body),
+        },
+      }
+    })
+
+    const opts = reqOpts(url, token)
+    opts.method = 'POST'
+    opts.headers['Content-Type'] = 'application/json'
+    const req = http.request(opts, function (res) {
+      res.pipe(concat(function (data) {
+        const result = JSON.parse(data)
+        t.same(result.status, 'created')
+        t.end()
+      }))
+    })
+
+    req.write(body)
+    req.end()
   })
 
   test('GET requests, chicago key', function (t) {
@@ -156,4 +190,8 @@ function reqOpts(url, token) {
     opts.headers['Authentication'] = util.format('JWT token="%s"', token)
   }
   return opts
+}
+
+function sha256(stuff) {
+  return crypto.createHash('sha256').update(stuff).digest('hex')
 }
