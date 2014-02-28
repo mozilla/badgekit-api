@@ -222,7 +222,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
   function updateBadge (req, res, next) {
     const row = safeExtend(req.badge, req.body);
     const image = imageHelper.getFromPost(req);
-    const criteria = row.criteria;
+    const criteria = req.body.criteria;
+    delete row.created;
     putBadge(row, image, criteria, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
