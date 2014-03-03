@@ -152,7 +152,7 @@ function getAuthToken(req) {
   const authHeader = req.headers.authentication
   if (!authHeader) return
 
-  const match = authHeader.match(/JWT token="(.+?)"/)
+  const match = authHeader.match(/^JWT token="(.+?)"$/)
   if (!match) return
 
   return match[1]
