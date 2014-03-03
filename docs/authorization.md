@@ -42,6 +42,7 @@ var crypto = require('crypto')
 var body = '{"slug": "some-system", "name": "Some System", "url":"http://example.org"}'
 var computedHash = crypto.createHash('SHA256').update(body).digest('hex')
 var token = jws.sign({
+  secret: "supersecret",
   header: {typ: "JWT", alg:"HS256"},
   payload: {
     key: "master",
@@ -53,7 +54,6 @@ var token = jws.sign({
       hash: computedHash
     }
   },
-  secret: "supersecret",
 })
 ```
 
