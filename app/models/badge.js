@@ -96,7 +96,7 @@ Badges.validateRow = makeValidator({
   },
   limit: optionalInt,
   unique: function(unique) {
-    this.check(unique).isIn(['0','1']);
+    this.check(unique).isIn(['0','1','true','false']);
   },
   imageId: optionalInt,
   programId: optionalInt,

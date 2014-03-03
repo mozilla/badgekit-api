@@ -150,7 +150,7 @@ function verifyRequest() {
 }
 
 function getAuthToken(req) {
-  const authHeader = req.headers.authentication
+  const authHeader = req.headers.authorization
   if (!authHeader) return
 
   const match = authHeader.match(/^JWT token="(.+?)"$/)

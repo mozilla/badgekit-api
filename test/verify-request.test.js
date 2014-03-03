@@ -198,7 +198,7 @@ function reqOpts(url, token) {
   const opts = uri.parse(url)
   if (token) {
     opts.headers = opts.headers || {}
-    opts.headers['Authentication'] = util.format('JWT token="%s"', token)
+    opts.headers['Authorization'] = util.format('JWT token="%s"', token)
   }
   return opts
 }
