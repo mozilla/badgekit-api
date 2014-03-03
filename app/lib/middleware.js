@@ -102,7 +102,7 @@ function verifyRequest() {
     if (auth.exp && auth.exp <= now)
       return next(new http403('Token is expired (token expiry: '+auth.exp+', server time: '+now))
 
-    if (!(/GET|DELETE|HEAD/i.exec(req.method))) {
+    if (!(/^(GET|DELETE|HEAD)$/i.exec(req.method))) {
       if (!auth.body)
         return next(new http403('Missing JWT claim: body'))
 
