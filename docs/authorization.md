@@ -24,7 +24,7 @@ Use the `HS256` (HMAC-SHA256) algorithm. Example header:
 ### Claims
 
 * **key**: Use `"master"` for now. **TODO**: update this when we implement specific consumer keys
-* **exp**: (Optional) [Unix time](http://en.wikipedia.org/wiki/Unix_time) in seconds which this token is valid. A short value should be used, e.g. 30 seconds. This is optional because of potential clock synchronization problems that can occur between servers, but it's highly recommended.
+* **exp**: (Optional) [Unix time](http://en.wikipedia.org/wiki/Unix_time) for when this token should expire. A short value should be used, e.g. 30-60 seconds from the time of token generation. *This is optional because of potential clock synchronization problems that can occur between servers, but it's highly recommended.*
 * **method**: HTTP Method being used in this request. Should be `GET`, `POST`, `PUT`, or `DELETE`.
 * **path**: Relative HTTP path being requested, e.g. `/systems/chicago` or `/systems/chicago/badges?archived=true`. Note that any query variables should be represented in the path.
 * **body**: (Required on `POST`, `PUT`) An object with two fields:
