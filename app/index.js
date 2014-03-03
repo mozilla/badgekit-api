@@ -1,9 +1,11 @@
+var logger = require('./lib/logger')
 var restify = require('restify');
 var applyRoutes = require('./routes');
 
 var server = restify.createServer({
   name: 'openbadger',
-  version: '1.0.0'
+  version: '1.0.0',
+  log: logger,
 });
 
 server.pre(restify.pre.sanitizePath());

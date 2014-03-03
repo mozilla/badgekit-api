@@ -7,6 +7,7 @@ CREATE TABLE `systems` (
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
+  `webhook` VARCHAR(255) NULL,
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -14,13 +15,14 @@ CREATE TABLE `systems` (
 DROP TABLE IF EXISTS `issuers`;
 CREATE TABLE `issuers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `slug` VARCHAR(50) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
   `systemId` INT NULL REFERENCES `systems`(`id`),
+  UNIQUE KEY `slug_and_system` (`slug`, `systemId`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -28,22 +30,22 @@ CREATE TABLE `issuers` (
 DROP TABLE IF EXISTS `programs`;
 CREATE TABLE `programs` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `slug` VARCHAR(50) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `url` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
   `email` VARCHAR(255) NULL,
   `imageId` INT NULL REFERENCES `images`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
+  UNIQUE KEY `slug_and_issuer` (`slug`, `issuerId`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-
 DROP TABLE IF EXISTS `badges`;
 CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL UNIQUE,
+  `slug` VARCHAR(50) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `strapline` VARCHAR(50) NULL,
   `description` TEXT NOT NULL,
@@ -52,6 +54,9 @@ CREATE TABLE `badges` (
   `programId` INT NULL REFERENCES `programs`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
   `systemId` INT NULL REFERENCES `systems`(`id`),
+  UNIQUE KEY `slug_and_system` (`slug`, `systemId`),
+  UNIQUE KEY `slug_and_issuer` (`slug`, `issuerId`),
+  UNIQUE KEY `slug_and_program` (`slug`, `programId`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;

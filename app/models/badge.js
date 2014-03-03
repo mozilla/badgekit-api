@@ -10,9 +10,9 @@ const Badges = db.table('badges', {
     'description',
     'archived',
     'imageId',
-    'programId',
-    'issuerId',
     'systemId',
+    'issuerId',
+    'programId',
   ],
   relationships: {
     image: {
@@ -20,7 +20,25 @@ const Badges = db.table('badges', {
       local: 'imageId',
       foreign: { table: 'images', key: 'id' },
       optional: true
-    }
+    },
+    system: {
+      type: 'hasOne',
+      local: 'systemId',
+      foreign: { table: 'systems', key: 'id' },
+      optional: true,
+    },
+    issuer: {
+      type: 'hasOne',
+      local: 'issuerId',
+      foreign: { table: 'issuers', key: 'id' },
+      optional: true,
+    },
+    program: {
+      type: 'hasOne',
+      local: 'programId',
+      foreign: { table: 'programs', key: 'id' },
+      optional: true,
+    },
   }
 });
 
@@ -45,7 +63,7 @@ Badges.validateRow = makeValidator({
 });
 
 function optionalInt(id) {
-  if (typeof id == 'undefined') return;
+  if (typeof id == 'undefined' || id === null) return;
   this.check(id).isInt();
 }
 

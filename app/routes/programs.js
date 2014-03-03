@@ -3,12 +3,17 @@ const Programs = require('../models/program');
 
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
+const middleware = require('../lib/middleware')
 
 const putProgram = imageHelper.putModel(Programs)
 const dbErrorHandler = errorHelper.makeDbHandler('program')
 
 exports = module.exports = function applyProgramRoutes (server) {
-  server.get('/programs', showAllPrograms);
+  server.get('/systems/:systemSlug/issuers/:issuerSlug/programs', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    showAllPrograms,
+  ])
   function showAllPrograms(req, res, next) {
     const query = {}
     const options = {relationships: true};
@@ -21,10 +26,30 @@ exports = module.exports = function applyProgramRoutes (server) {
     });
   }
 
-  server.post('/programs', saveProgram);
+  server.get('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    middleware.findProgram({
+      relationships: true,
+      where: {issuerId: ['issuer', 'id']}
+    }),
+    showOneProgram
+  ])
+  function showOneProgram(req, res, next) {
+    res.send({program: programFromDb(req.program)});
+    return next();
+  }
+
+  server.post('/systems/:systemSlug/issuers/:issuerSlug/programs', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    saveProgram
+  ])
   function saveProgram(req, res, next) {
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req)
+
+    row.issuerId = req.issuer.id
 
     putProgram(row, image, function savedRow(err, program) {
       if (err) {
@@ -40,67 +65,49 @@ exports = module.exports = function applyProgramRoutes (server) {
     });
   }
 
-  server.get('/programs/:programId', showOneProgram);
-  function showOneProgram(req, res, next) {
-    getProgram(req, res, next, function (row) {
-      res.send({program: programFromDb(row)});
-      return next();
-    });
-  }
-
-  server.del('/programs/:programId', deleteProgram);
+  server.del('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
+    deleteProgram
+  ])
   function deleteProgram(req, res, next) {
-    getProgram(req, res, next, function (row) {
-      const query = {id: row.id, slug: row.slug}
-      Programs.del(query, function deletedRow(error, result) {
-        if (error)
-          return dbErrorHandler(error, row, req, next);
+    const row = req.program
+    const query = {id: row.id, slug: row.slug}
+    Programs.del(query, function deletedRow(error, result) {
+      if (error)
+        return dbErrorHandler(error, row, req, next);
 
-        res.send({
-          status: 'deleted',
-          program: programFromDb(row)
-        });
+      res.send({
+        status: 'deleted',
+        program: programFromDb(row)
       });
     });
   }
 
-  server.put('/programs/:programId', updateProgram);
+  server.put('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
+    updateProgram
+  ])
   function updateProgram(req, res, next) {
-    getProgram(req, res, next, function (row) {
-      const updated = safeExtend(row, req.body)
-      const image = imageHelper.getFromPost(req)
-      delete updated.image
+    const row = req.program
+    const updated = safeExtend(row, req.body)
+    const image = imageHelper.getFromPost(req)
+    putProgram(updated, image, function updatedRow(err, program) {
+      if (err) {
+        if (!Array.isArray(err))
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
+      }
 
-      row.issuerId = row.issuerId || undefined;
-
-      putProgram(updated, image, function updatedRow(err, program) {
-        if (err) {
-          if (!Array.isArray(err))
-            return dbErrorHandler(err, row, res, next);
-          return res.send(400, errorHelper.validation(err));
-        }
-
-        res.send({
-          status: 'updated',
-          program: programFromDb(program)
-        });
-      })
-    });
+      res.send({
+        status: 'updated',
+        program: programFromDb(program)
+      });
+    })
   }
-};
-
-function getProgram(req, res, next, callback) {
-  const query = {slug: req.params.programId};
-  const options = {relationships: true};
-  Programs.getOne(query, options, function foundProgram(error, row) {
-    if (error)
-      return dbErrorHandler(error, row, res, next)
-
-    if (!row)
-      return next(errorHelper.notFound('Could not find program with slug `'+query.slug+'`'));
-
-    return callback(row)
-  });
 }
 
 function fromPostToRow(post) {

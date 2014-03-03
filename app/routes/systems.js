@@ -3,6 +3,7 @@ const Systems = require('../models/system');
 
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
+const middleware = require('../lib/middleware')
 
 const putSystem = imageHelper.putModel(Systems)
 const dbErrorHandler = errorHelper.makeDbHandler('system')
@@ -39,68 +40,55 @@ exports = module.exports = function applySystemRoutes (server) {
     });
   }
 
-  server.get('/systems/:systemId', showOneSystem);
+  server.get('/systems/:systemSlug', [
+    middleware.findSystem({relationships: true}),
+    showOneSystem,
+  ]);
   function showOneSystem(req, res, next) {
-    getSystem(req, res, next, function (row) {
-      return res.send({system: systemFromDb(row)});
-    });
+    res.send({system: systemFromDb(req.system)})
+    return res.next()
   }
 
-  server.del('/systems/:systemId', deleteSystem);
+  server.del('/systems/:systemSlug', [
+    middleware.findSystem(),
+    deleteSystem,
+  ]);
   function deleteSystem(req, res, next) {
-    getSystem(req, res, next, function (row) {
-      const query = {id: row.id, slug: row.slug}
-      Systems.del(query, function deletedRow(error, result) {
-        if (error)
-          return dbErrorHandler(error, row, req, next)
-        return res.send({
-          status: 'deleted',
-          system: systemFromDb(row)
-        });
+    const row = req.system
+    const query = {id: row.id, slug: row.slug}
+    Systems.del(query, function deletedRow(error, result) {
+      if (error)
+        return dbErrorHandler(error, row, req, next)
+      return res.send({
+        status: 'deleted',
+        system: systemFromDb(row)
       });
     });
   }
 
-  server.put('/systems/:systemId', updateSystem);
+  server.put('/systems/:systemSlug', [
+    middleware.findSystem(),
+    updateSystem,
+  ]);
   function updateSystem(req, res, next) {
-    getSystem(req, res, next, function (row) {
-      const updated = safeExtend(row, req.body)
-      const image = imageHelper.getFromPost(req)
-      delete updated.image
+    const row = req.system
+    const updated = safeExtend(row, req.body)
+    const image = imageHelper.getFromPost(req)
 
-      row.systemId = row.systemId || undefined;
+    putSystem(updated, image, function updatedRow(err, system) {
+      if (err) {
+        if (!Array.isArray(err))
+          return dbErrorHandler(err, row, res, next);
+        return res.send(400, errorHelper.validation(err));
+      }
 
-      putSystem(updated, image, function updatedRow(err, system) {
-        if (err) {
-          if (!Array.isArray(err))
-            return dbErrorHandler(err, row, res, next);
-          return res.send(400, errorHelper.validation(err));
-        }
-
-        return res.send({
-          status: 'updated',
-          system: systemFromDb(system)
-        });
+      return res.send({
+        status: 'updated',
+        system: systemFromDb(system)
       });
     });
   }
-
 };
-
-function getSystem(req, res, next, callback) {
-  const query = {slug: req.params.systemId};
-  const options = {relationships: true};
-
-  Systems.getOne(query, options, function foundSystem(error, row) {
-    if (error)
-      return dbErrorHandler(error, row, res, next)
-
-    if (!row)
-      return next(errorHelper.notFound('Could not find system with slug `'+query.slug+'`'));
-
-    return callback(row)
-  });
-}
 
 function fromPostToRow(post) {
   return {
@@ -119,6 +107,7 @@ function systemFromDb(row) {
     url: row.url,
     name: row.name,
     email: row.email,
-    imageUrl: row.image ? row.image.toUrl() : null
+    imageUrl: row.image ? row.image.toUrl() : null,
+    issuers: row.issuers,
   }
 }
