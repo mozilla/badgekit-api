@@ -87,11 +87,11 @@ Badges.validateRow = makeValidator({
     this.check(desc).len(1);
   },
   timeValue: function(val) {
-    if (typeof val == 'undefined') return;
+    if (typeof val == 'undefined' || val === null) return;
     this.check(val).isInt();
   },
   timeUnits: function(units) {
-    if (typeof units == 'undefined') return;
+    if (typeof units == 'undefined' || units === null) return;
     this.check(units).isIn(['minutes','hours','days','weeks']);
   },
   limit: optionalInt,
@@ -119,36 +119,26 @@ function optionalInt(id) {
   this.check(id).isInt();
 }
 
-function value(name) {
-  return function (obj) {
-    return obj[name]
-  }
-}
-
 function setCriteria(criteria, callback) {
   var criteriaIds = [];
   const badgeId = this.id;
-  async.each(criteria, function(criterion, innerCallback) {
+  async.each(criteria, function(criterion, done) {
     criterion.badgeId = badgeId;
     Criteria.put(criterion, function(err, result) {
-      if (err) {
-        return innerCallback(err);
-      }
+      if (err)
+        return done(err);
 
-      if (result.insertId) {
-        criteriaIds.push(result.insertId);
-      }
-      else {
-        criteriaIds.push(result.row.id);
-      }
+      const rowId = result.insertId || result.row.id;
+      criteriaIds.push(rowId);
 
-      return innerCallback();
+      return done();
     });
   },
-  function(err) {
+  function done(err) {
     if (err)
       return callback(err);
 
+    // Now that we have added all the new criteria, we want to delete any old criteria attached to this badge
     const deleteQuery = { 
       badgeId: {
         value: badgeId,
