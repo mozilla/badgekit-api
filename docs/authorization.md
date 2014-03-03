@@ -16,7 +16,7 @@ Authorization: JWT token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiO\
 
 ### Header
 
-Use the `"HS256"` (HMAC-SHA256) algorithm. Example header:
+Use the `HS256` (HMAC-SHA256) algorithm. Example header:
 ```json
 {"typ":"JWT",
  "alg":"HS256"}
@@ -29,7 +29,7 @@ Use the `"HS256"` (HMAC-SHA256) algorithm. Example header:
 * **path**: Relative HTTP path being requested, e.g. `/systems/chicago` or `/systems/chicago/badges?archived=true`. Note that any query variables should be represented in the path.
 * **body**: (Required on `POST`, `PUT`) An object with two fields:
   * **hash**: A hash of the entire contents of the body of the POST request, e.g. `sha256('{"slug":"hi","name":"Hello"}')`
-  * **alg**: You should probably just use `"sha256"`.
+  * **alg**: Just use `sha256`.
 
 ### Secret
 
