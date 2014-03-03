@@ -122,6 +122,9 @@ function verifyRequest() {
         return next(new http403('Computed hash does not match given hash: '+givenHash+' != '+computedHash+''))
     }
 
+    if (!auth.key)
+      return next(new http403('Missing JWT claim: key'))
+
     if (auth.key === 'master') {
       const masterSecret = process.env.MASTER_SECRET
       if (!jws.verify(token, masterSecret))
@@ -129,20 +132,18 @@ function verifyRequest() {
       return success()
     }
 
-    else {
-      models.consumer.findByKey(auth.key, function (err, consumer) {
-        if (!consumer)
-          return next(new http403('Could not find consumer for API key'))
+    models.consumer.findByKey(auth.key, function (err, consumer) {
+      if (!consumer)
+        return next(new http403('Could not find consumer for API key'))
 
-        const requestSystemSlug = req.params.systemSlug
-        if (!requestSystemSlug || consumer.system.slug !== requestSystemSlug)
-          return next(new http403('Invalid token for system'))
+      const requestSystemSlug = req.params.systemSlug
+      if (!requestSystemSlug || consumer.system.slug !== requestSystemSlug)
+        return next(new http403('Invalid token for system'))
 
-        if (!jws.verify(token, consumer.apiSecret))
-          return next(new http403('Invalid token signature'))
-        return success()
-      })
-    }
+      if (!jws.verify(token, consumer.apiSecret))
+        return next(new http403('Invalid token signature'))
+      return success()
+    })
 
     function success() { next() }
   }
