@@ -59,7 +59,7 @@ var token = jws.sign({
 
 ## Purpose of Each Claim
 
-* **key**: To look up the secret used to HMAC the token.
+* **key**: To look up the secret used to sign the token.
 * **exp**: General protection against replay attacks: a short lived token has limited opportunity for re-use.
 * **method**: Protection from replay attacks against the same URL with a different method, e.g., converting a POST request into a DELETE request.
 * **path**: Protection from replay attacks with the same method but against a new URL, e.g, using the same token for a POST to `/systems/chicago` as the token for a POST to `/systems/new-york`.
