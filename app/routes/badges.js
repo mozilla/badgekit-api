@@ -222,7 +222,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   function updateBadge (req, res, next) {
     const row = safeExtend(req.badge, req.body);
     const image = imageHelper.getFromPost(req);
-    const criteria = req.body.criteria;
+    const criteria = req.body.criteria || [];
     delete row.created;
     putBadge(row, image, criteria, function (err, badge) {
       if (err) {
@@ -282,14 +282,14 @@ function badgeFromDb (row) {
     timeValue: row.timeValue,
     timeUnits: row.timeUnits,
     limit: row.limit,
-    unique: row.unique,
+    unique: !!row.unique,
     created: row.created,
     imageUrl: row.image ? row.image.toUrl() : null,
     archived: !!row.archived,
     system: maybeObject(row.system),
     issuer: maybeObject(row.issuer),
     program: maybeObject(row.program),
-    criteria: row.criteria.map(function(criterion) {
+    criteria: (row.criteria || []).map(function(criterion) {
       return { 
         description: criterion.description.toString(),
         required: criterion.required,

@@ -1,3 +1,8 @@
+INSERT INTO `images` SET
+  `id` = 1,
+  `slug` = 'some-image',
+  `url` = 'http://example.org/test.png';
+
 INSERT INTO `systems` SET
   `id` = 1,
   `slug` = 'chicago',
@@ -69,7 +74,8 @@ INSERT INTO `badges` SET
   `timeUnits` = 'minutes',
   `limit` = 5,
   `unique` = 1,
-  `strapline` = 'A badge for Chicago';
+  `strapline` = 'A badge for Chicago',
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 2,
@@ -84,7 +90,8 @@ INSERT INTO `badges` SET
   `timeUnits` = 'hours',
   `limit` = null,
   `unique` = 0,
-  `strapline` = 'A badge for Pittsburgh';
+  `strapline` = 'A badge for Pittsburgh',
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 3,
@@ -96,11 +103,12 @@ INSERT INTO `badges` SET
   `rubricUrl` = 'http://example.org/archivedRubric',
   `issuerUrl` = 'http://example.org/archivedIssuer',
   `timeValue` = 5,
-  `timeUnits` = 'seconds',
+  `timeUnits` = 'hours',
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'An archived badge',
-  `archived` = 1;
+  `archived` = 1,
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 4,
@@ -114,10 +122,11 @@ INSERT INTO `badges` SET
   `rubricUrl` = 'http://example.org/chicaogScratchRubric',
   `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
   `timeValue` = 5,
-  `timeUnits` = 'seconds',
+  `timeUnits` = 'hours',
   `limit` = 2,
   `unique` = 1,
-  `strapline` = 'A badge for doing Scratch in Chicago';
+  `strapline` = 'A badge for doing Scratch in Chicago',
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 5,
@@ -130,12 +139,8 @@ INSERT INTO `badges` SET
   `rubricUrl` = 'http://example.org/chicaogLibraryRubric',
   `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
   `timeValue` = 5,
-  `timeUnits` = 'seconds',
+  `timeUnits` = 'hours',
   `limit` = 2,
   `unique` = 1,
-  `strapline` = 'A badge for doing Library in Chicago';
-
-INSERT INTO `images` SET
-  `id` = 1,
-  `slug` = 'some-image',
-  `url` = 'http://example.org/test.png';
+  `strapline` = 'A badge for doing Library in Chicago',
+  `imageId` = 1;

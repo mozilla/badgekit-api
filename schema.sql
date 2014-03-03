@@ -66,7 +66,7 @@ CREATE TABLE `badges` (
   `timeValue` INT,
   `timeUnits` ENUM('minutes', 'hours', 'days', 'weeks'),
   `limit` INT,
-  `unique` BOOL NOT NULL DEFAULT FALSE,
+  `unique` BOOLEAN NOT NULL DEFAULT FALSE,
   `archived` BOOLEAN NOT NULL DEFAULT FALSE,
   `imageId` INT NOT NULL REFERENCES `images`(`id`),
   `programId` INT NULL REFERENCES `programs`(`id`),
