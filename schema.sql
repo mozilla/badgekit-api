@@ -79,6 +79,7 @@ CREATE TABLE `badges` (
   `limit` INT,
   `unique` BOOLEAN NOT NULL DEFAULT FALSE,
   `archived` BOOLEAN NOT NULL DEFAULT FALSE,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `imageId` INT NOT NULL REFERENCES `images`(`id`),
   `programId` INT NULL REFERENCES `programs`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
@@ -86,7 +87,6 @@ CREATE TABLE `badges` (
   UNIQUE KEY `slug_and_system` (`slug`, `systemId`),
   UNIQUE KEY `slug_and_issuer` (`slug`, `issuerId`),
   UNIQUE KEY `slug_and_program` (`slug`, `programId`),
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -126,4 +126,3 @@ CREATE TABLE `criteria` (
   PRIMARY KEY (`id`)
 ) CHARACTER SET binary
   ENGINE=InnoDB;
-
