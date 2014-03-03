@@ -112,9 +112,6 @@ function verifyRequest() {
       if (!auth.body.hash)
         return next(new http403('Missing JWT claim: body.hash'))
 
-      if (!auth.body.alg)
-        return next(new http403('Missing JWT claim: body.alg'))
-
       const givenHash = auth.body.hash
       try {
         const computedHash = hash(auth.body.alg, req._body)
