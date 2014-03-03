@@ -2,7 +2,7 @@
 
 ## Overview
 
-Authorization is done by generating a JWT token from the request and putting it in the HTTP `Authorization` header with the auth-scheme `JWT`, under the auth-param `token`. Example (line breaks are for display purposes only):
+Authorization is done by generating a JWT token for each request and putting it in the HTTP `Authorization` header with the auth-scheme `JWT`, under the auth-param `token`. Example (line breaks are for display purposes only):
 
 ```
 Authorization: JWT token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiO\
