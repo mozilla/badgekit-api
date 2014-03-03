@@ -244,9 +244,6 @@ function fromPostToRow (post) {
     name: post.name,
     strapline: post.strapline,
     description: post.description,
-    systemId: post.systemId,
-    issuerId: post.issuerId,
-    programId: post.programId,
   };
 }
 
