@@ -1,3 +1,14 @@
+DROP TABLE IF EXISTS `consumers`;
+CREATE TABLE `consumers` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `apiKey` VARCHAR(255) NOT NULL UNIQUE,
+  `apiSecret` VARCHAR(255) NOT NULL,
+  `description` VARCHAR(255) NULL,
+  `systemId` INT NOT NULL REFERENCES `systems`(`id`),
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `systems`;
 CREATE TABLE `systems` (
   `id` INT NOT NULL AUTO_INCREMENT,

@@ -1,8 +1,9 @@
-var logger = require('./lib/logger')
-var restify = require('restify');
-var applyRoutes = require('./routes');
+const restify = require('restify');
+const applyRoutes = require('./routes');
+const logger = require('./lib/logger')
+const middleware = require('./lib/middleware')
 
-var server = restify.createServer({
+const server = restify.createServer({
   name: 'openbadger',
   version: '1.0.0',
   log: logger,
@@ -12,6 +13,7 @@ server.pre(restify.pre.sanitizePath());
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser({mapParams: false}));
 server.use(restify.bodyParser({mapParams: false, rejectUnknown: true}));
+server.use(middleware.verifyRequest())
 
 applyRoutes(server);
 
