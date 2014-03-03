@@ -49,7 +49,7 @@ var token = jws.sign({
     method: "POST",
     path: "/systems",
     body: {
-      alg: "SHA256",
+      alg: "sha256",
       hash: computedHash
     }
   },
