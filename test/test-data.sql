@@ -1,3 +1,8 @@
+INSERT INTO `images` SET
+  `id` = 1,
+  `slug` = 'some-image',
+  `url` = 'http://example.org/test.png';
+
 INSERT INTO `systems` SET
   `id` = 1,
   `slug` = 'chicago',
@@ -61,23 +66,49 @@ INSERT INTO `badges` SET
   `systemId` = 1,
   `slug` = 'chicago-badge',
   `name` = 'Chicago Badge',
-  `description` = 'A longer description of the badge',
-  `strapline` = 'A badge for Chicago';
+  `earnerDescription` = 'An earner description of the Chicago Badge',
+  `consumerDescription` = 'A consumer description of the Chicago Badge',
+  `rubricUrl` = 'http://example.org/chicagoRubric',
+  `issuerUrl` = 'http://example.org/chicagoIssuer',
+  `timeValue` = 10,
+  `timeUnits` = 'minutes',
+  `limit` = 5,
+  `unique` = 1,
+  `strapline` = 'A badge for Chicago',
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 2,
   `systemId` = 2,
   `slug` = 'pittsburgh-badge',
   `name` = 'Pittsburgh Badge',
-  `strapline` = 'A badge for Pittsburgh';
+  `earnerDescription` = 'An earner description of the Pittsburgh Badge',
+  `consumerDescription` = 'A consumer description of the Pittsburgh Badge',
+  `rubricUrl` = 'http://example.org/pittsburghRubric',
+  `issuerUrl` = 'http://example.org/pittsburghIssuer',
+  `timeValue` = 9,
+  `timeUnits` = 'hours',
+  `limit` = null,
+  `unique` = 0,
+  `strapline` = 'A badge for Pittsburgh',
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 3,
   `systemId` = 1,
   `slug` = 'archived-badge',
   `name` = 'Archived Badge',
+  `earnerDescription` = 'An earner description of the Archived Badge',
+  `consumerDescription` = 'A consumer description of the Archived Badge',
+  `rubricUrl` = 'http://example.org/archivedRubric',
+  `issuerUrl` = 'http://example.org/archivedIssuer',
+  `timeValue` = 5,
+  `timeUnits` = 'hours',
+  `limit` = 2,
+  `unique` = 1,
   `strapline` = 'An archived badge',
-  `archived` = 1;
+  `archived` = 1,
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 4,
@@ -86,8 +117,16 @@ INSERT INTO `badges` SET
   `programId` = 1,
   `slug` = 'chicago-scratch-badge',
   `name` = 'Chicago Scratch Badge',
-  `description` = 'A longer description of the badge',
-  `strapline` = 'A badge for doing Scratch in Chicago';
+  `earnerDescription` = 'An earner description of the Chicago Scratch Badge',
+  `consumerDescription` = 'A consumer description of the Chicago Scratch Badge',
+  `rubricUrl` = 'http://example.org/chicaogScratchRubric',
+  `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
+  `timeValue` = 5,
+  `timeUnits` = 'hours',
+  `limit` = 2,
+  `unique` = 1,
+  `strapline` = 'A badge for doing Scratch in Chicago',
+  `imageId` = 1;
 
 INSERT INTO `badges` SET
   `id` = 5,
@@ -95,10 +134,13 @@ INSERT INTO `badges` SET
   `issuerId` = 1,
   `slug` = 'chicago-library-badge',
   `name` = 'Chicago Library Badge',
-  `description` = 'A longer description of the badge',
-  `strapline` = 'A badge for doing Library in Chicago';
-
-INSERT INTO `images` SET
-  `id` = 1,
-  `slug` = 'some-image',
-  `url` = 'http://example.org/test.png';
+  `earnerDescription` = 'An earner description of the Chicago Library Badge',
+  `consumerDescription` = 'A consumer description of the Chicago Library Badge',
+  `rubricUrl` = 'http://example.org/chicaogLibraryRubric',
+  `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
+  `timeValue` = 5,
+  `timeUnits` = 'hours',
+  `limit` = 2,
+  `unique` = 1,
+  `strapline` = 'A badge for doing Library in Chicago',
+  `imageId` = 1;

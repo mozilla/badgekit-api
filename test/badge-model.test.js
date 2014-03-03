@@ -10,16 +10,25 @@ test('validating rows', function (t) {
     id: 'hi',
     slug: null,
     name: null,
-    description: Array(500).join('lo'),
+    strapline: Array(500).join('lo'),
+    earnerDescription: '',
+    consumerDescription: '',
+    timeValue: 'not an int',
+    timeUnits: 'not one of the enums',
+    unique: '2'
   });
-  t.same(errors.length, 4);
+  t.same(errors.length, 9);
 
   errors = Badges.validateRow({
     id: 1,
     slug: 'chicago-badge',
     name: 'Chicago Badge',
-    strapline: 'A badge for Chicago',
-    description: Array(255).join('l'),
+    strapline: Array(140).join('l'),
+    earnerDescription: Array(255).join('l'),
+    consumerDescription: Array(255).join('l'),
+    timeValue: '5',
+    timeUnits: 'minutes',
+    unique: '1'
   });
   t.same(errors.length, 0);
 
@@ -28,7 +37,7 @@ test('validating rows', function (t) {
     name: 'Test Badge',
     strapline: 'A badge for testing',
   });
-  t.same(errors.length, 1);
+  t.same(errors.length, 3);
 
   closeDb(); t.end();
 })

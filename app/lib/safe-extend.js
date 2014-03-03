@@ -1,6 +1,9 @@
 const xtend = require('xtend');
 
 module.exports = function safeExtend(target, source) {
+  if (!source)
+    return target
+
   const safeKeys = Object.keys(target)
   const safeSource = {}
 
