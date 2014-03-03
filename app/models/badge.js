@@ -67,10 +67,4 @@ function optionalInt(id) {
   this.check(id).isInt();
 }
 
-function value(name) {
-  return function (obj) {
-    return obj[name]
-  }
-}
-
 exports = module.exports = Badges;
