@@ -109,7 +109,14 @@ INSERT INTO `badges` SET
   `programId` = 1,
   `slug` = 'chicago-scratch-badge',
   `name` = 'Chicago Scratch Badge',
-  `description` = 'A longer description of the badge',
+  `earnerDescription` = 'An earner description of the Chicago Scratch Badge',
+  `consumerDescription` = 'A consumer description of the Chicago Scratch Badge',
+  `rubricUrl` = 'http://example.org/chicaogScratchRubric',
+  `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
+  `timeValue` = 5,
+  `timeUnits` = 'seconds',
+  `limit` = 2,
+  `unique` = 1,
   `strapline` = 'A badge for doing Scratch in Chicago';
 
 INSERT INTO `badges` SET
@@ -118,7 +125,14 @@ INSERT INTO `badges` SET
   `issuerId` = 1,
   `slug` = 'chicago-library-badge',
   `name` = 'Chicago Library Badge',
-  `description` = 'A longer description of the badge',
+  `earnerDescription` = 'An earner description of the Chicago Library Badge',
+  `consumerDescription` = 'A consumer description of the Chicago Library Badge',
+  `rubricUrl` = 'http://example.org/chicaogLibraryRubric',
+  `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
+  `timeValue` = 5,
+  `timeUnits` = 'seconds',
+  `limit` = 2,
+  `unique` = 1,
   `strapline` = 'A badge for doing Library in Chicago';
 
 INSERT INTO `images` SET
