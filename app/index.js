@@ -1,3 +1,8 @@
+// New Relic Server monitoring support
+if ( process.env.NEW_RELIC_ENABLED ) {
+  require( "newrelic" );
+}
+
 const restify = require('restify');
 const applyRoutes = require('./routes');
 const logger = require('./lib/logger')
