@@ -37,6 +37,7 @@ spawn(app).then(function (api) {
       const issuerUrl = badgeClass.issuer
       t.same(badgeClass.name, 'Chicago Badge')
       t.same(badgeClass.description, 'A consumer description of the Chicago Badge')
+      t.same(badgeClass.criteria, 'http://example.org/chicagoCriteria')
       t.same(badgeClass.image, 'http://example.org/test.png')
       t.same(issuerUrl, '/public/systems/chicago')
       return api.get(issuerUrl)
