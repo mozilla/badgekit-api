@@ -22,6 +22,7 @@ const Badges = db.table('badges', {
     'consumerDescription',
     'issuerUrl', 
     'rubricUrl',
+    'criteriaUrl',
     'timeValue',
     'timeUnits',
     'limit',
@@ -31,7 +32,7 @@ const Badges = db.table('badges', {
     'imageId',
     'systemId',
     'issuerId',
-    'programId',
+    'programId'
   ],
   relationships: {
     image: {
@@ -97,6 +98,9 @@ Badges.validateRow = makeValidator({
   limit: optionalInt,
   unique: function(unique) {
     this.check(unique).isIn(['0','1','true','false']);
+  },
+  criteriaUrl: function(url) {
+    this.check(url).isUrl();
   },
   imageId: optionalInt,
   programId: optionalInt,
