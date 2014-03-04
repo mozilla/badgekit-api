@@ -25,7 +25,7 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
   return {
     slug: obj.slug || sha1(Date.now() + JSON.stringify(obj)),
     email: obj.email,
-    issuedOn: obj.issuedOn,
+    issuedOn: obj.issuedOn || dateFromUnixtime(Date.now()),
     expires: obj.expires ? dateFromUnixtime(obj.expires) : null,
   }
 }

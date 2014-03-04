@@ -1,6 +1,7 @@
 const util = require('util')
-const crypto = require('crypto')
+const sha256 = require('../lib/sha256')
 const Badges = require('../models/badge')
+const Webhooks = require('../models/webhook')
 const BadgeInstances = require('../models/badge-instance')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
@@ -72,15 +73,39 @@ exports = module.exports = function applyBadgeRoutes (server) {
         log.error(err, 'error trying to save badge instance')
         return next(err)
       }
+      const instance = result.row
+      const assertionUrl = '/public/assertions/' + instance.slug
 
-      const url = '/public/assertions/' + result.row.slug
-      res.header('Location', url)
+      res.header('Location', assertionUrl)
       res.send(201, {
         status: 'created',
-        location: url,
+        location: assertionUrl,
       })
 
-      return next()
+      // Webhook stuff shouldn't hold up the request, so we call
+      // `next()` before looking up any hooks we have to send off
+      next()
+
+      const system = req.system
+      const hookData = {
+        action: 'award',
+        uid: instance.slug,
+        email: instance.email,
+        assertionUrl: assertionUrl,
+        issuedOn: +instance.issuedOn/1000|0 || undefined
+      }
+      Webhooks.getOne({systemId: system.id}, function (err, hook) {
+        if (err)
+          return log.error(err, 'Could not retrieve webhook')
+
+        if (!hook)
+          return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
+
+        hook.call(hookData, function (err, res, body) {
+          if (res.statusCode != 200)
+            return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
+        })
+      })
     })
   }
 
@@ -264,8 +289,4 @@ exports = module.exports = function applyBadgeRoutes (server) {
   //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
   //   middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
   // ])
-}
-
-function sha256(body) {
-  return crypto.createHash('sha256').update(body).digest('hex')
 }

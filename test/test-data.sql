@@ -21,12 +21,6 @@ INSERT INTO `systems` SET
   `description` = 'The City of Pittsburgh',
   `email` = 'mayor-ravenstahl@pittsburghpa.gov';
 
-INSERT INTO `webhooks` SET
-  `id` = 1,
-  `systemId` = 1,
-  `url` = 'http://example.org/',
-  `secret` = 'n+MMi/xDLqB8qu94om10newruRh+4R+z28s4h6xnQrx9XUnjia7V7JJNstdknwbq';
-
 INSERT INTO `consumers` SET
   `id` = 1,
   `apiKey` = 'radical',

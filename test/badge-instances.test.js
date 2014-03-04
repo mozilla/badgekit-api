@@ -1,11 +1,16 @@
 const test = require('tap').test
+const jws = require('jws')
+const concat = require('concat-stream')
+const sha256 = require('../app/lib/sha256')
 const app = require('../')
 const spawn = require('./spawn')
+const startWebhookServer = require('./test-webhook-server')
 
 spawn(app).then(function (api) {
   test('creating a new badge instance', function (t) {
     const now = (Date.now()/1000|0)
     const expires = now + 8600
+
     api.post('/systems/chicago/badges/chicago-badge/instances', {
       garbage: 'yep',
       nonsense: 'totally'
@@ -48,8 +53,53 @@ spawn(app).then(function (api) {
       t.same(issuerOrg.description, 'The City of Chicago')
       t.same(issuerOrg.email, 'mayor-emanuel@cityofchicago.org')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
+
+  test('Webhook fires when necessary', function (t) {
+    const secret = 'shhh.very.secret'
+    const email = 'brian-webhook@example.org'
+    const now = Date.now()/1000|0
+    startWebhookServer({
+      systemId: 1,
+      secret: secret
+    }).then(function(server){
+      server.on('request', function (req, res) {
+        req.setEncoding('utf8')
+        req.pipe(concat(function (body) {
+          res.end('lollerskates')
+          server.close()
+
+          const match = /^JWT token="(.+?)"$/.exec(req.headers.authorization)
+          t.ok(match, 'should have a proper auth header')
+
+          const tokenString = match[1]
+          t.ok(jws.verify(tokenString, secret), 'token should be verifiable')
+
+          const token = jws.decode(tokenString)
+          t.ok(token, 'token should be decodable')
+
+          const hash = sha256(body)
+          const auth = token.payload
+          t.same(auth.body.hash, hash, 'should get expected body hash')
+
+          const hookData = JSON.parse(body)
+          t.same(hookData.action, 'award', 'should be correct action')
+          t.same(hookData.email, email, 'should be correct email')
+          t.ok(hookData.issuedOn >= now, 'should have good issuedOn')
+          t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(hookData.assertionUrl), 'properly formed assertion url')
+          t.end()
+        }))
+      })
+
+      api.post('/systems/chicago/badges/chicago-badge/instances', {
+        email: email,
+      }).then(function(res){
+        t.same(res.statusCode, 201, 'should be created')
+      }).catch(api.fail(t))
+    }).catch(api.fail(t))
+  })
+
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
