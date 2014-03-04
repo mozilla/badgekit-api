@@ -85,7 +85,7 @@ spawn(app).then(function (api) {
     var form;
 
     api.post('/systems/chicago/issuers/chicago-library/badges', {whatever: 'lol'}).then(function (res) {
-      const expect = ['consumerDescription', 'earnerDescription', 'image', 'name', 'slug', 'unique']
+      const expect = ['consumerDescription', 'criteriaUrl', 'earnerDescription', 'image', 'name', 'slug', 'unique']
       const found = res.body.details.map(prop('field')).sort()
 
       t.same(res.statusCode, 400, 'should have 400')
@@ -100,6 +100,7 @@ spawn(app).then(function (api) {
         consumerDescription: 'Some description, o',
         unique: 0,
         image: stream('test-image.png'),
+        criteriaUrl: 'http://example.org/criteria'
       })
     }).then(function (res) {
       t.same(res.statusCode, 201)
@@ -107,6 +108,7 @@ spawn(app).then(function (api) {
       t.same(res.body.badge.name, form.name)
       t.same(res.body.badge.system.slug, 'chicago')
       t.same(res.body.badge.issuer.slug, 'chicago-library')
+      t.same(res.body.badge.criteriaUrl, 'http://example.org/criteria')
       t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
 
       form.image = stream('test-image.png')

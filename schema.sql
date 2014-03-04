@@ -63,6 +63,7 @@ CREATE TABLE `badges` (
   `consumerDescription` TEXT NOT NULL,
   `issuerUrl` VARCHAR(255),
   `rubricUrl` VARCHAR(255),
+  `criteriaUrl` VARCHAR(255) NOT NULL,
   `timeValue` INT,
   `timeUnits` ENUM('minutes', 'hours', 'days', 'weeks'),
   `limit` INT,
