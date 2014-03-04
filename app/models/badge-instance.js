@@ -30,25 +30,6 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
   }
 }
 
-BadgeInstances.makeAssertion = function makeAssertion(instance) {
-  const badge = instance.badge
-  return {
-    uid: instance.slug,
-    recipient: {
-      identity: 'sha256$' + sha256(instance.email),
-      type: 'email',
-      hashed: true,
-    },
-    badge: '/public/badges/' + [badge.id, badge.slug].join('-'),
-    verify: {
-      url: '/public/assertions/' + instance.slug,
-      type: 'hosted',
-    },
-    issuedOn: instance.issuedOn ? +instance.issuedOn/1000|0 : undefined,
-    expires: instance.expires ? +instance.expires/1000|0 : undefined,
-  }
-}
-
 BadgeInstances.validateRow = makeValidator({
   id: optionalInt,
   email: function (email) {
@@ -73,9 +54,6 @@ function dateFromUnixtime(ut) {
   if ((''+date) === 'Invalid Date')
     return null
   return date
-}
-function sha256(body) {
-  return crypto.createHash('sha256').update(body).digest('hex')
 }
 function sha1(body) {
   return crypto.createHash('sha1').update(body).digest('hex')

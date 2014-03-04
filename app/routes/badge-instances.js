@@ -1,3 +1,5 @@
+const util = require('util')
+const crypto = require('crypto')
 const Badges = require('../models/badge')
 const BadgeInstances = require('../models/badge-instance')
 const errorHelper = require('../lib/error-helper')
@@ -40,6 +42,11 @@ const prefix = {
   system: '/systems/:systemSlug',
   issuer: '/systems/:systemSlug/issuers/:issuerSlug',
   program: '/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug'
+}
+const publicPrefix = {
+  system: '/public/' + prefix.system,
+  issuer: '/public/' + prefix.issuer,
+  program: '/public/' + prefix.program,
 }
 
 exports = module.exports = function applyBadgeRoutes (server) {
@@ -85,29 +92,95 @@ exports = module.exports = function applyBadgeRoutes (server) {
     BadgeInstances.getOne(query, options, function (err, instance) {
       if (!instance)
         return next(errorHelper.notFound('Could not find badge instance'))
-      const assertion = BadgeInstances.makeAssertion(instance)
-      res.send(200, assertion)
-      return next()
+
+      // get fully hydrated badge class
+      const query = {id: instance.badge.id}
+      const options = {relationships: true}
+      Badges.getOne(query, options, function (err, badge) {
+        if (err) return next(err)
+        instance.badge = badge
+
+        const assertion = makeAssertion(instance)
+        res.send(200, assertion)
+        return next()
+      })
     })
   }
+  function makeAssertion(instance) {
+    const badge = instance.badge
+    return {
+      uid: instance.slug,
+      recipient: {
+        identity: 'sha256$' + sha256(instance.email),
+        type: 'email',
+        hashed: true,
+      },
+      badge: makeBadgeClassUrl(badge),
+      verify: {
+        url: '/public/assertions/' + instance.slug,
+        type: 'hosted',
+      },
+      issuedOn: instance.issuedOn ? +instance.issuedOn/1000|0 : undefined,
+      expires: instance.expires ? +instance.expires/1000|0 : undefined,
+    }
+  }
+  function makeBadgeClassUrl(badge) {
+    const badgeSlug = badge.slug
+    const programSlug = badge.program && badge.program.slug
+    const issuerSlug = badge.issuer && badge.issuer.slug
+    const systemSlug = badge.system && badge.system.slug
 
-  server.get('/public/badges/:badgeKey', getBadgeClass)
+    if (programSlug && issuerSlug && systemSlug)
+      return util.format('/public/systems/%s/issuers/%s/programs/%s/badges/%s',
+                        systemSlug, issuerSlug, programSlug, badgeSlug)
+
+    if (!programSlug && issuerSlug && systemSlug)
+      return util.format('/public/systems/%s/issuers/%s/badges/%s',
+                        systemSlug, issuerSlug, badgeSlug)
+
+    if (!programSlug && !issuerSlug && systemSlug)
+      return util.format('/public/systems/%s/badges/%s',
+                        systemSlug, badgeSlug)
+
+    log.error({badge: badge}, 'badge has incomplete parantage – sending broken assertion')
+    return '/public'
+  }
+
+  server.get(publicPrefix.system +'/badges/:badgeSlug',
+              findSystemBadge.concat([getBadgeClass]))
+
+  server.get(publicPrefix.issuer +'/badges/:badgeSlug',
+              findIssuerBadge.concat([getBadgeClass]))
+
+  server.get(publicPrefix.program+'/badges/:badgeSlug',
+              findProgramBadge.concat([getBadgeClass]))
   function getBadgeClass(req, res, next) {
-    const badgeKey = req.params.badgeKey
-    const match = /(\d+)-(.+)/.exec(badgeKey)
-    if (!match)
-      return next(errorHelper.notFound('Could not find badge'))
-
-    const badgeId = match[1]
-    const badgeSlug = match[2]
-
-    const query = {id: badgeId, slug: badgeSlug}
-    const options = {relationships: true}
-    Badges.getOne(query, options, function (err, badge) {
-      const badgeClass = Badges.makeBadgeClass(badge)
-      res.send(200, badgeClass)
-      return next()
-    })
+    const badgeClass = makeBadgeClass(req.badge)
+    res.send(200, badgeClass)
+    return next()
+  }
+  function makeBadgeClass(badge) {
+    // #TODO: alignment urls, tags
+    return {
+      name: badge.name,
+      description: badge.consumerDescription,
+      image: badge.image.toUrl(),
+      criteria: badge.criteriaUrl,
+      issuer: publicIssuerUrl(badge),
+    }
+  }
+  function publicIssuerUrl(badge) {
+    const system = badge.system
+    const issuer = badge.issuer
+    const program = badge.program
+    if (program && program.slug)
+      return util.format('/public/systems/%s/issuers/%s/programs/%s',
+                         system.slug, issuer.slug, program.slug)
+    if (issuer && issuer.slug)
+      return util.format('/public/systems/%s/issuers',
+                         system.slug, issuer.slug)
+    if (badge.system && badge.system.slug)
+      return util.format('/public/systems/%s', system.slug)
   }
 
   server.get('/public/systems/:systemSlug', [
@@ -137,14 +210,19 @@ exports = module.exports = function applyBadgeRoutes (server) {
     ))
   }
   function makeIssuerOrganization(program, issuer, system) {
-    program = program || {}
-    issuer = issuer || {}
-    system = system || {}
+    const lookup = findFirstKeyIn([program, issuer, system])
     return {
-      name: program.name || issuer.name || system.name,
-      url: program.url || issuer.url || system.url,
-      description: program.description || issuer.description || system.description,
-      email: program.email || issuer.email || system.email,
+      name: lookup('name'),
+      url: lookup('url'),
+      description: lookup('description'),
+      email: lookup('email'),
+    }
+  }
+  function findFirstKeyIn(things) {
+    things = things.map(function (o) { return o || {} })
+    return function lookup(key) {
+      for (var i = 0; i < things.length; i++)
+        if (things[i][key]) return things[i][key]
     }
   }
 
@@ -186,4 +264,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
   //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
   //   middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
   // ])
+}
+
+function sha256(body) {
+  return crypto.createHash('sha256').update(body).digest('hex')
 }

@@ -8,7 +8,7 @@ const Criteria = db.table('criteria', {
     'id',
     'description',
     'badgeId',
-    'required', 
+    'required',
     'note'
   ]
 });
@@ -21,7 +21,7 @@ const Badges = db.table('badges', {
     'strapline',
     'earnerDescription',
     'consumerDescription',
-    'issuerUrl', 
+    'issuerUrl',
     'rubricUrl',
     'criteriaUrl',
     'timeValue',
@@ -70,32 +70,6 @@ const Badges = db.table('badges', {
     setCriteria: setCriteria
   }
 });
-
-
-Badges.makeBadgeClass = function makeBadgeClass(badge) {
-  // #TODO: alignment url, criteria, tags
-  return {
-    name: badge.name,
-    description: badge.description,
-    image: badge.image.toUrl(),
-    criteria: badge.criteria,
-    issuer: publicIssuerUrl(badge),
-  }
-}
-
-function publicIssuerUrl(badge) {
-  const system = badge.system
-  const issuer = badge.issuer
-  const program = badge.program
-  if (program && program.slug)
-    return util.format('/public/systems/%s/issuers/%s/programs/%s',
-                      system.slug, issuer.slug, program.slug)
-  if (issuer && issuer.slug)
-    return util.format('/public/systems/%s/issuers',
-                      system.slug, issuer.slug)
-  if (badge.system && badge.system.slug)
-    return util.format('/public/systems/%s', system.slug)
-}
 
 Badges.validateRow = makeValidator({
   id: optionalInt,
@@ -170,7 +144,7 @@ function setCriteria(criteria, callback) {
       return callback(err);
 
     // Now that we have added all the new criteria, we want to delete any old criteria attached to this badge
-    const deleteQuery = { 
+    const deleteQuery = {
       badgeId: {
         value: badgeId,
         op: '='
