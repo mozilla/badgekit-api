@@ -71,6 +71,9 @@ function verifyRequest() {
   }
 
   return function (req, res, next) {
+    if (req.url.indexOf('/public/') === 0)
+      return next()
+
     const token = getAuthToken(req)
     if (!token)
       return next(new http403('Missing valid Authorization header'))

@@ -188,6 +188,17 @@ spawn(app).then(function (api) {
     t.plan(9)
   })
 
+  test('GET a public url, should not 403 without auth', function (t) {
+    http.get(api.makeUrl('/public/images/some-image'), function (res) {
+      t.same(res.statusCode, 301)
+      t.same(res.headers.location, 'http://example.org/test.png')
+      res.setEncoding('utf8')
+      res.pipe(concat(function (data) {
+        t.same(data, '{"location":"http://example.org/test.png"}')
+        t.end()
+      }))
+    })
+  })
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
