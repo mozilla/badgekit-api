@@ -250,43 +250,4 @@ exports = module.exports = function applyBadgeRoutes (server) {
         if (things[i][key]) return things[i][key]
     }
   }
-
-  // server.get(prefix.system +'/badges/:badgeSlug/instances', [
-  //   middleware.findSystem(),
-  // ])
-  // server.get(prefix.issuer +'/badges/:badgeSlug/instances', [
-  //   middleware.findSystem(),
-  //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-  // ])
-  // server.get(prefix.program+'/badges/:badgeSlug/instances', [
-  //   middleware.findSystem(),
-  //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-  //   middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-  // ])
-
-  // server.get(prefix.system +'/badges/:badgeSlug/instances/:instanceId', [
-  //   middleware.findSystem(),
-  // ])
-  // server.get(prefix.issuer +'/badges/:badgeSlug/instances/:instanceId', [
-  //   middleware.findSystem(),
-  //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-  // ])
-  // server.get(prefix.program+'/badges/:badgeSlug/instances/:instanceId', [
-  //   middleware.findSystem(),
-  //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-  //   middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-  // ])
-
-  // server.del(prefix.system +'/badges/:badgeSlug/instances/:instanceId', [
-  //   middleware.findSystem(),
-  // ])
-  // server.del(prefix.issuer +'/badges/:badgeSlug/instances/:instanceId', [
-  //   middleware.findSystem(),
-  //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-  // ])
-  // server.del(prefix.program+'/badges/:badgeSlug/instances/:instanceId', [
-  //   middleware.findSystem(),
-  //   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-  //   middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-  // ])
 }
