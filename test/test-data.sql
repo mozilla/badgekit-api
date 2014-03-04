@@ -74,7 +74,6 @@ INSERT INTO `programs` SET
 INSERT INTO `badges` SET
   `id` = 1,
   `systemId` = 1,
-  `imageId` = 1,
   `slug` = 'chicago-badge',
   `name` = 'Chicago Badge',
   `earnerDescription` = 'An earner description of the Chicago Badge',
