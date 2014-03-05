@@ -1,4 +1,5 @@
 const db = require('../lib/db');
+const crypto = require('crypto')
 const ClaimCodes = db.table('claimCodes', {
   fields: [
     'id',
@@ -25,6 +26,19 @@ ClaimCodes.fromUserInput = function fromUserInput(obj) {
     claimed: isEmpty(obj.claimed) ?  false : true,
     multiuse: isEmpty(obj.multiuse) ? false : true,
   }
+}
+
+ClaimCodes.makeRandom = function makeRandom(len) {
+  const letters = '0123456789abcdef'
+  const rando = new Buffer(len)
+  const bytes = crypto.randomBytes(len)
+  for (var i = 0; i < bytes.length; i++)
+    rando[i] = letters[bytes[i] % letters.length].charCodeAt(0)
+  return rando.toString('utf8')
+}
+
+function sha1(data) {
+  crypto.createHash('sha1').update(data).digest('hex')
 }
 
 function isEmpty(v) {

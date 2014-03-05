@@ -10,7 +10,7 @@ spawn(app).then(function (api) {
       t.same(res.statusCode, 201, 'statuscode 201')
       t.same(res.body.claimCode.code, 'test')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('List all claimcodes', function (t) {
@@ -19,7 +19,7 @@ spawn(app).then(function (api) {
       t.same(res.body.claimCodes.length, 2, 'should have right amount of codes')
       t.same(res.body.badge.slug, 'chicago-badge', 'should get badge back as well')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
 
   test('Claim a claimcode', function (t) {
@@ -34,8 +34,18 @@ spawn(app).then(function (api) {
       t.same(res.statusCode, 400, 'should get an error')
       t.same(res.body.code, 'CodeAlreadyUsed', 'should get the right error')
       t.end()
-    })
+    }).catch(api.fail(t))
   })
+
+  test('Get a new random code', function (t) {
+    const url = '/systems/chicago/badges/chicago-badge/codes/random'
+    api.post(url).then(function (res) {
+      t.same(res.statusCode, 201, 'should have been created')
+      t.ok(res.body.claimCode.code.length > 1, 'should have created a claim code')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
 
   test(':cleanup:', function (t) {
     api.done(); t.end()

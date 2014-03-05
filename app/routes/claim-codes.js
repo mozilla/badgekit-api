@@ -96,6 +96,29 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
     })
   }
 
+  server.post(prefix.system + '/codes/random',
+             findSystemBadge.concat([makeRandomCode]))
+  server.post(prefix.issuer + '/codes/random',
+             findIssuerBadge.concat([makeRandomCode]))
+  server.post(prefix.program + '/codes/random',
+             findProgramBadge.concat([makeRandomCode]))
+
+  function makeRandomCode(req, res, next) {
+    const row = {code: ClaimCodes.makeRandom(10)}
+    ClaimCodes.put(row, function (err, result) {
+      if (err) {
+        log.error(err, 'Error inserting claim code')
+        return next(err)
+      }
+      const claimCode = result.row
+      res.send(201, {
+        status: 'created',
+        claimCode: claimCode,
+      })
+      return next()
+    })
+  }
+
 
   server.post(prefix.system + '/codes/:code/claim',
              findSystemBadge.concat([claimCodeFinder, claim]))
@@ -128,5 +151,4 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       })
     })
   }
-
 }
