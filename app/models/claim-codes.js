@@ -4,7 +4,7 @@ const ClaimCodes = db.table('claimCodes', {
     'id',
     'code',
     'claimed',
-    'recipient',
+    'email',
     'multiuse',
     'badgeId',
   ],
@@ -21,7 +21,7 @@ const ClaimCodes = db.table('claimCodes', {
 ClaimCodes.fromUserInput = function fromUserInput(obj) {
   return {
     code: obj.code,
-    recipient: obj.recipient,
+    email: obj.email,
     claimed: isEmpty(obj.claimed) ?  false : true,
     multiuse: isEmpty(obj.multiuse) ? false : true,
   }

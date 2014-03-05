@@ -42,6 +42,12 @@ const findProgramBadge = [
   }),
 ]
 
+const claimCodeFinder = middleware.findClaimCode({
+  field: 'code',
+  param: 'code',
+  where: {badgeId: ['badge', 'id']}
+})
+
 exports = module.exports = function applyClaimCodesRoutes (server) {
   server.post(prefix.system + '/codes',
               findSystemBadge.concat([addNewCode]))
@@ -89,4 +95,38 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       return next()
     })
   }
+
+
+  server.post(prefix.system + '/codes/:code/claim',
+             findSystemBadge.concat([claimCodeFinder, claim]))
+  server.post(prefix.issuer + '/codes/:code/claim',
+             findIssuerBadge.concat([claimCodeFinder, claim]))
+  server.post(prefix.program + '/codes/:code/claim',
+             findProgramBadge.concat(claimCodeFinder, [claim]))
+
+  function claim(req, res, next) {
+    const code = req.claimCode
+    if (code.claimed) {
+      res.send(400, {
+        code: 'CodeAlreadyUsed',
+        message: 'Claim code `'+code.code+'` has already been claimed'
+      })
+      return next()
+    }
+
+    code.claimed = true
+    code.email = req.body.email
+
+    ClaimCodes.put(code, function (err, result) {
+      if (err) {
+        log.error(err, 'Error updating claim code to claimed')
+        return next(err)
+      }
+      res.send(200, {
+        status: 'updated',
+        claimCode: code,
+      })
+    })
+  }
+
 }
