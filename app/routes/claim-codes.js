@@ -106,7 +106,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
 
   function claim(req, res, next) {
     const code = req.claimCode
-    if (code.claimed) {
+    if (code.claimed && !code.multiuse) {
       res.send(400, {
         code: 'CodeAlreadyUsed',
         message: 'Claim code `'+code.code+'` has already been claimed'
