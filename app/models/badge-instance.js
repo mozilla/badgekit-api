@@ -10,6 +10,7 @@ const BadgeInstances = db.table('badgeInstances', {
     'email',
     'issuedOn',
     'expires',
+    'claimCode',
     'badgeId',
   ],
   relationships: {
@@ -28,6 +29,7 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
     email: obj.email,
     issuedOn: obj.issuedOn || dateFromUnixtime(Date.now()),
     expires: obj.expires ? dateFromUnixtime(obj.expires) : null,
+    claimCode: obj.claimCode,
   }
 }
 
@@ -35,6 +37,10 @@ BadgeInstances.validateRow = makeValidator({
   id: optionalInt,
   email: function (email) {
     this.check(email).isEmail();
+  },
+  claimCode: function (code) {
+    if (typeof code == 'undefined' || code === null) return;
+    this.check(code).len(0, 255);
   },
   badgeId: function (id) {
     this.check(id).isInt();

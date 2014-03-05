@@ -2,6 +2,7 @@ const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
 const Badges = require('../models/badge')
+const ClaimCodes = require('../models/claim-codes')
 const Webhooks = require('../models/webhook')
 const BadgeInstances = require('../models/badge-instance')
 const errorHelper = require('../lib/error-helper')
@@ -70,47 +71,78 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (errs.length)
       return res.send(400, errorHelper.validation(errs));
 
-    BadgeInstances.put(row, function (err, result) {
-      if (err) {
-        log.error(err, 'error trying to save badge instance')
-        return next(err)
-      }
-      const instance = result.row
+    if (row.claimCode) {
+      const query = {code: row.claimCode, badgeId: row.badgeId}
+      ClaimCodes.getOne(query, function (err, code) {
+        if (err) {
+          log.error(err, 'error trying to find claim code')
+          return next(err)
+        }
 
-      const relativeAssertionUrl = '/public/assertions/' + instance.slug
-      const assertionUrl = req.resolvePath(relativeAssertionUrl)
+        if (code.claimed && !code.multiuse) {
+          return res.send(400, {
+            code: 'CodeAlreadyUsed',
+            message: 'Claim code `'+code.code+'` has already been claimed'
+          })
+        }
 
-      res.header('Location', relativeAssertionUrl)
-      res.send(201, {
-        status: 'created',
-        location: assertionUrl,
-      })
+        code.claimed = true
+        code.email = row.email
 
-      // Webhook stuff shouldn't hold up the request, so we call
-      // `next()` before looking up any hooks we have to send off
-      next()
-
-      const system = req.system
-      const hookData = {
-        action: 'award',
-        uid: instance.slug,
-        email: instance.email,
-        assertionUrl: assertionUrl,
-        issuedOn: unixtimeFromDate(instance.issuedOn),
-      }
-      Webhooks.getOne({systemId: system.id}, function (err, hook) {
-        if (err)
-          return log.error(err, 'Could not retrieve webhook')
-
-        if (!hook)
-          return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
-
-        hook.call(hookData, function (err, res, body) {
-          if (res.statusCode != 200)
-            return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
+        ClaimCodes.put(code, function (err, result) {
+          if (err) {
+            log.error(err, 'error trying to find claim code')
+            return next(err)
+          }
+          return saveBadgeInstance()
         })
       })
-    })
+    }
+    else saveBadgeInstance()
+
+    function saveBadgeInstance() {
+      BadgeInstances.put(row, function (err, result) {
+        if (err) {
+          log.error(err, 'error trying to save badge instance')
+          return next(err)
+        }
+        const instance = result.row
+        const relativeAssertionUrl = '/public/assertions/' + instance.slug
+        const assertionUrl = req.resolvePath(relativeAssertionUrl)
+
+
+        res.header('Location', relativeAssertionUrl)
+        res.send(201, {
+          status: 'created',
+          location: assertionUrl,
+        })
+
+        // Webhook stuff shouldn't hold up the request, so we call
+        // `next()` before looking up any hooks we have to send off
+        next()
+
+        const system = req.system
+        const hookData = {
+          action: 'award',
+          uid: instance.slug,
+          email: instance.email,
+          assertionUrl: assertionUrl,
+          issuedOn: unixtimeFromDate(instance.issuedOn),
+        }
+        Webhooks.getOne({systemId: system.id}, function (err, hook) {
+          if (err)
+            return log.error(err, 'Could not retrieve webhook')
+
+          if (!hook)
+            return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
+
+          hook.call(hookData, function (err, res, body) {
+            if (res.statusCode != 200)
+              return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
+          })
+        })
+      })
+    }
   }
 
   server.get('/public/assertions/:instanceSlug', getAssertion)

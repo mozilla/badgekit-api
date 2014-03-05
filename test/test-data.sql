@@ -155,13 +155,21 @@ INSERT INTO `badges` SET
   `imageId` = 1;
 
 INSERT INTO `claimCodes` SET
-  `id` = 1,
   `code` = 'multiple-use',
   `multiuse` = true,
   `badgeId` = 1;
 
 INSERT INTO `claimCodes` SET
-  `id` = 2,
+  `code` = 'single-use',
+  `multiuse` = false,
+  `badgeId` = 1;
+
+INSERT INTO `claimCodes` SET
+  `code` = 'for-pittsburgh',
+  `multiuse` = false,
+  `badgeId` = 2;
+
+INSERT INTO `claimCodes` SET
   `code` = 'delete-me',
   `multiuse` = true,
   `badgeId` = 1;

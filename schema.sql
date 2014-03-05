@@ -111,6 +111,7 @@ CREATE TABLE `badgeInstances` (
   `email` VARCHAR(255) NOT NULL,
   `issuedOn` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires` TIMESTAMP NULL,
+  `claimCode` VARCHAR(255) NULL,
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
   UNIQUE KEY `email_and_badge` (`email`, `badgeId`),
   PRIMARY KEY (`id`)
