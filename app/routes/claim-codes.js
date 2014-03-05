@@ -125,7 +125,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   server.post(prefix.issuer + '/codes/:code/claim',
              findIssuerBadge.concat([claimCodeFinder, claim]))
   server.post(prefix.program + '/codes/:code/claim',
-             findProgramBadge.concat(claimCodeFinder, [claim]))
+             findProgramBadge.concat([claimCodeFinder, claim]))
 
   function claim(req, res, next) {
     const code = req.claimCode
