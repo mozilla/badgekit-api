@@ -40,12 +40,13 @@ spawn(app).then(function (api) {
   test('Get a new random code', function (t) {
     const url = '/systems/chicago/badges/chicago-badge/codes/random'
     api.post(url).then(function (res) {
+      const code = res.body.claimCode
+      console.dir(code)
       t.same(res.statusCode, 201, 'should have been created')
-      t.ok(res.body.claimCode.code.length > 1, 'should have created a claim code')
+      t.ok(code.code.length > 1, 'should have created a claim code')
       t.end()
     }).catch(api.fail(t))
   })
-
 
   test(':cleanup:', function (t) {
     api.done(); t.end()
