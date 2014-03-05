@@ -4,6 +4,7 @@ var applyIssuerRoutes = require('./issuers');
 var applyProgramRoutes = require('./programs');
 var applyBadgeInstanceRoutes = require('./badge-instances');
 var applyImageRoutes = require('./images');
+var applyClaimCodesRoutes = require('./claim-codes');
 
 exports = module.exports = function applyAllRoutes (server) {
 
@@ -18,6 +19,7 @@ exports = module.exports = function applyAllRoutes (server) {
     applyProgramRoutes,
     applyBadgeInstanceRoutes,
     applyImageRoutes,
+    applyClaimCodesRoutes,
   ].forEach(callWith(server));
 
 };

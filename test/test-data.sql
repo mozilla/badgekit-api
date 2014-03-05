@@ -153,3 +153,9 @@ INSERT INTO `badges` SET
   `unique` = 1,
   `strapline` = 'A badge for doing Library in Chicago',
   `imageId` = 1;
+
+INSERT INTO `claimCodes` SET
+  `id` = 1,
+  `code` = 'multiple-use',
+  `multiuse` = true,
+  `badgeId` = 1;
