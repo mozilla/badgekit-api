@@ -16,7 +16,7 @@ spawn(app).then(function (api) {
   test('List all claimcodes', function (t) {
     const url = '/systems/chicago/badges/chicago-badge/codes'
     api.get(url).then(function (res) {
-      t.same(res.body.claimCodes.length, 2, 'should have right amount of codes')
+      t.same(res.body.claimCodes.length, 3, 'should have right amount of codes')
       t.same(res.body.badge.slug, 'chicago-badge', 'should get badge back as well')
       t.end()
     }).catch(api.fail(t))
@@ -44,6 +44,19 @@ spawn(app).then(function (api) {
       console.dir(code)
       t.same(res.statusCode, 201, 'should have been created')
       t.ok(code.code.length > 1, 'should have created a claim code')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
+  test('Delete a claim code', function (t) {
+    const url = '/systems/chicago/badges/chicago-badge/codes/delete-me'
+    api.del(url).then(function (res) {
+      t.same(res.statusCode, 200)
+      t.same(res.body.status, 'deleted')
+      return api.del(url)
+    }).then(function (res) {
+      t.same(res.statusCode, 404)
+      t.same(res.body.code, 'ResourceNotFound')
       t.end()
     }).catch(api.fail(t))
   })

@@ -159,3 +159,9 @@ INSERT INTO `claimCodes` SET
   `code` = 'multiple-use',
   `multiuse` = true,
   `badgeId` = 1;
+
+INSERT INTO `claimCodes` SET
+  `id` = 2,
+  `code` = 'delete-me',
+  `multiuse` = true,
+  `badgeId` = 1;

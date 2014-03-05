@@ -149,6 +149,47 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
         status: 'updated',
         claimCode: code,
       })
+      return next()
     })
   }
+
+  server.get(prefix.system + '/codes/:code',
+             findSystemBadge.concat([claimCodeFinder, getCode]))
+  server.get(prefix.issuer + '/codes/:code',
+             findIssuerBadge.concat([claimCodeFinder, getCode]))
+  server.get(prefix.program + '/codes/:code',
+             findProgramBadge.concat([claimCodeFinder, getCode]))
+
+  function getCode(req, res, next) {
+    res.send(200, {
+      badge: req.badge.toResponse(),
+      claimCode: req.claimCode,
+    })
+  }
+
+
+  server.del(prefix.system + '/codes/:code',
+             findSystemBadge.concat([claimCodeFinder, deleteCode]))
+  server.del(prefix.issuer + '/codes/:code',
+             findIssuerBadge.concat([claimCodeFinder, deleteCode]))
+  server.del(prefix.program + '/codes/:code',
+             findProgramBadge.concat([claimCodeFinder, deleteCode]))
+
+  function deleteCode(req, res, next) {
+    const code = req.claimCode
+    const badgeId = req.badge.id
+    const query = {id: code.id, badgeId: badgeId}
+    ClaimCodes.del(query, function (err, result) {
+      if (err) {
+        log.error(err, 'Error deleteing claim code')
+        return next(err)
+      }
+      res.send(200, {
+        status: 'deleted',
+        claimCode: code,
+      })
+      return next()
+    })
+  }
+
 }
