@@ -1,5 +1,9 @@
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator')
+const validation = require('../lib/validation');
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
 
 const Images = db.table('images', {
   fields: [
@@ -23,22 +27,10 @@ const Images = db.table('images', {
 });
 
 Images.validateRow = makeValidator({
-  id: function (id) {
-    if (typeof id == 'undefined') return;
-    this.check(id).isInt();
-  },
-  slug: function (slug) {
-    this.check(slug).len(1, 50);
-  },
-  url: function (url) {
-    if (typeof url == 'undefined') return;
-    this.check(url).isUrl();
-  },
-  mimetype: function (type) {
-    if (typeof type == 'undefined') return;
-    // Do we need to check this against an actual list somewhere?
-    this.check(type).is(/^[a-z]+\/\w+([-.]\w+)*(\+\w+)?$/i);
-  }
+  id: optional('isInt'),
+  slug: required('len', 1, 50),
+  url: optional('isUrl'),
+  mimetype: optional('is', /^[a-z]+\/\w+([-.]\w+)*(\+\w+)?$/i)
 });
 
 exports = module.exports = Images;

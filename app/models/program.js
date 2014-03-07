@@ -1,5 +1,9 @@
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator')
+const validation = require('../lib/validation');
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
 
 const Programs = db.table('programs', {
   fields: [
@@ -29,30 +33,14 @@ const Programs = db.table('programs', {
 });
 
 Programs.validateRow = makeValidator({
-  id: optionalInt,
-  slug: function (slug) {
-    this.check(slug).len(1, 50);
-  },
-  name: function (name) {
-    this.check(name).len(1, 255);
-  },
-  url: function (url) {
-    this.check(url).isUrl();
-  },
-  description: function (desc) {
-    this.check(desc).len(0, 255);
-  },
-  email: function (email) {
-    if (typeof email == 'undefined') return;
-    this.check(email).isEmail();
-  },
-  imageId: optionalInt,
-  issuerId: optionalInt,
+  id: optional('isInt'),
+  slug: required('len', 1, 50),
+  name: required('len', 1, 255),
+  url: required('isUrl'),
+  description: optional('len', 0, 255),
+  email: optional('isEmail'),
+  imageId: optional('isInt'),
+  issuerId: optional('isInt'),
 });
-
-function optionalInt(id) {
-  if (typeof id == 'undefined' || id === null) return;
-  this.check(id).isInt();
-}
 
 exports = module.exports = Programs;

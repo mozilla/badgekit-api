@@ -1,6 +1,10 @@
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator')
-const async = require('async')
+const validation = require('../lib/validation');
+const async = require('async');
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
 
 const Criteria = db.table('criteria', {
   fields: [
@@ -71,57 +75,28 @@ const Badges = db.table('badges', {
 });
 
 Badges.validateRow = makeValidator({
-  id: optionalInt,
-  slug: function (slug) {
-    this.check(slug).len(1, 50);
-  },
-  name: function (name) {
-    this.check(name).len(1, 255);
-  },
-  strapline: function (text) {
-    this.check(text).len(0, 140);
-  },
-  earnerDescription: function (desc) {
-    this.check(desc).len(1);
-  },
-  consumerDescription: function (desc) {
-    this.check(desc).len(1);
-  },
-  timeValue: function(val) {
-    if (typeof val == 'undefined' || val === null) return;
-    this.check(val).isInt();
-  },
-  timeUnits: function(units) {
-    if (typeof units == 'undefined' || units === null) return;
-    this.check(units).isIn(['minutes','hours','days','weeks']);
-  },
-  limit: optionalInt,
-  unique: function(unique) {
-    this.check(unique).isIn(['0','1','true','false']);
-  },
-  criteriaUrl: function(url) {
-    this.check(url).isUrl();
-  },
-  imageId: optionalInt,
-  programId: optionalInt,
-  issuerId: optionalInt,
-  systemId: optionalInt,
+  id: optional('isInt'),
+  slug: required('len', 1, 50),
+  name: required('len', 1, 255),
+  strapline: optional('len', 0, 140),
+  earnerDescription: required('len', 1),
+  consumerDescription: required('len', 1),
+  timeValue: optional('isInt'),
+  timeUnits: optional('isIn', ['minutes','hours','days','weeks']),
+  limit: optional('isInt'),
+  unique: required('isIn', ['0','1','true','false']),
+  criteriaUrl: required('isUrl'),
+  imageId: optional('isInt'),
+  programId: optional('isInt'),
+  issuerId: optional('isInt'),
+  systemId: optional('isInt'),
 });
 
 Criteria.validateRow = makeValidator({
-  id: optionalInt,
-  description: function(desc) {
-    this.check(desc).len(1);
-  },
-  required: function(required) {
-    this.check(required).isIn(['0','1']);
-  }
+  id: optional('isInt'),
+  description: required('len', 1),
+  required: required('isIn', ['0','1'])
 });
-
-function optionalInt(id) {
-  if (typeof id == 'undefined' || id === null) return;
-  this.check(id).isInt();
-}
 
 function setCriteria(criteria, callback) {
   var criteriaIds = [];
