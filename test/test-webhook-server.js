@@ -1,11 +1,11 @@
 const Webhooks = require('../app/models/webhook')
 const http = require('http')
-const Q = require('q')
+const Promise = require('bluebird')
 const EventEmitter =  require('events').EventEmitter
 
 module.exports = function makeServer(data) {
   const emitter = new EventEmitter
-  const deferred = Q.defer()
+  const deferred = Promise.defer()
 
   const server = http.createServer().listen(0)
   server.on('listening', function () {
