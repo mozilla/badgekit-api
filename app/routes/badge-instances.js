@@ -148,24 +148,29 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/public/assertions/:instanceSlug', getAssertion)
   function getAssertion(req, res, next) {
+    const data = {}
     const instanceSlug = req.params.instanceSlug
     const query = {slug: instanceSlug}
     const options = {relationships: true}
-    BadgeInstances.getOne(query, options, function (err, instance) {
+    BadgeInstances.getOne(query, options).then(function (instance) {
       if (!instance)
-        return next(errorHelper.notFound('Could not find badge instance'))
+        return Promise.reject(errorHelper.notFound('Could not find badge instance'))
 
+      data.instance = instance
       // get fully hydrated badge class
       const query = {id: instance.badge.id}
       const options = {relationships: true}
-      Badges.getOne(query, options, function (err, badge) {
-        if (err) return next(err)
-        instance.badge = badge
-
-        const assertion = makeAssertion(instance, req)
-        res.send(200, assertion)
-        return next()
-      })
+      return Badges.getOne(query, options)
+    }).then(function (badge) {
+      const instance = data.instance
+      instance.badge = badge
+      const assertion = makeAssertion(instance, req)
+      res.send(200, assertion)
+      return next()
+    }).error(function (err) {
+      if (!err.restCode)
+        log.error(err, 'unknown error in assertion route')
+      return next(err)
     })
   }
   function makeAssertion(instance, req) {

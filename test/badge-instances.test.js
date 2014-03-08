@@ -66,6 +66,14 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
+  test('Trying to get a missing assertion', function (t) {
+    const url = '/public/assertions/slug-does-not-exist'
+    api.get(url).then(function(res){
+      t.same(res.statusCode, 404)
+      t.end()
+    })
+  })
+
   test('Awarding a badge with a multi-use claim code', function (t) {
     const url = '/systems/chicago/badges/chicago-badge/instances'
     const email = 'brian+claimcode@example.org'
