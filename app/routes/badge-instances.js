@@ -71,34 +71,34 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (errs.length)
       return res.send(400, errorHelper.validation(errs));
 
-    if (row.claimCode) {
-      const query = {code: row.claimCode, badgeId: row.badgeId}
-      ClaimCodes.getOne(query, function (err, code) {
+    if (!row.claimCode)
+      return saveBadgeInstance()
+
+    const query = {code: row.claimCode, badgeId: row.badgeId}
+    ClaimCodes.getOne(query, function (err, code) {
+      if (err) {
+        log.error(err, 'error trying to find claim code')
+        return next(err)
+      }
+
+      if (code.claimed && !code.multiuse) {
+        return res.send(400, {
+          code: 'CodeAlreadyUsed',
+          message: 'Claim code `'+code.code+'` has already been claimed'
+        })
+      }
+
+      code.claimed = true
+      code.email = row.email
+
+      ClaimCodes.put(code, function (err, result) {
         if (err) {
           log.error(err, 'error trying to find claim code')
           return next(err)
         }
-
-        if (code.claimed && !code.multiuse) {
-          return res.send(400, {
-            code: 'CodeAlreadyUsed',
-            message: 'Claim code `'+code.code+'` has already been claimed'
-          })
-        }
-
-        code.claimed = true
-        code.email = row.email
-
-        ClaimCodes.put(code, function (err, result) {
-          if (err) {
-            log.error(err, 'error trying to find claim code')
-            return next(err)
-          }
-          return saveBadgeInstance()
-        })
+        return saveBadgeInstance()
       })
-    }
-    else saveBadgeInstance()
+    })
 
     function saveBadgeInstance() {
       BadgeInstances.put(row, function (err, result) {
