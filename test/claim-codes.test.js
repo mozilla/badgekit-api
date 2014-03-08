@@ -16,7 +16,7 @@ spawn(app).then(function (api) {
   test('List all claimcodes', function (t) {
     const url = '/systems/chicago/badges/chicago-badge/codes'
     api.get(url).then(function (res) {
-      t.same(res.body.claimCodes.length, 3, 'should have right amount of codes')
+      t.same(res.body.claimCodes.length, 4, 'should have right amount of codes')
       t.same(res.body.badge.slug, 'chicago-badge', 'should get badge back as well')
       t.end()
     }).catch(api.fail(t))
