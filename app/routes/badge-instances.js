@@ -1,3 +1,4 @@
+const Promise = require('bluebird')
 const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
@@ -74,38 +75,37 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (!row.claimCode)
       return saveBadgeInstance()
 
-    const query = {code: row.claimCode, badgeId: row.badgeId}
-    ClaimCodes.getOne(query, function (err, code) {
-      if (err) {
-        log.error(err, 'error trying to find claim code')
-        return next(err)
-      }
+    function errorHandler(err) {
+      log.error(err, 'error interacting with database in route for creating a new badge instance')
+      return next(err)
+    }
 
+    const query = {
+      code: row.claimCode,
+      badgeId: row.badgeId
+    }
+
+    ClaimCodes.getOne(query).then(function (code) {
       if (code.claimed && !code.multiuse) {
-        return res.send(400, {
+        const response = {
           code: 'CodeAlreadyUsed',
           message: 'Claim code `'+code.code+'` has already been claimed'
-        })
+        }
+        res.send(400, response)
+        return Promise.reject(response)
       }
-
       code.claimed = true
       code.email = row.email
-
-      ClaimCodes.put(code, function (err, result) {
-        if (err) {
-          log.error(err, 'error trying to find claim code')
-          return next(err)
-        }
-        return saveBadgeInstance()
+      return ClaimCodes.put(code)
+    }).then(saveBadgeInstance)
+      .error(function (err) {
+        if (err.code !== 'CodeAlreadyUsed')
+          return errorHandler(err)
       })
-    })
 
-    function saveBadgeInstance() {
-      BadgeInstances.put(row, function (err, result) {
-        if (err) {
-          log.error(err, 'error trying to save badge instance')
-          return next(err)
-        }
+    function saveBadgeInstance(err) {
+      var hookData, system
+      BadgeInstances.put(row).then(function (result) {
         const instance = result.row
         const relativeAssertionUrl = '/public/assertions/' + instance.slug
         const assertionUrl = req.resolvePath(relativeAssertionUrl)
@@ -122,25 +122,26 @@ exports = module.exports = function applyBadgeRoutes (server) {
         next()
 
         const system = req.system
-        const hookData = {
+        hookData = {
           action: 'award',
           uid: instance.slug,
           email: instance.email,
           assertionUrl: assertionUrl,
           issuedOn: unixtimeFromDate(instance.issuedOn),
         }
-        Webhooks.getOne({systemId: system.id}, function (err, hook) {
+        return Webhooks.getOne({systemId: system.id})
+      }).then(function (hook) {
+        if (!hook)
+          return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
+
+        hook.call(hookData, function (err, res, body) {
           if (err)
-            return log.error(err, 'Could not retrieve webhook')
-
-          if (!hook)
-            return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
-
-          hook.call(hookData, function (err, res, body) {
-            if (res.statusCode != 200)
-              return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
-          })
+            return log.warn({code: 'WebhookRequestError', error: err})
+          if (res.statusCode != 200)
+            return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
         })
+      }).error(function (err) {
+        log.error(err, 'error dealing with webhooks when awarding badge')
       })
     }
   }
