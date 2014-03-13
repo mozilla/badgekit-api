@@ -77,19 +77,10 @@ exports = module.exports = function applyBadgeRoutes (server) {
       }
       const instance = result.row
 
-      /*
-        TODO: assertionUrl should be fully qualified. We can either
-        fully qualify this by requiring an environment variable for the
-        expected host, or we can check out the request's `Host`
-        header. We'd also have to determine whether the request is made
-        over HTTP or HTTPS, hopefully that's possible to introspect from
-        the `req` variable.
+      const relativeAssertionUrl = '/public/assertions/' + instance.slug
+      const assertionUrl = req.resolvePath(relativeAssertionUrl)
 
-        https://github.com/mozilla/badgekit-api/issues/48
-      */
-      const assertionUrl = '/public/assertions/' + instance.slug
-
-      res.header('Location', assertionUrl)
+      res.header('Location', relativeAssertionUrl)
       res.send(201, {
         status: 'created',
         location: assertionUrl,
@@ -138,13 +129,13 @@ exports = module.exports = function applyBadgeRoutes (server) {
         if (err) return next(err)
         instance.badge = badge
 
-        const assertion = makeAssertion(instance)
+        const assertion = makeAssertion(instance, req)
         res.send(200, assertion)
         return next()
       })
     })
   }
-  function makeAssertion(instance) {
+  function makeAssertion(instance, req) {
     const badge = instance.badge
     return {
       uid: instance.slug,
@@ -153,9 +144,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
         type: 'email',
         hashed: true,
       },
-      badge: makeBadgeClassUrl(badge),
+      badge: req.resolvePath(makeBadgeClassUrl(badge)),
       verify: {
-        url: '/public/assertions/' + instance.slug,
+        url: req.resolvePath('/public/assertions/' + instance.slug),
         type: 'hosted',
       },
       issuedOn: unixtimeFromDate(instance.issuedOn),
@@ -193,18 +184,21 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.get(publicPrefix.program+'/badges/:badgeSlug',
               findProgramBadge, getBadgeClass)
   function getBadgeClass(req, res, next) {
-    const badgeClass = makeBadgeClass(req.badge)
+    const badgeClass = makeBadgeClass(req.badge, req)
     res.send(200, badgeClass)
     return next()
   }
-  function makeBadgeClass(badge) {
+  function makeBadgeClass(badge, req) {
     // #TODO: alignment urls, tags
+    var imageUrl = badge.image.toUrl()
+    if (!/^http/.test(imageUrl))
+      imageUrl = req.resolvePath(imageUrl)
     return {
       name: badge.name,
       description: badge.consumerDescription,
       image: badge.image.toUrl(),
       criteria: badge.criteriaUrl,
-      issuer: publicIssuerUrl(badge),
+      issuer: req.resolvePath(publicIssuerUrl(badge)),
     }
   }
   function publicIssuerUrl(badge) {
@@ -231,7 +225,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       relationships: true,
       where: {systemId: ['system', 'id']},
     }),
-    getIssuerClass
+    getIssuerClass,
   ])
   server.get('/public/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug', [
     middleware.findSystem(),
@@ -240,7 +234,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       relationships: true,
       where: {issuerId: ['issuer', 'id']},
     }),
-    getIssuerClass
+    getIssuerClass,
   ])
   function getIssuerClass(req, res, next) {
     return res.send(200, makeIssuerOrganization(

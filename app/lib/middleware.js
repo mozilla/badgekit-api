@@ -4,12 +4,15 @@ module.exports = {
   findProgram: createFinder('program'),
   findBadge: createFinder('badge'),
   verifyRequest: verifyRequest,
+  attachResolvePath: attachResolvePath,
 }
 
 const jws = require('jws')
 const crypto = require('crypto')
 const restify = require('restify')
+const url = require('url')
 const log = require('../lib/logger')
+const hash = require('../lib/hash').hash
 const models = {
   system: require('../models/system'),
   issuer: require('../models/issuer'),
@@ -63,6 +66,19 @@ function makeQuery(req, where, query) {
     query[key] = value
     return query
   }, query)
+}
+
+function attachResolvePath() {
+  return function (req, res, next) {
+    req.resolvePath = function resolve(path) {
+      return url.format({
+        protocol: req.isSecure() ? 'https:' : 'http:',
+        host: req.headers.host || '',
+        pathname: url.resolve(req.url, path || ''),
+      })
+    }
+    return next()
+  }
 }
 
 function verifyRequest() {
@@ -163,8 +179,4 @@ function getAuthToken(req) {
   if (!match) return
 
   return match[1]
-}
-
-function hash(alg, body) {
-  return crypto.createHash(alg).update(body).digest('hex')
 }

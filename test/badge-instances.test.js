@@ -1,5 +1,6 @@
 const test = require('tap').test
 const jws = require('jws')
+const url = require('url')
 const concat = require('concat-stream')
 const sha256 = require('../app/lib/hash').sha256
 const app = require('../')
@@ -23,29 +24,38 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       const assertionUrl = res.headers.location
       t.same(res.statusCode, 201, 'should get created')
-      t.same(assertionUrl, res.body.location, 'should have right location')
       t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(assertionUrl), 'correct location format')
       return api.get(assertionUrl)
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be found')
+
       const assertion = res.body
       const badgeClassUrl = assertion.badge
-      t.same(badgeClassUrl, '/public/systems/chicago/badges/chicago-badge', 'should have the right badgeclass')
+      const relativeBadgeClassUrl = url.parse(assertion.badge).pathname
+      t.ok(/^http/.test(badgeClassUrl), 'badge class url should be absolute')
+      t.same(relativeBadgeClassUrl, '/public/systems/chicago/badges/chicago-badge')
       t.same(assertion.verify.type, 'hosted', 'should be a hosted badge')
-      t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(assertion.verify.url), 'matchs URL format')
+
+      const verifyUrl = assertion.verify.url
+      const relativeVerifyUrl = url.parse(assertion.verify.url).pathname
+      t.ok(/^http/.test(verifyUrl), 'verify url should be absolute')
+      t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(relativeVerifyUrl), 'matchs URL format')
       t.ok(assertion.issuedOn >= now && assertion.issuedOn <= now + 60, 'reasonable issuedOn')
       t.same(assertion.expires, expires, 'right expiration date')
-      return api.get(badgeClassUrl)
+
+      return api.get(relativeBadgeClassUrl)
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be found')
       const badgeClass = res.body
       const issuerUrl = badgeClass.issuer
+      const relativeIssuerUrl = url.parse(badgeClass.issuer).pathname
       t.same(badgeClass.name, 'Chicago Badge')
       t.same(badgeClass.description, 'A consumer description of the Chicago Badge')
       t.same(badgeClass.criteria, 'http://example.org/chicagoCriteria')
       t.same(badgeClass.image, 'http://example.org/test.png')
-      t.same(issuerUrl, '/public/systems/chicago')
-      return api.get(issuerUrl)
+      t.ok(/^http/.test(issuerUrl), 'issuer url should be absolute')
+      t.same(relativeIssuerUrl, '/public/systems/chicago')
+      return api.get(relativeIssuerUrl)
     }).then(function(res) {
       const issuerOrg = res.body
       t.same(issuerOrg.name, 'Chicago')
@@ -84,10 +94,12 @@ spawn(app).then(function (api) {
           t.same(auth.body.hash, hash, 'should get expected body hash')
 
           const hookData = JSON.parse(body)
+          const assertionUrlParts = url.parse(hookData.assertionUrl)
+          const assertionUrl = assertionUrlParts.pathname
           t.same(hookData.action, 'award', 'should be correct action')
           t.same(hookData.email, email, 'should be correct email')
           t.ok(hookData.issuedOn >= now, 'should have good issuedOn')
-          t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(hookData.assertionUrl), 'properly formed assertion url')
+          t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(assertionUrl), 'properly formed assertion url')
           t.end()
         }))
       })
