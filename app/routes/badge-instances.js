@@ -11,7 +11,7 @@ const findSystemBadge = [
   middleware.findSystem(),
   middleware.findBadge({
     relationships: true,
-    where: {systemId: ['system', 'id']}
+    where: {systemId: ['system', 'id']},
   }),
 ]
 const findIssuerBadge = [
@@ -22,7 +22,7 @@ const findIssuerBadge = [
     where: {
       systemId: ['system', 'id'],
       issuerId: ['issuer', 'id'],
-    }
+    },
   }),
 ]
 const findProgramBadge = [
@@ -35,14 +35,14 @@ const findProgramBadge = [
       systemId: ['system', 'id'],
       issuerId: ['issuer', 'id'],
       programId: ['program', 'id'],
-    }
+    },
   }),
 ]
 
 const prefix = {
   system: '/systems/:systemSlug',
   issuer: '/systems/:systemSlug/issuers/:issuerSlug',
-  program: '/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug'
+  program: '/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug',
 }
 const publicPrefix = {
   system: '/public/' + prefix.system,
@@ -92,7 +92,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         uid: instance.slug,
         email: instance.email,
         assertionUrl: assertionUrl,
-        issuedOn: +instance.issuedOn/1000|0 || undefined
+        issuedOn: +instance.issuedOn/1000|0 || undefined,
       }
       Webhooks.getOne({systemId: system.id}, function (err, hook) {
         if (err)
@@ -210,13 +210,13 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
   server.get('/public/systems/:systemSlug', [
     middleware.findSystem({relationships: true}),
-    getIssuerClass
+    getIssuerClass,
   ])
   server.get('/public/systems/:systemSlug/issuers/:issuerSlug', [
     middleware.findSystem(),
     middleware.findIssuer({
       relationships: true,
-      where: {systemId: ['system', 'id']}
+      where: {systemId: ['system', 'id']},
     }),
     getIssuerClass
   ])
@@ -225,7 +225,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({
       relationships: true,
-      where: {issuerId: ['issuer', 'id']}
+      where: {issuerId: ['issuer', 'id']},
     }),
     getIssuerClass
   ])
