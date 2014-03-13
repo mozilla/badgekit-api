@@ -40,8 +40,8 @@ module.exports = function spawner(app, callback) {
     function requester(method, url, form) {
       const deferred = Q.defer()
 
-      function resolve(status, body) {
-        return deferred.resolve({statusCode: status, body: body})
+      function resolve(status, body, headers) {
+        return deferred.resolve({statusCode: status, body: body, headers: headers})
       }
 
       if (form) {
@@ -60,13 +60,13 @@ module.exports = function spawner(app, callback) {
         const req = request(options)
         formData.pipe(req)
         req.pipe(concat(function (body) {
-          resolve(req.response.statusCode, JSON.parse(body))
+          resolve(req.response.statusCode, JSON.parse(body), req.response.headers)
         }))
 
       } else {
         request[method.toLowerCase()](baseUrl + url, function (err, res, body) {
           if (err) throw err
-          resolve(res.statusCode, JSON.parse(body))
+          resolve(res.statusCode, JSON.parse(body), res.headers)
         })
       }
       return deferred.promise

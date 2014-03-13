@@ -25,7 +25,7 @@ spawn(app).then(function (api) {
         name: 'MIT Scratch',
         description: 'Create stories, games, and animations. Share with others around the world',
         email: 'admin@scratch.mit.edu',
-        imageUrl: null,
+        imageUrl: 'http://example.org/test.png',
       })
       return api.get('/systems/chicago/issuers/chicago-library/programs/not-a-program')
     }).then(function(res){

@@ -10,7 +10,6 @@ const Systems = db.table('systems', {
     'description',
     'email',
     'imageId',
-    'webhook',
   ],
   relationships: {
     image: {
@@ -31,7 +30,7 @@ const Systems = db.table('systems', {
 Systems.validateRow = makeValidator({
   id: optionalInt,
   slug: function (slug) {
-    this.check(slug).len(1, 50);
+    this.check(slug).len(1, 255);
   },
   name: function (name) {
     this.check(name).len(1, 255);
@@ -47,11 +46,6 @@ Systems.validateRow = makeValidator({
     this.check(email).isEmail();
   },
   imageId: optionalInt,
-  webhook: function (url) {
-    if (typeof url == 'undefined' || url === null) return;
-    this.check(url).isUrl();
-  },
-
 });
 
 function optionalInt(id) {

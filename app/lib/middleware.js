@@ -4,18 +4,21 @@ module.exports = {
   findProgram: createFinder('program'),
   findBadge: createFinder('badge'),
   verifyRequest: verifyRequest,
+  attachResolvePath: attachResolvePath,
 }
 
 const jws = require('jws')
 const crypto = require('crypto')
 const restify = require('restify')
+const url = require('url')
 const log = require('../lib/logger')
+const hash = require('../lib/hash').hash
 const models = {
   system: require('../models/system'),
   issuer: require('../models/issuer'),
   program: require('../models/program'),
   badge: require('../models/badge'),
-  consumer: require('../models/consumer')
+  consumer: require('../models/consumer'),
 }
 
 const http403 = restify.NotAuthorizedError
@@ -25,6 +28,9 @@ const http500 = restify.InternalError
 function createFinder(modelName) {
   return function findModel(opts) {
     opts = opts || {}
+    const optional = typeof opts.optional !== 'undefined'
+      ? opts.optional
+      : false
     const param = opts.param || modelName + 'Slug'
     const key = opts.key || modelName
     const where = opts.where || {}
@@ -40,7 +46,7 @@ function createFinder(modelName) {
           log.error(error)
           return next(new http500('An internal error occured'))
         }
-        if (!item) {
+        if (!item && !optional) {
           log.warn({code: 'ResourceNotFound', model: modelName, slug: slug})
           return next(new http404('Could not find '+modelName+' `'+slug+'`'))
         }
@@ -62,6 +68,19 @@ function makeQuery(req, where, query) {
   }, query)
 }
 
+function attachResolvePath() {
+  return function (req, res, next) {
+    req.resolvePath = function resolve(path) {
+      return url.format({
+        protocol: req.isSecure() ? 'https:' : 'http:',
+        host: req.headers.host || '',
+        pathname: url.resolve(req.url, path || ''),
+      })
+    }
+    return next()
+  }
+}
+
 function verifyRequest() {
   if (process.env.NODE_ENV == 'test') {
     log.warn('In test environment, bypassing request verification')
@@ -71,6 +90,9 @@ function verifyRequest() {
   }
 
   return function (req, res, next) {
+    if (req.url.indexOf('/public/') === 0)
+      return next()
+
     const token = getAuthToken(req)
     if (!token)
       return next(new http403('Missing valid Authorization header'))
@@ -157,8 +179,4 @@ function getAuthToken(req) {
   if (!match) return
 
   return match[1]
-}
-
-function hash(alg, body) {
-  return crypto.createHash(alg).update(body).digest('hex')
 }

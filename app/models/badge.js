@@ -1,3 +1,4 @@
+const util = require('util')
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
 const async = require('async')
@@ -7,7 +8,7 @@ const Criteria = db.table('criteria', {
     'id',
     'description',
     'badgeId',
-    'required', 
+    'required',
     'note'
   ]
 });
@@ -20,7 +21,7 @@ const Badges = db.table('badges', {
     'strapline',
     'earnerDescription',
     'consumerDescription',
-    'issuerUrl', 
+    'issuerUrl',
     'rubricUrl',
     'criteriaUrl',
     'timeValue',
@@ -73,7 +74,7 @@ const Badges = db.table('badges', {
 Badges.validateRow = makeValidator({
   id: optionalInt,
   slug: function (slug) {
-    this.check(slug).len(1, 50);
+    this.check(slug).len(1, 255);
   },
   name: function (name) {
     this.check(name).len(1, 255);
@@ -143,7 +144,7 @@ function setCriteria(criteria, callback) {
       return callback(err);
 
     // Now that we have added all the new criteria, we want to delete any old criteria attached to this badge
-    const deleteQuery = { 
+    const deleteQuery = {
       badgeId: {
         value: badgeId,
         op: '='

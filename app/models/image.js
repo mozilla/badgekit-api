@@ -28,7 +28,7 @@ Images.validateRow = makeValidator({
     this.check(id).isInt();
   },
   slug: function (slug) {
-    this.check(slug).len(1, 50);
+    this.check(slug).len(1, 255);
   },
   url: function (url) {
     if (typeof url == 'undefined') return;
