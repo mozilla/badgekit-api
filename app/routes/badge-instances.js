@@ -51,13 +51,14 @@ const publicPrefix = {
 }
 
 exports = module.exports = function applyBadgeRoutes (server) {
-  server.post(prefix.system +'/badges/:badgeSlug/instances',
+  const createNewInstanceSuffix = '/badges/:badgeSlug/instances'
+  server.post(prefix.system + createNewInstanceSuffix,
               findSystemBadge.concat([createNewInstance]))
 
-  server.post(prefix.issuer +'/badges/:badgeSlug/instances',
+  server.post(prefix.issuer + createNewInstanceSuffix,
               findIssuerBadge.concat([createNewInstance]))
 
-  server.post(prefix.program+'/badges/:badgeSlug/instances',
+  server.post(prefix.program + createNewInstanceSuffix,
               findProgramBadge.concat([createNewInstance]))
 
   function createNewInstance(req, res, next) {
