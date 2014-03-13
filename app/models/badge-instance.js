@@ -1,5 +1,4 @@
 const dateFromUnixtime = require('../lib/date-from-unixtime')
-const crypto = require('crypto')
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
 const sha1 = require('../lib/hash').sha1
