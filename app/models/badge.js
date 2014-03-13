@@ -74,7 +74,7 @@ const Badges = db.table('badges', {
 Badges.validateRow = makeValidator({
   id: optionalInt,
   slug: function (slug) {
-    this.check(slug).len(1, 50);
+    this.check(slug).len(1, 255);
   },
   name: function (name) {
     this.check(name).len(1, 255);
