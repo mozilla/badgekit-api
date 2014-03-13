@@ -75,6 +75,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
         return next(err)
       }
       const instance = result.row
+
+      /*
+        TODO: assertionUrl should be fully qualified. We can either
+        fully qualify this by requiring an environment variable for the
+        expected host, or we can check out the request's `Host`
+        header. We'd also have to determine whether the request is made
+        over HTTP or HTTPS, hopefully that's possible to introspect from
+        the `req` variable.
+
+        https://github.com/mozilla/badgekit-api/issues/48
+      */
       const assertionUrl = '/public/assertions/' + instance.slug
 
       res.header('Location', assertionUrl)
