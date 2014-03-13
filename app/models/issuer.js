@@ -32,7 +32,24 @@ const Issuers = db.table('issuers', {
       optional: true,
     },
   },
+  methods: {
+    toResponse: function () {
+      return Issuers.toResponse(this)
+    }
+  }
 });
+
+Issuers.toResponse = function toResponse(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    url: row.url,
+    name: row.name,
+    description: row.description,
+    email: row.email,
+    imageUrl: row.image ? row.image.toUrl() : null
+  }
+}
 
 Issuers.validateRow = makeValidator({
   id: optionalInt,
