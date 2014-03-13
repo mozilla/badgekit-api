@@ -1,3 +1,4 @@
+const dateFromUnixtime = require('../lib/date-from-unixtime')
 const crypto = require('crypto')
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
@@ -47,14 +48,6 @@ function optionalInt(id) {
 
 exports = module.exports = BadgeInstances
 
-function dateFromUnixtime(ut) {
-  if ((''+ut).length === 13)
-    return new Date(parseInt(ut, 10))
-  const date = new Date(parseInt(ut, 10) * 1000)
-  if ((''+date) === 'Invalid Date')
-    return null
-  return date
-}
 function sha1(body) {
   return crypto.createHash('sha1').update(body).digest('hex')
 }
