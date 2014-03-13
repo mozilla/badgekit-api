@@ -15,8 +15,8 @@ exports = module.exports = function applyProgramRoutes (server) {
     showAllPrograms,
   ])
   function showAllPrograms(req, res, next) {
-    const query = {}
-    const options = {relationships: true};
+    const options = {relationships: true}
+    const query = {issuerId: req.issuer.id}
     Programs.get(query, options, function foundRows(error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
