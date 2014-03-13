@@ -1,9 +1,10 @@
-function dateFromUnixtime(time) {
+function dateFromUnixtime(time, fallback) {
+  fallback = fallback || null
   if (timeIsMilliseconds(time))
     return new Date(parseInt(time, 10))
   const date = new Date(parseInt(time, 10) * 1000)
   if (!dateIsValid(date))
-    return null
+    return fallback
   return date
 }
 function timeIsMilliseconds(time) {
