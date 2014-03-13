@@ -2,6 +2,7 @@ const dateFromUnixtime = require('../lib/date-from-unixtime')
 const crypto = require('crypto')
 const db = require('../lib/db');
 const makeValidator = require('../lib/make-validator')
+const sha1 = require('../lib/hash').sha1
 
 const BadgeInstances = db.table('badgeInstances', {
   fields: [
@@ -47,7 +48,3 @@ function optionalInt(id) {
 }
 
 exports = module.exports = BadgeInstances
-
-function sha1(body) {
-  return crypto.createHash('sha1').update(body).digest('hex')
-}

@@ -1,5 +1,5 @@
 const util = require('util')
-const sha256 = require('../lib/sha256')
+const sha256 = require('../lib/hash').sha256
 const Badges = require('../models/badge')
 const Webhooks = require('../models/webhook')
 const BadgeInstances = require('../models/badge-instance')

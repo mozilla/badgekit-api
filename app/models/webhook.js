@@ -1,7 +1,7 @@
 const log = require('../lib/logger')
 const db = require('../lib/db');
 const request = require('request')
-const sha256 = require('../lib/sha256')
+const sha256 = require('../lib/hash').sha256
 const jws = require('jws')
 
 const Webhooks = db.table('webhooks', {
