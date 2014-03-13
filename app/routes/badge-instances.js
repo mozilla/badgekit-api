@@ -1,4 +1,5 @@
 const util = require('util')
+const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
 const Badges = require('../models/badge')
 const Webhooks = require('../models/webhook')
@@ -104,7 +105,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         uid: instance.slug,
         email: instance.email,
         assertionUrl: assertionUrl,
-        issuedOn: +instance.issuedOn/1000|0 || undefined,
+        issuedOn: unixtimeFromDate(instance.issuedOn),
       }
       Webhooks.getOne({systemId: system.id}, function (err, hook) {
         if (err)
@@ -157,8 +158,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
         url: '/public/assertions/' + instance.slug,
         type: 'hosted',
       },
-      issuedOn: instance.issuedOn ? +instance.issuedOn/1000|0 : undefined,
-      expires: instance.expires ? +instance.expires/1000|0 : undefined,
+      issuedOn: unixtimeFromDate(instance.issuedOn),
+      expires: unixtimeFromDate(instance.expires),
     }
   }
   function makeBadgeClassUrl(badge) {
