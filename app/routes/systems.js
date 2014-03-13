@@ -35,7 +35,7 @@ exports = module.exports = function applySystemRoutes (server) {
 
       res.send(201, {
         status: 'created',
-        system: Systems.toResponse(system)
+        system: system.toResponse(),
       });
     });
   }
