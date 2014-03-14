@@ -1,7 +1,11 @@
 const dateFromUnixtime = require('../lib/date-from-unixtime')
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator')
+const validation = require('../lib/validation')
 const sha1 = require('../lib/hash').sha1
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
 
 const BadgeInstances = db.table('badgeInstances', {
   fields: [
@@ -34,22 +38,10 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
 }
 
 BadgeInstances.validateRow = makeValidator({
-  id: optionalInt,
-  email: function (email) {
-    this.check(email).isEmail();
-  },
-  claimCode: function (code) {
-    if (typeof code == 'undefined' || code === null) return;
-    this.check(code).len(0, 255);
-  },
-  badgeId: function (id) {
-    this.check(id).isInt();
-  },
+  id: optional('isInt'),
+  email: required('isEmail'),
+  claimCode: optional('len', 0, 255),
+  badgeId: required('isInt'),
 })
-
-function optionalInt(id) {
-  if (typeof id == 'undefined' || id === null) return;
-  this.check(id).isInt();
-}
 
 exports = module.exports = BadgeInstances
