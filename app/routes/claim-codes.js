@@ -59,17 +59,20 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   function addNewCode(req, res, next) {
     const row = ClaimCodes.fromUserInput(req.body)
     row.badgeId = req.badge.id
-    ClaimCodes.put(row, function (err, result) {
-      if (err) {
-        log.error(err, 'Error inserting claim code')
-        return next(err)
-      }
-      const claimCode = result.row
-      res.send(201, {
-        status: 'created',
-        claimCode: claimCode,
+
+    ClaimCodes
+      .put(row)
+      .then(function (result) {
+        const claimCode = result.row
+        res.send(201, {
+          status: 'created',
+          claimCode: claimCode,
+        })
       })
-    })
+      .error(function (err) {
+        log.error(err, 'Error inserting claim code')
+        next(err)
+      })
   }
 
 
@@ -83,17 +86,19 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   function getBadgeCodes(req, res, next) {
     const query = {badgeId: req.badge.id}
     const options = {relationships: false}
-    ClaimCodes.get(query, options, function (err, claimCodes) {
-      if (err) {
-        log.error(err, 'Error getting claim code list')
-        return next(err)
-      }
-      res.send(200, {
-        claimCodes: claimCodes,
-        badge: req.badge.toResponse(),
+
+    ClaimCodes
+      .get(query, options)
+      .then(function (claimCodes) {
+        res.send(200, {
+          claimCodes: claimCodes,
+          badge: req.badge.toResponse(),
+        })
       })
-      return next()
-    })
+      .error(function (err) {
+        log.error(err, 'Error getting claim code list')
+        next(err)
+      })
   }
 
   server.post(prefix.system + '/codes/random',
@@ -105,18 +110,19 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
 
   function makeRandomCode(req, res, next) {
     const row = {code: ClaimCodes.makeRandom(10)}
-    ClaimCodes.put(row, function (err, result) {
-      if (err) {
-        log.error(err, 'Error inserting claim code')
-        return next(err)
-      }
-      const claimCode = result.row
-      res.send(201, {
-        status: 'created',
-        claimCode: claimCode,
+    ClaimCodes
+      .put(row)
+      .then(function (result) {
+        const claimCode = result.row
+        res.send(201, {
+          status: 'created',
+          claimCode: claimCode,
+        })
       })
-      return next()
-    })
+      .error(function (err) {
+        log.error(err, 'Error inserting claim code')
+        next(err)
+      })
   }
 
 
@@ -140,17 +146,18 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
     code.claimed = true
     code.email = req.body.email
 
-    ClaimCodes.put(code, function (err, result) {
-      if (err) {
-        log.error(err, 'Error updating claim code to claimed')
-        return next(err)
-      }
-      res.send(200, {
-        status: 'updated',
-        claimCode: code,
+    ClaimCodes
+      .put(code)
+      .then(function (result) {
+        res.send(200, {
+          status: 'updated',
+          claimCode: code,
+        })
       })
-      return next()
-    })
+      .error(function (err) {
+        log.error(err, 'Error updating claim code to claimed')
+        next(err)
+      })
   }
 
   server.get(prefix.system + '/codes/:code',
@@ -179,17 +186,18 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
     const code = req.claimCode
     const badgeId = req.badge.id
     const query = {id: code.id, badgeId: badgeId}
-    ClaimCodes.del(query, function (err, result) {
-      if (err) {
-        log.error(err, 'Error deleteing claim code')
-        return next(err)
-      }
-      res.send(200, {
-        status: 'deleted',
-        claimCode: code,
-      })
-      return next()
-    })
-  }
 
+    ClaimCodes
+      .del(query)
+      .then(function (result) {
+        res.send(200, {
+          status: 'deleted',
+          claimCode: code,
+        })
+      })
+      .error(function (err) {
+        log.error(err, 'Error deleteing claim code')
+        next(err)
+      })
+  }
 }
