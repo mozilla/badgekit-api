@@ -61,7 +61,7 @@ exports = module.exports = function applySystemRoutes (server) {
         return dbErrorHandler(error, system, req, next)
       return res.send({
         status: 'deleted',
-        system: system.toResponse
+        system: system.toResponse(),
       });
     });
   }
