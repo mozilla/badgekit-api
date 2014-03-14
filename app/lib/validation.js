@@ -21,8 +21,8 @@ function makeValidator (validation) {
 
 function noop() {}
 
-function required (fn) {
-  fn = confirmValidatorFunction.apply(null, arguments);
+function required () {
+  var fn = confirmValidatorFunction.apply(null, arguments);
 
   return function (value) {
     if (typeof value === 'undefined' || value === null)
@@ -32,8 +32,8 @@ function required (fn) {
   }
 }
 
-function optional (fn) {
-  fn = confirmValidatorFunction.apply(null, arguments);
+function optional () {
+  var fn = confirmValidatorFunction.apply(null, arguments);
 
   return function (value) {
     if (typeof value === 'undefined' || value === null)
