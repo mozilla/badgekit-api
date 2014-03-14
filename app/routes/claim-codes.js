@@ -1,6 +1,5 @@
 const ClaimCodes = require('../models/claim-codes')
 const middleware = require('../lib/middleware')
-const log = require('../lib/logger')
 
 // #TODO: factor this out, see ./badge-instances.js
 
@@ -66,10 +65,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
           claimCode: claimCode,
         })
       })
-      .error(function (err) {
-        log.error(err, 'Error inserting claim code')
-        next(err)
-      })
+      .error(req.error('Error inserting claim code'))
   }
 
 
@@ -89,10 +85,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
           badge: req.badge.toResponse(),
         })
       })
-      .error(function (err) {
-        log.error(err, 'Error getting claim code list')
-        next(err)
-      })
+      .error(req.error('Error getting claim code list'))
   }
 
   server.post(prefix.system + '/codes/random',
@@ -113,10 +106,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
           claimCode: claimCode,
         })
       })
-      .error(function (err) {
-        log.error(err, 'Error inserting claim code')
-        next(err)
-      })
+      .error(req.error('Error inserting claim code'))
   }
 
 
@@ -148,10 +138,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
           claimCode: code,
         })
       })
-      .error(function (err) {
-        log.error(err, 'Error updating claim code to claimed')
-        next(err)
-      })
+      .error(req.error('Error updating claim code to claimed'))
   }
 
   server.get(prefix.system + '/codes/:code',
@@ -189,9 +176,6 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
           claimCode: code,
         })
       })
-      .error(function (err) {
-        log.error(err, 'Error deleteing claim code')
-        next(err)
-      })
+      .error(req.error('Error deleting claim code'))
   }
 }

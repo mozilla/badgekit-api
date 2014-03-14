@@ -6,6 +6,7 @@ module.exports = {
   findClaimCode: createFinder('claimCode'),
   verifyRequest: verifyRequest,
   attachResolvePath: attachResolvePath,
+  attachErrorLogger: attachErrorLogger,
 }
 
 const jws = require('jws')
@@ -83,6 +84,18 @@ function attachResolvePath() {
         host: req.headers.host || '',
         pathname: url.resolve(req.url, path || ''),
       })
+    }
+    return next()
+  }
+}
+
+function attachErrorLogger() {
+  return function (req, res, next) {
+    req.error = function error(message) {
+      return function logAndNext(error) {
+        req.log(error, message)
+        next(error)
+      }
     }
     return next()
   }

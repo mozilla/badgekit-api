@@ -20,6 +20,7 @@ server.use(restify.queryParser({mapParams: false}));
 server.use(restify.bodyParser({mapParams: false, rejectUnknown: true}));
 server.use(middleware.verifyRequest())
 server.use(middleware.attachResolvePath())
+server.use(middleware.attachErrorLogger())
 
 applyRoutes(server);
 
