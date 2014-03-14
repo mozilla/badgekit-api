@@ -1,3 +1,4 @@
+const util = require('util')
 const db = require('../lib/db');
 const validation = require('../lib/validation');
 const async = require('async');
@@ -11,7 +12,7 @@ const Criteria = db.table('criteria', {
     'id',
     'description',
     'badgeId',
-    'required', 
+    'required',
     'note'
   ]
 });
@@ -24,7 +25,7 @@ const Badges = db.table('badges', {
     'strapline',
     'earnerDescription',
     'consumerDescription',
-    'issuerUrl', 
+    'issuerUrl',
     'rubricUrl',
     'criteriaUrl',
     'timeValue',
@@ -70,13 +71,49 @@ const Badges = db.table('badges', {
     }
   },
   methods: {
-    setCriteria: setCriteria
+    setCriteria: setCriteria,
+    toResponse: function () {
+      return Badges.toResponse(this)
+    }
   }
 });
 
+Badges.toResponse = function toResponse(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    strapline: row.strapline,
+    earnerDescription: row.earnerDescription,
+    consumerDescription: row.consumerDescription,
+    issuerUrl: row.issuerUrl,
+    rubricUrl: row.rubricUrl,
+    timeValue: row.timeValue,
+    timeUnits: row.timeUnits,
+    limit: row.limit,
+    unique: row.unique,
+    created: row.created,
+    imageUrl: row.image ? row.image.toUrl() : undefined,
+    archived: !!row.archived,
+    system: maybeObject(row.system),
+    issuer: maybeObject(row.issuer),
+    program: maybeObject(row.program),
+    criteria: row.criteria.map(function(criterion) {
+      return {
+        description: criterion.description.toString(),
+        required: criterion.required,
+        note: criterion.note.toString()
+      }
+    })
+  };
+}
+function maybeObject(obj) {
+  return (obj && obj.id) ? obj : undefined
+}
+
 Badges.validateRow = makeValidator({
   id: optional('isInt'),
-  slug: required('len', 1, 50),
+  slug: required('len', 1, 255),
   name: required('len', 1, 255),
   strapline: optional('len', 0, 140),
   earnerDescription: required('len', 1),
@@ -118,7 +155,7 @@ function setCriteria(criteria, callback) {
       return callback(err);
 
     // Now that we have added all the new criteria, we want to delete any old criteria attached to this badge
-    const deleteQuery = { 
+    const deleteQuery = {
       badgeId: {
         value: badgeId,
         op: '='

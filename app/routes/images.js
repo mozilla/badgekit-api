@@ -2,7 +2,7 @@ const Images = require('../models/image');
 
 exports = module.exports = function applyBadgeRoutes (server) {
 
-  server.get('/images/:imageId', function (req, res, next) {
+  server.get('/public/images/:imageId', function (req, res, next) {
     const query = {slug: req.params.imageId};
 
     Images.getOne(query, function (err, image) {

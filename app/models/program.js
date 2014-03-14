@@ -34,7 +34,7 @@ const Programs = db.table('programs', {
 
 Programs.validateRow = makeValidator({
   id: optional('isInt'),
-  slug: required('len', 1, 50),
+  slug: required('len', 1, 255),
   name: required('len', 1, 255),
   url: required('isUrl'),
   description: optional('len', 0, 255),

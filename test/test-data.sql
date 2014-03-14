@@ -5,25 +5,27 @@ INSERT INTO `images` SET
 
 INSERT INTO `systems` SET
   `id` = 1,
+  `imageId` = 1,
   `slug` = 'chicago',
   `name` = 'Chicago',
   `url` = 'http://cityofchicago.org',
   `description` = 'The City of Chicago',
   `email` = 'mayor-emanuel@cityofchicago.org';
 
-INSERT INTO `consumers` SET
-  `id` = 1,
-  `apiKey` = 'radical',
-  `apiSecret` = 'At9p1PVNW5jQAV8LnvfGdpbnuAcxq765pBNNhV9Kjnvgyn4S7YEs7KgVla1OGyny',
-  `systemId` = 1;
-
 INSERT INTO `systems` SET
   `id` = 2,
+  `imageId` = 1,
   `slug` = 'pittsburgh',
   `name` = 'Pittsburgh',
   `url` = 'http://pittsburghpa.gov',
   `description` = 'The City of Pittsburgh',
   `email` = 'mayor-ravenstahl@pittsburghpa.gov';
+
+INSERT INTO `consumers` SET
+  `id` = 1,
+  `apiKey` = 'radical',
+  `apiSecret` = 'At9p1PVNW5jQAV8LnvfGdpbnuAcxq765pBNNhV9Kjnvgyn4S7YEs7KgVla1OGyny',
+  `systemId` = 1;
 
 INSERT INTO `issuers` SET
   `id` = 1,
@@ -47,6 +49,7 @@ INSERT INTO `issuers` SET
 INSERT INTO `programs` SET
   `id` = 1,
   `issuerId` = 1,
+  `imageId` = 1,
   `slug` = 'mit-scratch',
   `name` = 'MIT Scratch',
   `url` = 'http://scratch.mit.edu/',
@@ -55,6 +58,7 @@ INSERT INTO `programs` SET
 
 INSERT INTO `programs` SET
   `id` = 2,
+  `imageId` = 1,
   `slug` = 'khan-academy',
   `name` = 'Khan Academy',
   `url` = 'https://www.khanacademy.org/',
@@ -149,3 +153,23 @@ INSERT INTO `badges` SET
   `unique` = 1,
   `strapline` = 'A badge for doing Library in Chicago',
   `imageId` = 1;
+
+INSERT INTO `claimCodes` SET
+  `code` = 'multiple-use',
+  `multiuse` = true,
+  `badgeId` = 1;
+
+INSERT INTO `claimCodes` SET
+  `code` = 'single-use',
+  `multiuse` = false,
+  `badgeId` = 1;
+
+INSERT INTO `claimCodes` SET
+  `code` = 'for-pittsburgh',
+  `multiuse` = false,
+  `badgeId` = 2;
+
+INSERT INTO `claimCodes` SET
+  `code` = 'delete-me',
+  `multiuse` = true,
+  `badgeId` = 1;

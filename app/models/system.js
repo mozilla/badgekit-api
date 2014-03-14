@@ -14,7 +14,6 @@ const Systems = db.table('systems', {
     'description',
     'email',
     'imageId',
-    'webhook',
   ],
   relationships: {
     image: {
@@ -34,13 +33,12 @@ const Systems = db.table('systems', {
 
 Systems.validateRow = makeValidator({
   id: optional('isInt'),
-  slug: required('len', 1, 50),
+  slug: required('len', 1, 255),
   name: required('len', 1, 255),
   url: required('isUrl'),
   description: optional('len', 0, 255),
   email: optional('isEmail'),
   imageId: optional('isInt'),
-  webhook: optional('isUrl')
 });
 
 exports = module.exports = Systems;

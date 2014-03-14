@@ -2,7 +2,7 @@ const http = require('http')
 const request = require('request')
 const FormData = require('form-data')
 const concat = require('concat-stream')
-const Q = require('q')
+const Promise = require('bluebird')
 const fs = require('fs')
 const db = require('../app/lib/db')
 const path = require('path')
@@ -38,10 +38,10 @@ module.exports = function spawner(app, callback) {
   function makeRequestFn(port) {
     const baseUrl = 'http://127.0.0.1:'+port
     function requester(method, url, form) {
-      const deferred = Q.defer()
+      const deferred = Promise.defer()
 
-      function resolve(status, body) {
-        return deferred.resolve({statusCode: status, body: body})
+      function resolve(status, body, headers) {
+        return deferred.resolve({statusCode: status, body: body, headers: headers})
       }
 
       if (form) {
@@ -60,13 +60,13 @@ module.exports = function spawner(app, callback) {
         const req = request(options)
         formData.pipe(req)
         req.pipe(concat(function (body) {
-          resolve(req.response.statusCode, JSON.parse(body))
+          resolve(req.response.statusCode, JSON.parse(body), req.response.headers)
         }))
 
       } else {
         request[method.toLowerCase()](baseUrl + url, function (err, res, body) {
           if (err) throw err
-          resolve(res.statusCode, JSON.parse(body))
+          resolve(res.statusCode, JSON.parse(body), res.headers)
         })
       }
       return deferred.promise
@@ -90,7 +90,7 @@ module.exports = function spawner(app, callback) {
     }
   }
 
-  const deferred = Q.defer()
+  const deferred = Promise.defer()
 
   loadDatabase(function (err, result) {
     if (err) throw err
