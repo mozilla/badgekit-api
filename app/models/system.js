@@ -25,7 +25,24 @@ const Systems = db.table('systems', {
       optional: true,
     },
   },
+  methods: {
+    toResponse: function () {
+      return Systems.toResponse(this)
+    }
+  }
 });
+
+Systems.toResponse = function toResponse(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    url: row.url,
+    name: row.name,
+    email: row.email,
+    imageUrl: row.image ? row.image.toUrl() : null,
+    issuers: row.issuers,
+  }
+}
 
 Systems.validateRow = makeValidator({
   id: optionalInt,

@@ -70,6 +70,7 @@ spawn(app).then(function (api) {
   test('delete system', function (t) {
     api.del('/systems/test-system').then(function(res){
       t.same(res.body.status, 'deleted')
+      t.same(res.body.system.id, 3, 'should get system back')
       return api.del('/systems/test-system')
     }).then(function(res){
       t.same(res.statusCode, 404)

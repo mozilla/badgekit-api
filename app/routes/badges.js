@@ -62,7 +62,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({badges: rows.map(badgeFromDb)});
+      res.send({badges: rows.map(Badges.toResponse)});
       return next();
     });
   }
@@ -100,7 +100,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
       return res.send(201, {
         status: 'created',
-        badge: badgeFromDb(badge)
+        badge: badge.toResponse(),
       });
     });
   }
@@ -140,7 +140,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     showOneBadge,
   ]);
   function showOneBadge (req, res, next) {
-    res.send({badge: badgeFromDb(req.badge)});
+    res.send({badge: req.badge.toResponse()});
     return next();
   }
 
@@ -176,14 +176,14 @@ exports = module.exports = function applyBadgeRoutes (server) {
     deleteBadge,
   ]);
   function deleteBadge (req, res, next) {
-    const row = req.badge
-    Badges.del({id: row.id}, function deletedRow (error, result) {
+    const badge = req.badge
+    Badges.del({id: badge.id}, function deletedRow (error, result) {
       if (error)
-        return dbErrorHandler(error, row, req, next);
+        return dbErrorHandler(error, badge, req, next);
 
       res.send({
         status: 'deleted',
-        badge: badgeFromDb(row)
+        badge: badge.toResponse(),
       });
     });
   }
@@ -233,7 +233,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
       res.send({
         status: 'updated',
-        badge: badgeFromDb(badge)
+        badge: badge.toResponse(),
       });
     });
   }
@@ -268,39 +268,4 @@ function fromPostToRow (post) {
     limit: post.limit,
     unique: post.unique
   };
-}
-
-function badgeFromDb (row) {
-  return {
-    id: row.id,
-    slug: row.slug,
-    name: row.name,
-    strapline: row.strapline,
-    earnerDescription: row.earnerDescription,
-    consumerDescription: row.consumerDescription,
-    issuerUrl: row.issuerUrl,
-    rubricUrl: row.rubricUrl,
-    criteriaUrl: row.criteriaUrl,
-    timeValue: row.timeValue,
-    timeUnits: row.timeUnits,
-    limit: row.limit,
-    unique: !!row.unique,
-    created: row.created,
-    imageUrl: row.image ? row.image.toUrl() : null,
-    archived: !!row.archived,
-    system: maybeObject(row.system),
-    issuer: maybeObject(row.issuer),
-    program: maybeObject(row.program),
-    criteria: (row.criteria || []).map(function(criterion) {
-      return { 
-        description: criterion.description.toString(),
-        required: criterion.required,
-        note: criterion.note.toString()
-      }
-    })
-  };
-}
-
-function maybeObject(obj) {
-  return (obj && obj.id) ? obj : null
 }

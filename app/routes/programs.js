@@ -21,7 +21,7 @@ exports = module.exports = function applyProgramRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next)
 
-      res.send({programs: rows.map(programFromDb)});
+      res.send({programs: rows.map(Programs.toResponse)});
       return next();
     });
   }
@@ -36,7 +36,7 @@ exports = module.exports = function applyProgramRoutes (server) {
     showOneProgram
   ])
   function showOneProgram(req, res, next) {
-    res.send({program: programFromDb(req.program)});
+    res.send({program: req.program.toResponse()});
     return next();
   }
 
@@ -60,7 +60,7 @@ exports = module.exports = function applyProgramRoutes (server) {
 
       res.send(201, {
         status: 'created',
-        program: programFromDb(program)
+        program: program.toResponse(),
       });
     });
   }
@@ -72,15 +72,15 @@ exports = module.exports = function applyProgramRoutes (server) {
     deleteProgram
   ])
   function deleteProgram(req, res, next) {
-    const row = req.program
-    const query = {id: row.id, slug: row.slug}
+    const program = req.program
+    const query = {id: program.id, slug: program.slug}
     Programs.del(query, function deletedRow(error, result) {
       if (error)
-        return dbErrorHandler(error, row, req, next);
+        return dbErrorHandler(error, program, req, next);
 
       res.send({
         status: 'deleted',
-        program: programFromDb(row)
+        program: program.toResponse(),
       });
     });
   }
@@ -104,7 +104,7 @@ exports = module.exports = function applyProgramRoutes (server) {
 
       res.send({
         status: 'updated',
-        program: programFromDb(program)
+        program: program.toResponse(),
       });
     })
   }
@@ -118,17 +118,5 @@ function fromPostToRow(post) {
     description: post.description,
     email: post.email,
     issuerId: post.issuerId,
-  }
-}
-
-function programFromDb(row) {
-  return {
-    id: row.id,
-    slug: row.slug,
-    url: row.url,
-    name: row.name,
-    description: row.description,
-    email: row.email,
-    imageUrl: row.image ? row.image.toUrl() : null,
   }
 }

@@ -70,7 +70,7 @@ const Badges = db.table('badges', {
     setCriteria: setCriteria,
     toResponse: function () {
       return Badges.toResponse(this)
-    }
+    },
   }
 });
 
@@ -94,7 +94,8 @@ Badges.toResponse = function toResponse(row) {
     system: maybeObject(row.system),
     issuer: maybeObject(row.issuer),
     program: maybeObject(row.program),
-    criteria: row.criteria.map(function(criterion) {
+    criteriaUrl: row.criteriaUrl,
+    criteria: (row.criteria || []).map(function(criterion) {
       return {
         description: criterion.description.toString(),
         required: criterion.required,
@@ -104,7 +105,7 @@ Badges.toResponse = function toResponse(row) {
   };
 }
 function maybeObject(obj) {
-  return (obj && obj.id) ? obj : undefined
+  return (obj && obj.id) ? obj.toResponse() : undefined
 }
 
 Badges.validateRow = makeValidator({
