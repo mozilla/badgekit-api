@@ -17,7 +17,7 @@ exports = module.exports = function applySystemRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next)
 
-      return res.send({systems: rows.map(systemFromDb)});
+      return res.send({systems: rows.map(Systems.toResponse)});
     });
   }
 
@@ -35,7 +35,7 @@ exports = module.exports = function applySystemRoutes (server) {
 
       res.send(201, {
         status: 'created',
-        system: systemFromDb(system)
+        system: system.toResponse(),
       });
     });
   }
@@ -45,7 +45,7 @@ exports = module.exports = function applySystemRoutes (server) {
     showOneSystem,
   ]);
   function showOneSystem(req, res, next) {
-    res.send({system: systemFromDb(req.system)})
+    res.send({system: req.system.toResponse()})
     return res.next()
   }
 
@@ -54,14 +54,14 @@ exports = module.exports = function applySystemRoutes (server) {
     deleteSystem,
   ]);
   function deleteSystem(req, res, next) {
-    const row = req.system
-    const query = {id: row.id, slug: row.slug}
+    const system = req.system
+    const query = {id: system.id, slug: system.slug}
     Systems.del(query, function deletedRow(error, result) {
       if (error)
-        return dbErrorHandler(error, row, req, next)
+        return dbErrorHandler(error, system, req, next)
       return res.send({
         status: 'deleted',
-        system: systemFromDb(row)
+        system: system.toResponse(),
       });
     });
   }
@@ -71,20 +71,20 @@ exports = module.exports = function applySystemRoutes (server) {
     updateSystem,
   ]);
   function updateSystem(req, res, next) {
-    const row = req.system
-    const updated = safeExtend(row, req.body)
+    const system = req.system
+    const updated = safeExtend(system, req.body)
     const image = imageHelper.getFromPost(req)
 
     putSystem(updated, image, function updatedRow(err, system) {
       if (err) {
         if (!Array.isArray(err))
-          return dbErrorHandler(err, row, res, next);
+          return dbErrorHandler(err, system, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
       return res.send({
         status: 'updated',
-        system: systemFromDb(system)
+        system: system.toResponse()
       });
     });
   }
@@ -97,17 +97,5 @@ function fromPostToRow(post) {
     name: post.name,
     description: post.description,
     email: post.email,
-  }
-}
-
-function systemFromDb(row) {
-  return {
-    id: row.id,
-    slug: row.slug,
-    url: row.url,
-    name: row.name,
-    email: row.email,
-    imageUrl: row.image ? row.image.toUrl() : null,
-    issuers: row.issuers,
   }
 }

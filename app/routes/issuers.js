@@ -19,7 +19,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
     Issuers.get(query, options, function foundRows(error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
-      return res.send({issuers: rows.map(issuerFromDb)});
+      return res.send({issuers: rows.map(Issuers.toResponse)});
     });
   }
 
@@ -32,7 +32,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
     showOneIssuer,
   ]);
   function showOneIssuer(req, res, next) {
-    return res.send({issuer: issuerFromDb(req.issuer)});
+    return res.send({issuer: req.issuer.toResponse()});
   }
 
   server.post('/systems/:systemSlug/issuers', [
@@ -53,7 +53,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
       res.send(201, {
         status: 'created',
-        issuer: issuerFromDb(issuer)
+        issuer: issuer.toResponse(),
       });
     });
   }
@@ -64,14 +64,14 @@ exports = module.exports = function applyIssuerRoutes (server) {
     deleteIssuer
   ]);
   function deleteIssuer(req, res, next) {
-    const row = req.issuer
-    const query = {id: row.id, slug: row.slug}
+    const issuer = req.issuer
+    const query = {id: issuer.id, slug: issuer.slug}
     Issuers.del(query, function deletedRow(error, result) {
       if (error)
-        return dbErrorHandler(error, row, req, next)
+        return dbErrorHandler(error, issuer, req, next)
       return res.send({
         status: 'deleted',
-        issuer: issuerFromDb(row)
+        issuer: issuer.toResponse(),
       });
     });
   }
@@ -94,7 +94,7 @@ exports = module.exports = function applyIssuerRoutes (server) {
 
       return res.send({
         status: 'updated',
-        issuer: issuerFromDb(issuer)
+        issuer: issuer.toResponse(),
       });
     });
   }
@@ -108,17 +108,5 @@ function fromPostToRow(post) {
     description: post.description,
     email: post.email,
     systemId: post.systemId,
-  }
-}
-
-function issuerFromDb(row) {
-  return {
-    id: row.id,
-    slug: row.slug,
-    url: row.url,
-    name: row.name,
-    description: row.description,
-    email: row.email,
-    imageUrl: row.image ? row.image.toUrl() : null
   }
 }

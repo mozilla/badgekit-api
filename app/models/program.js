@@ -30,7 +30,24 @@ const Programs = db.table('programs', {
       optional: true,
     },
   },
+  methods: {
+    toResponse: function () {
+      return Programs.toResponse(this)
+    }
+  }
 });
+
+Programs.toResponse = function toResponse(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    url: row.url,
+    name: row.name,
+    description: row.description,
+    email: row.email,
+    imageUrl: row.image ? row.image.toUrl() : null,
+  }
+}
 
 Programs.validateRow = makeValidator({
   id: optional('isInt'),
