@@ -93,7 +93,7 @@ function attachErrorLogger() {
   return function (req, res, next) {
     req.error = function error(message) {
       return function logAndNext(error) {
-        req.log(error, message)
+        req.log.error(error, message)
         next(error)
       }
     }
