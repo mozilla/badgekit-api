@@ -67,9 +67,45 @@ const Badges = db.table('badges', {
     }
   },
   methods: {
-    setCriteria: setCriteria
+    setCriteria: setCriteria,
+    toResponse: function () {
+      return Badges.toResponse(this)
+    }
   }
 });
+
+Badges.toResponse = function toResponse(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    strapline: row.strapline,
+    earnerDescription: row.earnerDescription,
+    consumerDescription: row.consumerDescription,
+    issuerUrl: row.issuerUrl,
+    rubricUrl: row.rubricUrl,
+    timeValue: row.timeValue,
+    timeUnits: row.timeUnits,
+    limit: row.limit,
+    unique: row.unique,
+    created: row.created,
+    imageUrl: row.image ? row.image.toUrl() : undefined,
+    archived: !!row.archived,
+    system: maybeObject(row.system),
+    issuer: maybeObject(row.issuer),
+    program: maybeObject(row.program),
+    criteria: row.criteria.map(function(criterion) {
+      return {
+        description: criterion.description.toString(),
+        required: criterion.required,
+        note: criterion.note.toString()
+      }
+    })
+  };
+}
+function maybeObject(obj) {
+  return (obj && obj.id) ? obj : undefined
+}
 
 Badges.validateRow = makeValidator({
   id: optionalInt,

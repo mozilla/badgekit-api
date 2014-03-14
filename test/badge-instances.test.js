@@ -66,6 +66,53 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
+  test('Trying to get a missing assertion', function (t) {
+    const url = '/public/assertions/slug-does-not-exist'
+    api.get(url).then(function(res){
+      t.same(res.statusCode, 404)
+      t.end()
+    })
+  })
+
+  test('Awarding a badge with a multi-use claim code', function (t) {
+    const url = '/systems/chicago/badges/chicago-badge/instances'
+    const email = 'brian+claimcode@example.org'
+    const form = {
+      email: email,
+      claimCode: 'multiple-use',
+    }
+    api.post(url, form).then(function (res) {
+      t.same(res.statusCode, 201, 'should be created')
+      return api.get('/systems/chicago/badges/chicago-badge/codes/multiple-use')
+    }).then(function (res) {
+      t.same(res.body.claimCode.email, email, 'should have the right email')
+      form.email = 'brian+should-work@example.org'
+      return api.post(url, form)
+    }).then(function (res) {
+      t.same(res.statusCode, 201, 'should be created')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
+  test('Awarding a badge with a single-use claim code', function (t) {
+    const url = '/systems/chicago/badges/chicago-badge/instances'
+    const email = 'brian+single@example.org'
+    const form = {
+      email: email,
+      claimCode: 'single-use',
+    }
+    api.post(url, form).then(function (res) {
+      return api.get('/systems/chicago/badges/chicago-badge/codes/single-use')
+    }).then(function (res) {
+      t.same(res.body.claimCode.email, email, 'should have the right email')
+      form.email = 'brian+should-fail@example.org'
+      return api.post(url, form)
+    }).then(function (res) {
+      t.same(res.statusCode, 400, 'should have failed')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
   test('Webhook fires when necessary', function (t) {
     const secret = 'shhh.very.secret'
     const email = 'brian-webhook@example.org'

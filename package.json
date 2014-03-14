@@ -1,5 +1,5 @@
 {
-  "name": "badgekit-issue",
+  "name": "badgekit-api",
   "version": "0.0.5",
   "description": "A badge issuing platform",
   "author": "Mozilla OpenBadges",
@@ -13,12 +13,12 @@
   "dependencies": {
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.1",
-    "streamsql": "~0.4.5",
+    "streamsql": "~0.5.1",
     "validator": "~2.0.0",
     "xtend": "~2.1.1",
-    "q": "~1.0.0",
+    "bluebird": "~1.0.8",
     "bunyan": "~0.22.1",
-    "jws": "^0.2.5",
+    "jws": "~0.2.5",
     "request": "~2.33.0",
     "async": "~0.2.10"
   },
@@ -28,12 +28,12 @@
     "jshint": "~2.3.0",
     "tap": "~0.4.6"
   },
-  "homepage": "https://github.com/mozilla/badgekit-issue",
+  "homepage": "https://github.com/mozilla/badgekit-api",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mozilla/badgekit-issue.git"
+    "url": "git://github.com/mozilla/badgekit-api.git"
   },
   "bugs": {
-    "url": "https://github.com/mozilla/badgekit-issue/issues"
+    "url": "https://github.com/mozilla/badgekit-api/issues"
   }
 }

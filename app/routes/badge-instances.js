@@ -1,7 +1,9 @@
+const Promise = require('bluebird')
 const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
 const Badges = require('../models/badge')
+const ClaimCodes = require('../models/claim-codes')
 const Webhooks = require('../models/webhook')
 const BadgeInstances = require('../models/badge-instance')
 const errorHelper = require('../lib/error-helper')
@@ -70,69 +72,105 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (errs.length)
       return res.send(400, errorHelper.validation(errs));
 
-    BadgeInstances.put(row, function (err, result) {
-      if (err) {
-        log.error(err, 'error trying to save badge instance')
-        return next(err)
+    if (!row.claimCode)
+      return saveBadgeInstance()
+
+    function errorHandler(err) {
+      log.error(err, 'error interacting with database in route for creating a new badge instance')
+      return next(err)
+    }
+
+    const query = {
+      code: row.claimCode,
+      badgeId: row.badgeId
+    }
+
+    ClaimCodes.getOne(query).then(function (code) {
+      if (code.claimed && !code.multiuse) {
+        const response = {
+          code: 'CodeAlreadyUsed',
+          message: 'Claim code `'+code.code+'` has already been claimed'
+        }
+        res.send(400, response)
+        return Promise.reject(response)
       }
-      const instance = result.row
-
-      const relativeAssertionUrl = '/public/assertions/' + instance.slug
-      const assertionUrl = req.resolvePath(relativeAssertionUrl)
-
-      res.header('Location', relativeAssertionUrl)
-      res.send(201, {
-        status: 'created',
-        location: assertionUrl,
+      code.claimed = true
+      code.email = row.email
+      return ClaimCodes.put(code)
+    }).then(saveBadgeInstance)
+      .error(function (err) {
+        if (err.code !== 'CodeAlreadyUsed')
+          return errorHandler(err)
       })
 
-      // Webhook stuff shouldn't hold up the request, so we call
-      // `next()` before looking up any hooks we have to send off
-      next()
+    function saveBadgeInstance(err) {
+      var hookData, system
+      BadgeInstances.put(row).then(function (result) {
+        const instance = result.row
+        const relativeAssertionUrl = '/public/assertions/' + instance.slug
+        const assertionUrl = req.resolvePath(relativeAssertionUrl)
 
-      const system = req.system
-      const hookData = {
-        action: 'award',
-        uid: instance.slug,
-        email: instance.email,
-        assertionUrl: assertionUrl,
-        issuedOn: unixtimeFromDate(instance.issuedOn),
-      }
-      Webhooks.getOne({systemId: system.id}, function (err, hook) {
-        if (err)
-          return log.error(err, 'Could not retrieve webhook')
 
+        res.header('Location', relativeAssertionUrl)
+        res.send(201, {
+          status: 'created',
+          location: assertionUrl,
+        })
+
+        // Webhook stuff shouldn't hold up the request, so we call
+        // `next()` before looking up any hooks we have to send off
+        next()
+
+        const system = req.system
+        hookData = {
+          action: 'award',
+          uid: instance.slug,
+          email: instance.email,
+          assertionUrl: assertionUrl,
+          issuedOn: unixtimeFromDate(instance.issuedOn),
+        }
+        return Webhooks.getOne({systemId: system.id})
+      }).then(function (hook) {
         if (!hook)
           return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
 
         hook.call(hookData, function (err, res, body) {
+          if (err)
+            return log.warn({code: 'WebhookRequestError', error: err})
           if (res.statusCode != 200)
             return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
         })
+      }).error(function (err) {
+        log.error(err, 'error dealing with webhooks when awarding badge')
       })
-    })
+    }
   }
 
   server.get('/public/assertions/:instanceSlug', getAssertion)
   function getAssertion(req, res, next) {
+    const data = {}
     const instanceSlug = req.params.instanceSlug
     const query = {slug: instanceSlug}
     const options = {relationships: true}
-    BadgeInstances.getOne(query, options, function (err, instance) {
+    BadgeInstances.getOne(query, options).then(function (instance) {
       if (!instance)
-        return next(errorHelper.notFound('Could not find badge instance'))
+        return Promise.reject(errorHelper.notFound('Could not find badge instance'))
 
+      data.instance = instance
       // get fully hydrated badge class
       const query = {id: instance.badge.id}
       const options = {relationships: true}
-      Badges.getOne(query, options, function (err, badge) {
-        if (err) return next(err)
-        instance.badge = badge
-
-        const assertion = makeAssertion(instance, req)
-        res.send(200, assertion)
-        return next()
-      })
+      return Badges.getOne(query, options)
+    }).then(function (badge) {
+      const instance = data.instance
+      instance.badge = badge
+      const assertion = makeAssertion(instance, req)
+      res.send(200, assertion)
+      return next()
+    }).error(function (err) {
+      if (!err.restCode)
+        log.error(err, 'unknown error in assertion route')
+      return next(err)
     })
   }
   function makeAssertion(instance, req) {

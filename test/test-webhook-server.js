@@ -1,12 +1,9 @@
 const Webhooks = require('../app/models/webhook')
 const http = require('http')
-const Q = require('q')
-const EventEmitter =  require('events').EventEmitter
+const Promise = require('bluebird')
 
 module.exports = function makeServer(data) {
-  const emitter = new EventEmitter
-  const deferred = Q.defer()
-
+  const deferred = Promise.defer()
   const server = http.createServer().listen(0)
   server.on('listening', function () {
     const serverUrl = 'http://127.0.0.1:' + this.address().port

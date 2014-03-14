@@ -91,6 +91,19 @@ CREATE TABLE `badges` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `claimCodes`;
+CREATE TABLE `claimCodes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(255) NOT NULL,
+  `claimed` BOOLEAN NOT NULL DEFAULT FALSE,
+  `email` VARCHAR(255) NULL,
+  `multiuse` BOOLEAN NOT NULL DEFAULT FALSE,
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  UNIQUE KEY `code_and_badge` (`code`, `badgeId`),
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `badgeInstances`;
 CREATE TABLE `badgeInstances` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -98,6 +111,7 @@ CREATE TABLE `badgeInstances` (
   `email` VARCHAR(255) NOT NULL,
   `issuedOn` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires` TIMESTAMP NULL,
+  `claimCode` VARCHAR(255) NULL,
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
   UNIQUE KEY `email_and_badge` (`email`, `badgeId`),
   PRIMARY KEY (`id`)

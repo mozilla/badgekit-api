@@ -3,8 +3,10 @@ module.exports = {
   findIssuer: createFinder('issuer'),
   findProgram: createFinder('program'),
   findBadge: createFinder('badge'),
+  findClaimCode: createFinder('claimCode'),
   verifyRequest: verifyRequest,
   attachResolvePath: attachResolvePath,
+  attachErrorLogger: attachErrorLogger,
 }
 
 const jws = require('jws')
@@ -19,6 +21,7 @@ const models = {
   program: require('../models/program'),
   badge: require('../models/badge'),
   consumer: require('../models/consumer'),
+  claimCode: require('../models/claim-codes'),
 }
 
 const http403 = restify.NotAuthorizedError
@@ -31,6 +34,7 @@ function createFinder(modelName) {
     const optional = typeof opts.optional !== 'undefined'
       ? opts.optional
       : false
+    const field = opts.field || 'slug'
     const param = opts.param || modelName + 'Slug'
     const key = opts.key || modelName
     const where = opts.where || {}
@@ -38,8 +42,12 @@ function createFinder(modelName) {
       ? opts.relationships
       : false
     return function finder(req, res, next) {
-      const slug = req.params[param]
-      const query = makeQuery(req, where, {slug: slug})
+      const baseQuery = {}
+      const value = req.params[param]
+
+      baseQuery[field] = value
+
+      const query = makeQuery(req, where, baseQuery)
       const opts = {relationships: relationships}
       models[modelName].getOne(query, opts, function (error, item) {
         if (error) {
@@ -47,8 +55,8 @@ function createFinder(modelName) {
           return next(new http500('An internal error occured'))
         }
         if (!item && !optional) {
-          log.warn({code: 'ResourceNotFound', model: modelName, slug: slug})
-          return next(new http404('Could not find '+modelName+' `'+slug+'`'))
+          log.warn({code: 'ResourceNotFound', model: modelName, field: field, value: value})
+          return next(new http404('Could not find '+modelName+' field: `'+field+'`, value: `'+value+'`'))
         }
         req[key] = item
         return next()
@@ -76,6 +84,18 @@ function attachResolvePath() {
         host: req.headers.host || '',
         pathname: url.resolve(req.url, path || ''),
       })
+    }
+    return next()
+  }
+}
+
+function attachErrorLogger() {
+  return function (req, res, next) {
+    req.error = function error(message) {
+      return function logAndNext(error) {
+        req.log(error, message)
+        next(error)
+      }
     }
     return next()
   }
