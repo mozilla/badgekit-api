@@ -1,4 +1,3 @@
-const hash = require('../lib/hash')
 const db = require('../lib/db');
 const crypto = require('crypto')
 
