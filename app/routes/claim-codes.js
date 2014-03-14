@@ -50,11 +50,11 @@ const claimCodeFinder = middleware.findClaimCode({
 
 exports = module.exports = function applyClaimCodesRoutes (server) {
   server.post(prefix.system + '/codes',
-              findSystemBadge.concat([addNewCode]))
+              findSystemBadge, addNewCode)
   server.post(prefix.issuer + '/codes',
-              findIssuerBadge.concat([addNewCode]))
+              findIssuerBadge, addNewCode)
   server.post(prefix.program + '/codes',
-              findProgramBadge.concat([addNewCode]))
+              findProgramBadge, addNewCode)
 
   function addNewCode(req, res, next) {
     const row = ClaimCodes.fromUserInput(req.body)
@@ -74,11 +74,11 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
 
 
   server.get(prefix.system + '/codes',
-             findSystemBadge.concat([getBadgeCodes]))
+             findSystemBadge, getBadgeCodes)
   server.get(prefix.issuer + '/codes',
-             findIssuerBadge.concat([getBadgeCodes]))
+             findIssuerBadge, getBadgeCodes)
   server.get(prefix.program + '/codes',
-             findProgramBadge.concat([getBadgeCodes]))
+             findProgramBadge, getBadgeCodes)
 
   function getBadgeCodes(req, res, next) {
     const query = {badgeId: req.badge.id}
@@ -97,11 +97,11 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   }
 
   server.post(prefix.system + '/codes/random',
-             findSystemBadge.concat([makeRandomCode]))
+             findSystemBadge, makeRandomCode)
   server.post(prefix.issuer + '/codes/random',
-             findIssuerBadge.concat([makeRandomCode]))
+             findIssuerBadge, makeRandomCode)
   server.post(prefix.program + '/codes/random',
-             findProgramBadge.concat([makeRandomCode]))
+             findProgramBadge, makeRandomCode)
 
   function makeRandomCode(req, res, next) {
     const row = {code: ClaimCodes.makeRandom(10)}
@@ -121,11 +121,11 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
 
 
   server.post(prefix.system + '/codes/:code/claim',
-             findSystemBadge.concat([claimCodeFinder, claim]))
+             findSystemBadge, [claimCodeFinder, claim])
   server.post(prefix.issuer + '/codes/:code/claim',
-             findIssuerBadge.concat([claimCodeFinder, claim]))
+             findIssuerBadge, [claimCodeFinder, claim])
   server.post(prefix.program + '/codes/:code/claim',
-             findProgramBadge.concat([claimCodeFinder, claim]))
+             findProgramBadge, [claimCodeFinder, claim])
 
   function claim(req, res, next) {
     const code = req.claimCode
@@ -154,11 +154,11 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   }
 
   server.get(prefix.system + '/codes/:code',
-             findSystemBadge.concat([claimCodeFinder, getCode]))
+             findSystemBadge, [claimCodeFinder, getCode])
   server.get(prefix.issuer + '/codes/:code',
-             findIssuerBadge.concat([claimCodeFinder, getCode]))
+             findIssuerBadge, [claimCodeFinder, getCode])
   server.get(prefix.program + '/codes/:code',
-             findProgramBadge.concat([claimCodeFinder, getCode]))
+             findProgramBadge, [claimCodeFinder, getCode])
 
   function getCode(req, res, next) {
     res.send(200, {
@@ -169,11 +169,11 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
 
 
   server.del(prefix.system + '/codes/:code',
-             findSystemBadge.concat([claimCodeFinder, deleteCode]))
+             findSystemBadge, [claimCodeFinder, deleteCode])
   server.del(prefix.issuer + '/codes/:code',
-             findIssuerBadge.concat([claimCodeFinder, deleteCode]))
+             findIssuerBadge, [claimCodeFinder, deleteCode])
   server.del(prefix.program + '/codes/:code',
-             findProgramBadge.concat([claimCodeFinder, deleteCode]))
+             findProgramBadge, [claimCodeFinder, deleteCode])
 
   function deleteCode(req, res, next) {
     const code = req.claimCode
