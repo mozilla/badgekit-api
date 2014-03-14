@@ -49,12 +49,9 @@ const claimCodeFinder = middleware.findClaimCode({
 })
 
 exports = module.exports = function applyClaimCodesRoutes (server) {
-  server.post(prefix.system + '/codes',
-              findSystemBadge, addNewCode)
-  server.post(prefix.issuer + '/codes',
-              findIssuerBadge, addNewCode)
-  server.post(prefix.program + '/codes',
-              findProgramBadge, addNewCode)
+  server.post(prefix.system + '/codes', findSystemBadge, addNewCode)
+  server.post(prefix.issuer + '/codes', findIssuerBadge, addNewCode)
+  server.post(prefix.program + '/codes', findProgramBadge, addNewCode)
 
   function addNewCode(req, res, next) {
     const row = ClaimCodes.fromUserInput(req.body)
@@ -76,12 +73,9 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   }
 
 
-  server.get(prefix.system + '/codes',
-             findSystemBadge, getBadgeCodes)
-  server.get(prefix.issuer + '/codes',
-             findIssuerBadge, getBadgeCodes)
-  server.get(prefix.program + '/codes',
-             findProgramBadge, getBadgeCodes)
+  server.get(prefix.system + '/codes', findSystemBadge, getBadgeCodes)
+  server.get(prefix.issuer + '/codes', findIssuerBadge, getBadgeCodes)
+  server.get(prefix.program + '/codes',findProgramBadge, getBadgeCodes)
 
   function getBadgeCodes(req, res, next) {
     const query = {badgeId: req.badge.id}
