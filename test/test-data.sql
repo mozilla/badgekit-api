@@ -188,24 +188,21 @@ INSERT INTO `applications` SET
   `issuerId` = 1,
   `programId` = 1,
   `badgeId` = 4,
-  `learner` = 'edogg@dujg.com',
-  `webhook` = 'http://example.org/webhook1';
+  `learner` = 'edogg@dujg.com';
 
 INSERT INTO `applications` SET
   `id` = 2,
   `slug` = 'app-archived',
   `badgeId` = 3,
   `systemId` = 1,
-  `learner` = 'totebag@dujg.com',
-  `webhook` = 'http://example.org/webhook2';
+  `learner` = 'totebag@dujg.com';
 
 INSERT INTO `applications` SET
   `id` = 3,
   `slug` = 'app-pittsburgh',
   `badgeId` = 2,
   `systemId` = 2,
-  `learner` = 'totebag@dujg.com',
-  `webhook` = 'http://example.org/webhook3';
+  `learner` = 'totebag@dujg.com';
 
 INSERT INTO `evidence` SET
   `id` = 1,

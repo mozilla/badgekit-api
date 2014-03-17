@@ -1,9 +1,13 @@
 const safeExtend = require('../lib/safe-extend')
 const Reviews = require('../models/review');
+const Applications = require('../models/application');
+const Badges = require('../models/badge');
 
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 const hashString = require('../lib/hash-string')
+const request = require('request')
+const log = require('../lib/logger')
 
 const dbErrorHandler = errorHelper.makeDbHandler('application')
 
@@ -30,74 +34,78 @@ exports = module.exports = function applyReviewRoutes (server) {
     showAllReviews,
   ]);
   function showAllReviews (req, res, next) {
-    var query = { badgeId : req.badge.id };
+    var query = { applicationId : req.application.id };
     var options = {relationships: true};
 
     Reviews.get(query, options, function foundRows (error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({reviews: rows.map(reviewFromDb)});
+      res.send({reviews: rows.map(Reviews.toResponse)});
       return next();
     });
   }
 
-  server.get('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
+
+  server.get('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findBadge({where: {systemId: ['system', 'id']}}),
-    middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
+    middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
+    middleware.findReview({relationships: true, where: {applicationId: ['application', 'id']}}),
     showOneApplication,
   ]);
-  server.get('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.get('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
-    middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
+    middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
+    middleware.findReview({relationships: true, where: {applicationId: ['application', 'id']}}),
     showOneApplication,
   ]);
-  server.get('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.get('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
     middleware.findBadge({where: {programId: ['program', 'id']}}),
-    middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
+    middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
+    middleware.findReview({relationships: true, where: {applicationId: ['application', 'id']}}),
     showOneApplication,
   ]);
   function showOneApplication (req, res, next) {
-    res.send({application: applicationFromDb(req.application)});
+    res.send({review: req.review.toResponse()});
     return next();
   }
 
-  server.post('/systems/:systemSlug/badges/:badgeSlug/applications', [
+  server.post('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug/reviews', [
     middleware.findSystem(),
-    middleware.findBadge({where: {systemId: ['system', 'id']}}),
-    createApplication,
+    middleware.findBadge({relationships: true, where: {systemId: ['system', 'id']}}),
+    middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
+    createReview,
   ]);
-  server.post('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications', [
+  server.post('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug/reviews', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-    middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
-    createApplication,
+    middleware.findBadge({relationships: true, where: {issuerId: ['issuer', 'id']}}),
+    middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
+    createReview,
   ]);
-  server.post('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications', [
+  server.post('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug/reviews', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-    middleware.findBadge({where: {programId: ['program', 'id']}}),
-    createApplication,
+    middleware.findBadge({relationships: true, where: {programId: ['program', 'id']}}),
+    middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
+    createReview,
   ]);
-  function createApplication (req, res, next) {
-    const evidence = req.body.criteria || [];
+  function createReview (req, res, next) {
+    const reviewItems = req.body.reviewItems;
     const row = fromPostToRow(req.body);
 
-    if (req.system) row.systemId = req.system.id
-    if (req.issuer) row.issuerId = req.issuer.id
-    if (req.program) row.programId = req.program.id
-    if (req.badge) row.badgeId = req.badge.id
+    row.applicationId  = req.application.id;
 
-    row.slug = hashString(Date.now().toString() + row.learner),
+    row.slug = hashString(Date.now().toString() + row.author),
 
-    putApplication(row, evidence, function (err, application) {
+    putReview(row, req.application, reviewItems, req.badge.criteria, function (err, review) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -106,112 +114,169 @@ exports = module.exports = function applyReviewRoutes (server) {
 
       return res.send(201, {
         status: 'created',
-        application: applicationFromDb(application)
+        review: review.toResponse()
       });
     });
   }
 
-  server.put('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.put('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
-    middleware.findBadge({where: {systemId: ['system', 'id']}}),
+    middleware.findBadge({relationships: true, where: {systemId: ['system', 'id']}}),
     middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
-    updateApplication,
+    middleware.findReview({where: {applicationId: ['application', 'id']}}),
+    updateReview,
   ]);
-  server.put('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.put('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-    middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
+    middleware.findBadge({relationships: true, where: {issuerId: ['issuer', 'id']}}),
     middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
-    updateApplication,
+    middleware.findReview({where: {applicationId: ['application', 'id']}}),
+    updateReview,
   ]);
-  server.put('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.put('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-    middleware.findBadge({where: {programId: ['program', 'id']}}),
+    middleware.findBadge({relationships: true, where: {programId: ['program', 'id']}}),
     middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
-    updateApplication,
+    middleware.findReview({where: {applicationId: ['application', 'id']}}),
+    updateReview,
   ]);
-  function updateApplication (req, res, next) {
-    const row = safeExtend(req.application, req.body);
-    const evidence = req.body.evidence;
+  function updateReview (req, res, next) {
+    const row = safeExtend(req.review, req.body);
+    const reviewItems = req.body.reviewItems;
 
     delete row.created;
 
-    putApplication(row, evidence, function (err, application) {
+    putReview(row, req.application, reviewItems, req.badge.criteria, function (err, review) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
-      res.send({
+      return res.send({
         status: 'updated',
-        application: applicationFromDb(application)
+        review: review.toResponse()
       });
     });
   }
 
-  server.del('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.del('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findBadge({where: {systemId: ['system', 'id']}}),
     middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
-    deleteApplication,
+    middleware.findReview({where: {applicationId: ['application', 'id']}}),
+    deleteReview,
   ]);
-  server.del('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.del('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
     middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
-    deleteApplication,
+    middleware.findReview({where: {applicationId: ['application', 'id']}}),
+    deleteReview,
   ]);
-  server.del('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug', [
+  server.del('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/applications/:applicationSlug/reviews/:reviewSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
     middleware.findBadge({where: {programId: ['program', 'id']}}),
     middleware.findApplication({where: {badgeId: ['badge', 'id']}}),
-    deleteApplication,
+    middleware.findReview({where: {applicationId: ['application', 'id']}}),
+    deleteReview,
   ]);
-  function deleteApplication (req, res, next) {
-    const row = req.application;
-    Applications.del({id: row.id}, function (err, result) {
+  function deleteReview (req, res, next) {
+    const row = req.review;
+    Reviews.del({id: row.id}, function (err, result) {
       if (err)
         return dbErrorHandler(err, row, req, next);
 
       res.send({
         status: 'deleted',
-        application: applicationFromDb(row)
+        review: row.toResponse()
       });
     });
   }
 };
 
-function putApplication (row, evidence, callback) {
-  var validationErrors = Applications.validateRow(row);
-  if (validationErrors.length) {
-    callback(validationErrors);
+function putReview (row, application, reviewItems, criteria, callback) {
+  reviewItems = reviewItems || [];
+  criteria = criteria || [];
+
+  function done(err, newRow) {
+    if (err)
+      return callback(err);
+
+    if (application.webhook) {
+      // quite likely we'll want to reuse the webhook.js model instead of handling these differently.
+      // note that this is unsecured at the moment, need to investigate how to handle security for assessment webhooks
+      request.post({
+        url: application.webhook,
+        json: {
+          application: application.toResponse(),
+          review: newRow.toResponse(),
+          approved: checkCriteriaSatisifed()
+        }
+      }, function (err, res, body) {
+        if (err)
+          return log.warn({code: 'ReviewWebhookRequestError', error: err})
+        else if (res.statusCode != 200)
+          return log.warn({code: 'ReviewWebhookBadResponse', status: res.statusCode, body: body})
+      });
+    }
+
+    callback(null, newRow);
   }
 
-  Applications.put(row, function(err, result) {
+  function checkCriteriaSatisifed() {
+    const requiredCriteriaIds = criteria.filter(function(criterion) { return criterion.required })
+                                        .map(function(criterion) { return criterion.id })
+                                        .sort();
+
+    const satisfiedCriteriaIds = reviewItems.filter(function(item) { return item.satisfied })
+                                            .map(function(item) { return item.criterionId })
+                                            .sort();
+
+    if (requiredCriteriaIds.length !== satisfiedCriteriaIds.length) {
+      return false;
+    }
+
+    for (var i = 0; i < requiredCriteriaIds.length; i++) {
+      if (requiredCriteriaIds[i] !== satisfiedCriteriaIds[i]) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  var validationErrors = Reviews.validateRow(row);
+  if (validationErrors.length) {
+    return callback(validationErrors);
+  }
+
+  Reviews.put(row, function(err, result) {
     if (err)
       return callback(err);
 
     const rowId = result.insertId || result.row.id;
 
-    if (typeof evidence == 'undefined') {
-      Applications.getOne({id: rowId}, {relationships: true}, callback);
+    if (typeof reviewItems == 'undefined') {
+      Reviews.getOne({id: rowId}, {relationships: true}, done);
     }
     else {
-      Applications.getOne({id: rowId}, function(err, row) {
+      Reviews.getOne({id: rowId}, function(err, row) {
         if (err)
           return callback(err);
 
-        return row.setEvidence(evidence, callback);
+        return row.setReviewItems(reviewItems, done);
       });
     }
   });
 };
+
 
 function fromPostToRow (post) {
   return {
@@ -220,18 +285,3 @@ function fromPostToRow (post) {
   };
 }
 
-function reviewFromDb (row) {
-  return {
-    id: row.id,
-    slug: row.slug,
-    author: row.author,
-    comment: row.comment,
-    reviewItems: (row.reviewItems || []).map(function(reviewItem) {
-      return {
-        criterionId: reviewItem.criterionId,
-        satisfied: reviewItem.satisfied,
-        comment: reviewItem.comment
-      }
-    })
-  };
-}

@@ -1,5 +1,9 @@
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator');
+const validation = require('../lib/validation');
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
 
 const Evidence = db.table('evidence', {
   fields: [
@@ -12,21 +16,10 @@ const Evidence = db.table('evidence', {
 });
 
 Evidence.validateRow = makeValidator({
-  id: function (id) {
-    if (typeof id == 'undefined' || id === null) return;
-    this.check(id).isInt();
-  },
-  applicationId: function (id) {
-    this.check(id).isInt();
-  },
-  url: function (url) {
-    if (typeof url == 'undefined' || url === null) return;
-    this.check(url).isUrl();
-  },
-  mediaType: function (type) {
-    if (typeof type == 'undefined' || type === null) return;
-    this.check(type).isIn(['image','link']);
-  }
+  id: optional('isInt'),
+  applicationId: required('isInt'),
+  url: optional('isUrl'),
+  mediaType: optional('isIn', ['image','link'])
 });
 
 exports = module.exports = Evidence;

@@ -9,8 +9,8 @@ test('validating rows', function (t) {
   errors = Images.validateRow({
     id: 'hi',
     slug: null,
-    url: null,
-    mimetype: null,
+    url: 'NOT A URL AT ALL',
+    mimetype: 'what is this nonsense',
   });
   t.same(errors.length, 4);
 

@@ -9,87 +9,58 @@ spawn(app).then(function (api) {
     var active = {}
 
     function getSlugs(body) {
-      return body.applications.map(prop('slug')).sort()
+      return body.reviews.map(prop('slug')).sort()
     }
 
-    t.plan(23);
+    t.plan(9);
 
-    api.get('/systems/chicago/applications').then(function (res) {
+    api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-scratch/reviews').then(function (res) {
       const slugs = getSlugs(res.body)
-      active = res.body.applications
-      t.same(res.statusCode, 200, 'should have HTTP 200')
-      t.same(slugs.length, 2)
-      t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
-    }).catch(api.fail(t))
-
-    api.get('/systems/chicago/badges/chicago-scratch-badge/applications').then(function (res) {
-      const slugs = getSlugs(res.body)
-      active = res.body.applications
+      active = res.body.reviews
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 1)
-      t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
-      t.same(slugs.indexOf('app-archived'), -1, 'should not have archived badge application)')
+      t.same(slugs.indexOf('review-archived'), -1, 'should not have archived badge review)')
     }).catch(api.fail(t))
 
-    api.get('/systems/chicago/issuers/chicago-library/applications').then(function (res) {
+    api.get('/systems/chicago/issuers/chicago-library/badges/chicago-scratch-badge/applications/app-scratch/reviews').then(function (res) {
       const slugs = getSlugs(res.body)
-      active = res.body.applications
+      active = res.body.reviews
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 1)
-      t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
-      t.same(slugs.indexOf('app-archived'), -1, 'should not have archived badge application)')
+      t.same(slugs.indexOf('review-archived'), -1, 'should not have archived badge review)')
     }).catch(api.fail(t))
 
-    api.get('/systems/chicago/issuers/chicago-library/badges/chicago-scratch-badge/applications').then(function (res) {
+    api.get('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch/reviews').then(function (res) {
       const slugs = getSlugs(res.body)
-      active = res.body.applications
+      active = res.body.reviews
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 1)
-      t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
-      t.same(slugs.indexOf('app-archived'), -1, 'should not have archived badge application)')
-    }).catch(api.fail(t))
-
-    api.get('/systems/chicago/issuers/chicago-library/programs/mit-scratch/applications').then(function (res) {
-      const slugs = getSlugs(res.body)
-      active = res.body.applications
-      t.same(res.statusCode, 200, 'should have HTTP 200')
-      t.same(slugs.length, 1)
-      t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
-      t.same(slugs.indexOf('app-archived'), -1, 'should not have archived badge application)')
-    }).catch(api.fail(t))
-
-    api.get('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications').then(function (res) {
-      const slugs = getSlugs(res.body)
-      active = res.body.applications
-      t.same(res.statusCode, 200, 'should have HTTP 200')
-      t.same(slugs.length, 1)
-      t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
-      t.same(slugs.indexOf('app-archived'), -1, 'should not have archived badge application)')
+      t.same(slugs.indexOf('review-archived'), -1, 'should not have archived badge review)')
     }).catch(api.fail(t))
   })
 
-  test('get single application', function (t) {
+  test('get single review', function (t) {
     t.plan(9);
 
-    api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-scratch').then(function (res) {
-      t.same(res.body.application.slug, 'app-scratch')
-      return api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-does-not-exist')
+    api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-scratch/reviews/review-scratch').then(function (res) {
+      t.same(res.body.review.slug, 'review-scratch')
+      return api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-scratch/reviews/fake-review')
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
     }).catch(api.fail(t))
 
-    api.get('/systems/chicago/issuers/chicago-library/badges/chicago-scratch-badge/applications/app-scratch').then(function (res) {
-      t.same(res.body.application.slug, 'app-scratch')
-      return api.get('/systems/chicago/issuer/chicago-library/badges/chicago-scratch-badge/applications/app-does-not-exist')
+    api.get('/systems/chicago/issuers/chicago-library/badges/chicago-scratch-badge/applications/app-scratch/reviews/review-scratch').then(function (res) {
+      t.same(res.body.review.slug, 'review-scratch')
+      return api.get('/systems/chicago/issuer/chicago-library/badges/chicago-scratch-badge/applications/app-scratch/reviews/fake-review')
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
     }).catch(api.fail(t))
 
-    api.get('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch').then(function (res) {
-      t.same(res.body.application.slug, 'app-scratch')
-      return api.get('/systems/chicago/issuer/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-does-not-exist')
+    api.get('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch/reviews/review-scratch').then(function (res) {
+      t.same(res.body.review.slug, 'review-scratch')
+      return api.get('/systems/chicago/issuer/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch/reviews/fake-review')
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
@@ -98,56 +69,53 @@ spawn(app).then(function (api) {
 
   var newAppUrl;
 
-  test('add new application', function (t) {
+  test('add new review', function (t) {
     var form;
 
-    api.post('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications', {whatever: 'lol'}).then(function (res) {
-      const expect = ['learner']
+    api.post('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch/reviews', {whatever: 'lol'}).then(function (res) {
+      const expect = ['author']
       const found = res.body.details.map(prop('field')).sort()
 
       t.same(res.statusCode, 400, 'should have 400')
       t.same(res.body.code, 'ValidationError', 'should have ValidationError code')
       t.same(found, expect, 'should have right errored fields')
 
-      return api.post('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications', form = {
-        learner: 'somedude@example.org'
+      return api.post('/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch/reviews', form = {
+        author: 'somedude@example.org'
       })
     }).then(function (res) {
       t.same(res.statusCode, 201)
       t.same(res.body.status, 'created')
-      t.same(res.body.application.learner, form.learner)
-      t.same(res.body.application.badgeSlug, 'chicago-scratch-badge')
-      newAppUrl = '/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/' + res.body.application.slug
+      t.same(res.body.review.author, form.author)
+      newReviewUrl = '/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/app-scratch/reviews/' + res.body.review.slug
       t.end()
     }).catch(api.fail(t))
   })
 
-  test('update application', function (t) {
+  test('update review', function (t) {
     var form = {garbage:'yep', bs:'yah'}
 
-    api.put(newAppUrl, form).then(function (res) {
+    api.put(newReviewUrl, form).then(function (res) {
       t.same(res.statusCode, 200, 'should not fail')
-      return api.put(newAppUrl, form = {
-        learner: 'newlearner@example.org',
-        assignedTo: 'somedude@example.org',
-        webhook: 'http://example.org/hook',
-        evidence: [{ url: 'http://example.org/dujg', mediaType: 'link', reflection: 'hello'}]
+      return api.put(newReviewUrl, form = {
+        author: 'newauthor@example.org',
+        comment: 'blah blah',
+        // can't test reviewItems, as formdata does not support arrays.  Need to look into workaround, as this is pretty important.
       })
     }).then(function (res) {
       t.same(res.statusCode, 200)
       t.same(res.body.status, 'updated')
-      t.same(res.body.application.learner, form.learner)
-      t.same(res.body.application.assignedTo, form.assignedTo)
-      t.same(res.body.application.webhook, form.webhook)
+      t.same(res.body.review.author, form.author)
+      t.same(res.body.review.comment, form.comment)
       t.end()
     }).catch(api.fail(t))
   })
 
-  test('delete application', function (t) {
-    api.del(newAppUrl).then(function (res) {
+  test('delete review', function (t) {
+    api.del(newReviewUrl).then(function (res) {
       t.same(res.statusCode, 200)
       t.same(res.body.status, 'deleted')
-      return api.get(newAppUrl)
+      return api.get(newReviewUrl)
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
@@ -160,10 +128,6 @@ spawn(app).then(function (api) {
   })
 
 })
-
-function stream(file) {
-  return fs.createReadStream(path.join(__dirname, file))
-}
 
 function prop(name) {
   return function(obj) { return obj[name] }

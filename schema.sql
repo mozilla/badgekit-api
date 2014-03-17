@@ -144,13 +144,14 @@ CREATE TABLE `criteria` (
 DROP TABLE IF EXISTS `applications`;
 CREATE TABLE `applications` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
   `learner` VARCHAR(255) NOT NULL,
   `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `assignedTo` VARCHAR(255) NULL,
   `assignedExpiration` TIMESTAMP NULL,
-  `webhook` VARCHAR(255),
+  `webhook` VARCHAR(255) NULL,
+  `processed` TIMESTAMP NULL,
   `programId` INT NULL REFERENCES `programs`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
   `systemId` INT NULL REFERENCES `systems`(`id`),
@@ -172,7 +173,7 @@ CREATE TABLE `evidence` (
 DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE `reviews` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `slug` VARCHAR(50) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
   `applicationId` INT NOT NULL REFERENCES `applications`(`id`),
   `author` VARCHAR(255) NOT NULL,
   `comment` TEXT NULL,

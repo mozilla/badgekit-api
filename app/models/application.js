@@ -1,6 +1,11 @@
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator');
+const validation = require('../lib/validation');
 const async = require('async');
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
+
 const Evidence = require('./evidence');
 const Reviews = require('./review');
 
@@ -14,6 +19,7 @@ const Applications = db.table('applications', {
     'assignedTo',
     'assignedExpiration',
     'webhook',
+    'processed',
     'programId',
     'issuerId',
     'systemId'
@@ -39,42 +45,46 @@ const Applications = db.table('applications', {
     },
   },
   methods: {
-    setEvidence: setEvidence
+    setEvidence: setEvidence,
+    toResponse: function () {
+      return Applications.toResponse(this)
+    }
   }
 });
 
-Applications.validateRow = makeValidator({
-  id: optionalInt,
-  slug: function (slug) {
-    this.check(slug).len(1, 50);
-  },
-  badgeId: function (id) {
-    this.check(id).isInt();
-  },
-  learner: function (email) {
-    this.check(email).isEmail();
-  },
-  assignedTo: function (email) {
-    if (typeof email == 'undefined' || email === null) return;
-    this.check(email).isEmail();
-  },
-  assignedExpiration: function(date) {
-    if (typeof date == 'undefined' || date === null) return;
-    this.check(date).isDate();
-  },
-  webhook: function(url) {
-    if (typeof url == 'undefined' || url === null) return;
-    this.check(url).isUrl();
-  },
-  programId: optionalInt,
-  issuerId: optionalInt,
-  systemId: optionalInt
-});
+Applications.toResponse = function toResponse(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    learner: row.learner,
+    created: row.created,
+    assignedTo: row.assignedTo,
+    assignedExpiration: row.assignedExpiration,
+    webhook: row.webhook,
+    badgeSlug: row.badge ? row.badge.slug : null,  // may want to send the entire badge instead, not sure
+    evidence: (row.evidence || []).map(function(evidence) {
+      return {
+        url: evidence.url,
+        mediaType: evidence.mediaType,
+        reflection: evidence.reflection
+      }
+    })
+  };
+};
 
-function optionalInt(id) {
-  if (typeof id == 'undefined' || id === null) return;
-  this.check(id).isInt();
-}
+Applications.validateRow = makeValidator({
+  id: optional('isInt'),
+  slug: required('len', 1, 255),
+  badgeId: required('isInt'),
+  learner: required('isEmail'),
+  assignedTo: optional('isEmail'),
+  assignedExpiration: optional('isDate'),
+  webhook: optional('isUrl'),
+  processed: optional('isDate'),
+  programId: optional('isInt'),
+  issuerId: optional('isInt'),
+  systemId: optional('isInt')
+});
 
 function setEvidence(evidence, callback) {
   var evidenceIds = [];
@@ -95,7 +105,7 @@ function setEvidence(evidence, callback) {
     if (err)
       return callback(err);
 
-    // Now that we have added all the new evidence, we want to delete any old evidence attached to this badge
+    // Now that we have added all the new evidence, we want to delete any old evidence attached to this application
     const deleteQuery = { 
       applicationId: {
         value: applicationId,

@@ -54,7 +54,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({applications: rows.map(applicationFromDb)});
+      res.send({applications: rows.map(Applications.toResponse)});
       return next();
     });
   }
@@ -81,7 +81,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
     showOneApplication,
   ]);
   function showOneApplication (req, res, next) {
-    res.send({application: applicationFromDb(req.application)});
+    res.send({application: req.application.toResponse()});
     return next();
   }
 
@@ -104,7 +104,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
     createApplication,
   ]);
   function createApplication (req, res, next) {
-    const evidence = req.body.criteria || [];
+    const evidence = req.body.evidence || [];
     const row = fromPostToRow(req.body);
 
     if (req.system) row.systemId = req.system.id
@@ -123,7 +123,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
 
       return res.send(201, {
         status: 'created',
-        application: applicationFromDb(application)
+        application: application.toResponse()
       });
     });
   }
@@ -164,7 +164,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
 
       res.send({
         status: 'updated',
-        application: applicationFromDb(application)
+        application: application.toResponse()
       });
     });
   }
@@ -198,7 +198,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
 
       res.send({
         status: 'deleted',
-        application: applicationFromDb(row)
+        application: row.toResponse()
       });
     });
   }
@@ -207,7 +207,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
 function putApplication (row, evidence, callback) {
   var validationErrors = Applications.validateRow(row);
   if (validationErrors.length) {
-    callback(validationErrors);
+    return callback(validationErrors);
   }
 
   Applications.put(row, function(err, result) {
@@ -239,22 +239,4 @@ function fromPostToRow (post) {
   };
 }
 
-function applicationFromDb (row) {
-  return {
-    id: row.id,
-    slug: row.slug,
-    learner: row.learner,
-    created: row.created,
-    assignedTo: row.assignedTo,
-    assignedExpiration: row.assignedExpiration,
-    webhook: row.webhook,
-    badgeSlug: row.badge ? row.badge.slug : null,  // may want to send the entire badge instead, not sure
-    evidence: (row.evidence || []).map(function(evidence) {
-      return {
-        url: evidence.url,
-        mediaType: evidence.mediaType,
-        reflection: evidence.reflection
-      }
-    })
-  };
-}
+

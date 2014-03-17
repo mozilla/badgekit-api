@@ -1,5 +1,9 @@
 const db = require('../lib/db');
-const makeValidator = require('../lib/make-validator');
+const validation = require('../lib/validation');
+
+const makeValidator = validation.makeValidator;
+const optional = validation.optional;
+const required = validation.required;
 
 const Criteria = db.table('criteria', {
   fields: [

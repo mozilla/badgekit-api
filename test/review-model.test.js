@@ -15,7 +15,7 @@ test('validating rows', function (t) {
 
   errors = Reviews.validateRow({
     id: 'tote',
-    slug: Array(50).join('lo'),
+    slug: Array(255).join('lo'),
     applicationId: 'bag',
     author: 'ridiculous-email'
   });
