@@ -138,5 +138,55 @@ CREATE TABLE `criteria` (
   `note` TEXT NOT NULL,
   `required` BOOL NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
-) CHARACTER SET binary
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `applications`;
+CREATE TABLE `applications` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(50) NOT NULL,
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  `learner` VARCHAR(255) NOT NULL,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `assignedTo` VARCHAR(255) NULL,
+  `assignedExpiration` TIMESTAMP NULL,
+  `webhook` VARCHAR(255),
+  `programId` INT NULL REFERENCES `programs`(`id`),
+  `issuerId` INT NULL REFERENCES `issuers`(`id`),
+  `systemId` INT NULL REFERENCES `systems`(`id`),
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `evidence`;
+CREATE TABLE `evidence` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `applicationId` INT NOT NULL REFERENCES `applications`(`id`),
+  `url` VARCHAR(255) NULL,
+  `mediaType` ENUM('image', 'link') NULL,
+  `reflection` TEXT NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `reviews`;
+CREATE TABLE `reviews` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(50) NOT NULL,
+  `applicationId` INT NOT NULL REFERENCES `applications`(`id`),
+  `author` VARCHAR(255) NOT NULL,
+  `comment` TEXT NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `reviewItems`;
+CREATE TABLE `reviewItems` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `reviewId` INT NOT NULL REFERENCES `reviews`(`id`),
+  `criterionId` INT NOT NULL REFERENCES `criteria`(`id`),
+  `satisfied` BOOLEAN NOT NULL DEFAULT FALSE,
+  `comment` TEXT NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
   ENGINE=InnoDB;

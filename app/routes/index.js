@@ -6,6 +6,7 @@ const applyProgramRoutes = require('./programs');
 const applyBadgeInstanceRoutes = require('./badge-instances');
 const applyImageRoutes = require('./images');
 const applyClaimCodesRoutes = require('./claim-codes');
+const applyApplicationRoutes = require('./applications');
 
 exports = module.exports = function applyAllRoutes (server) {
 
@@ -28,6 +29,7 @@ exports = module.exports = function applyAllRoutes (server) {
     applyBadgeInstanceRoutes,
     applyImageRoutes,
     applyClaimCodesRoutes,
+    applyApplicationRoutes
   ].forEach(callWith(server));
 
 };

@@ -173,3 +173,77 @@ INSERT INTO `claimCodes` SET
   `code` = 'delete-me',
   `multiuse` = true,
   `badgeId` = 1;
+
+INSERT INTO `criteria` SET
+  `id` = 1,
+  `badgeId` = 1,
+  `description` = 'Just your basic criterion.',
+  `note` = 'Some sort of note',
+  `required` = TRUE;
+
+INSERT INTO `applications` SET
+  `id` = 1,
+  `slug` = 'app-scratch',
+  `systemId` = 1,
+  `issuerId` = 1,
+  `programId` = 1,
+  `badgeId` = 4,
+  `learner` = 'edogg@dujg.com',
+  `webhook` = 'http://example.org/webhook1';
+
+INSERT INTO `applications` SET
+  `id` = 2,
+  `slug` = 'app-archived',
+  `badgeId` = 3,
+  `systemId` = 1,
+  `learner` = 'totebag@dujg.com',
+  `webhook` = 'http://example.org/webhook2';
+
+INSERT INTO `applications` SET
+  `id` = 3,
+  `slug` = 'app-pittsburgh',
+  `badgeId` = 2,
+  `systemId` = 2,
+  `learner` = 'totebag@dujg.com',
+  `webhook` = 'http://example.org/webhook3';
+
+INSERT INTO `evidence` SET
+  `id` = 1,
+  `applicationId` = 1,
+  `url` = 'http://example.org/evidence1.png',
+  `mediaType` = 'image',
+  `reflection` = 'Check out this awesome evidence for Chicago Scratch';
+
+INSERT INTO `evidence` SET
+  `id` = 2,
+  `applicationId` = 1,
+  `url` = 'http://example.org/evidence2',
+  `mediaType` = 'link';
+
+INSERT INTO `evidence` SET
+  `id` = 3,
+  `applicationId` = 2,
+  `url` = 'http://example.org/evidence3.png',
+  `mediaType` = 'image',
+  `reflection` = 'Evidence for Archived';
+
+INSERT INTO `reviews` SET
+  `id` = 1,
+  `slug` = 'review-scratch',
+  `applicationId` = 1,
+  `author` = 'erik@example.org',
+  `comment` = 'My scratch comment.';
+
+INSERT INTO `reviews` SET
+  `id` = 2,
+  `slug` = 'review-archived',
+  `applicationId` = 2,
+  `author` = 'erik@example.org',
+  `comment` = 'My archived comment.';
+
+INSERT INTO `reviewItems` SET
+  `id` = 1,
+  `reviewId` = 1,
+  `criterionId` = 1,
+  `satisfied` = TRUE,
+  `comment` = 'Nice work, yo.';

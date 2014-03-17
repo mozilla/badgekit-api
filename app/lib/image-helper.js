@@ -6,12 +6,8 @@ module.exports = {
 }
 
 const fs = require('fs')
-const crypto = require('crypto')
 const Images = require('../models/image')
-
-function hashString (str) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
+const hashString = require('./hash-string')
 
 function getFromPost(req, opts) {
   opts = opts || {}

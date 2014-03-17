@@ -7,15 +7,7 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
-const Criteria = db.table('criteria', {
-  fields: [
-    'id',
-    'description',
-    'badgeId',
-    'required',
-    'note'
-  ]
-});
+const Criteria = require('./criteria')
 
 const Badges = db.table('badges', {
   fields: [
@@ -128,12 +120,6 @@ Badges.validateRow = makeValidator({
   programId: optional('isInt'),
   issuerId: optional('isInt'),
   systemId: optional('isInt'),
-});
-
-Criteria.validateRow = makeValidator({
-  id: optional('isInt'),
-  description: required('len', 1),
-  required: required('isIn', ['0','1'])
 });
 
 function setCriteria(criteria, callback) {
