@@ -10,7 +10,7 @@ const middleware = require('./lib/middleware')
 const package = require('../package')
 
 const server = restify.createServer({
-  name: 'openbadger',
+  name: package.name,
   version: package.version,
   log: logger,
 });
