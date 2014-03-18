@@ -114,8 +114,7 @@ function verifyRequest() {
       return next()
 
     if (req.url == '/' ||
-        req.url == '/healthcheck' ||
-        req.url == '/healthcheck/')
+        req.url == '/healthcheck')
       return next()
 
     const token = getAuthToken(req)
