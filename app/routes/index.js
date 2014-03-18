@@ -13,6 +13,12 @@ exports = module.exports = function applyAllRoutes (server) {
     return next();
   });
 
+  server.get('/healthcheck', function (req, res, next) {
+    res.send('tip-top');
+    return next();
+  });
+
+
   [ applyBadgeRoutes,
     applySystemRoutes,
     applyIssuerRoutes,

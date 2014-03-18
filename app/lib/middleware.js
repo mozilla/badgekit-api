@@ -113,6 +113,11 @@ function verifyRequest() {
     if (req.url.indexOf('/public/') === 0)
       return next()
 
+    if (req.url == '/' ||
+        req.url == '/healthcheck' ||
+        req.url == '/healthcheck/')
+      return next()
+
     const token = getAuthToken(req)
     if (!token)
       return next(new http403('Missing valid Authorization header'))
