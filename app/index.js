@@ -7,10 +7,11 @@ const restify = require('restify');
 const applyRoutes = require('./routes');
 const logger = require('./lib/logger')
 const middleware = require('./lib/middleware')
+const package = require('../package')
 
 const server = restify.createServer({
-  name: 'openbadger',
-  version: '1.0.0',
+  name: package.name,
+  version: package.version,
   log: logger,
 });
 

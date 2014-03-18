@@ -1,17 +1,25 @@
-var applyBadgeRoutes = require('./badges');
-var applySystemRoutes = require('./systems');
-var applyIssuerRoutes = require('./issuers');
-var applyProgramRoutes = require('./programs');
-var applyBadgeInstanceRoutes = require('./badge-instances');
-var applyImageRoutes = require('./images');
-var applyClaimCodesRoutes = require('./claim-codes');
+const package = require('../../package')
+const applyBadgeRoutes = require('./badges');
+const applySystemRoutes = require('./systems');
+const applyIssuerRoutes = require('./issuers');
+const applyProgramRoutes = require('./programs');
+const applyBadgeInstanceRoutes = require('./badge-instances');
+const applyImageRoutes = require('./images');
+const applyClaimCodesRoutes = require('./claim-codes');
 
 exports = module.exports = function applyAllRoutes (server) {
 
-  server.get('/', function (req, res, next) {
-    res.send('OpenBadger');
+  server.get('/', health);
+  server.get('/healthcheck', health)
+
+  function health(req, res, next) {
+    res.send({
+      app: 'BadgeKit API',
+      version: package.version,
+    });
     return next();
-  });
+  }
+
 
   [ applyBadgeRoutes,
     applySystemRoutes,
