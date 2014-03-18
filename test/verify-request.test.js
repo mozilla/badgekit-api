@@ -206,7 +206,7 @@ spawn(app).then(function (api) {
       t.same(res.statusCode, 200)
       res.setEncoding('utf8')
       res.pipe(concat(function (data) {
-        t.same(data, '"tip-top"')
+        t.same(JSON.parse(data).app, 'BadgeKit API')
         t.end()
       }))
     })
