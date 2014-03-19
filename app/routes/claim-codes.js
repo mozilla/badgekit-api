@@ -1,5 +1,6 @@
 const ClaimCodes = require('../models/claim-codes')
 const middleware = require('../lib/middleware')
+const errorHelper = require('../lib/error-helper')
 
 // #TODO: factor this out, see ./badge-instances.js
 
@@ -48,24 +49,51 @@ const claimCodeFinder = middleware.findClaimCode({
 })
 
 exports = module.exports = function applyClaimCodesRoutes (server) {
+  function createNewCode (input, req, res) {
+    const row = ClaimCodes.fromUserInput(input)
+    const badge = req.badge.toResponse()
+    row.badgeId = badge.id
+
+    var validationErrors = ClaimCodes.validateRow(row);
+    if (validationErrors.length)
+      return res.send(400, errorHelper.validation(validationErrors));
+
+    ClaimCodes
+      .put(row)
+      .then(function (result) {
+        result.row.id = result.insertId
+        const claimCode = ClaimCodes.toResponse(result.row)
+
+        res.send(201, {
+          status: 'created',
+          claimCode: claimCode,
+          badge: badge,
+        })
+      })
+      .error(req.error('Error inserting claim code'))
+  }
+
   server.post(prefix.system + '/codes', findSystemBadge, addNewCode)
   server.post(prefix.issuer + '/codes', findIssuerBadge, addNewCode)
   server.post(prefix.program + '/codes', findProgramBadge, addNewCode)
 
   function addNewCode(req, res, next) {
-    const row = ClaimCodes.fromUserInput(req.body)
-    row.badgeId = req.badge.id
+    createNewCode(req.body, req, res);
+  }
 
-    ClaimCodes
-      .put(row)
-      .then(function (result) {
-        const claimCode = result.row
-        res.send(201, {
-          status: 'created',
-          claimCode: claimCode,
-        })
-      })
-      .error(req.error('Error inserting claim code'))
+
+  server.post(prefix.system + '/codes/random',
+             findSystemBadge, makeRandomCode)
+  server.post(prefix.issuer + '/codes/random',
+             findIssuerBadge, makeRandomCode)
+  server.post(prefix.program + '/codes/random',
+             findProgramBadge, makeRandomCode)
+
+  function makeRandomCode(req, res, next) {
+    const data = req.body || {}
+    data.code = ClaimCodes.makeRandom(10)
+
+    createNewCode(data, req, res)
   }
 
 
@@ -81,32 +109,13 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       .get(query, options)
       .then(function (claimCodes) {
         res.send(200, {
-          claimCodes: claimCodes,
+          claimCodes: claimCodes.map(function(code) {
+            return code.toResponse()
+          }),
           badge: req.badge.toResponse(),
         })
       })
       .error(req.error('Error getting claim code list'))
-  }
-
-  server.post(prefix.system + '/codes/random',
-             findSystemBadge, makeRandomCode)
-  server.post(prefix.issuer + '/codes/random',
-             findIssuerBadge, makeRandomCode)
-  server.post(prefix.program + '/codes/random',
-             findProgramBadge, makeRandomCode)
-
-  function makeRandomCode(req, res, next) {
-    const row = {code: ClaimCodes.makeRandom(10)}
-    ClaimCodes
-      .put(row)
-      .then(function (result) {
-        const claimCode = result.row
-        res.send(201, {
-          status: 'created',
-          claimCode: claimCode,
-        })
-      })
-      .error(req.error('Error inserting claim code'))
   }
 
 
@@ -133,9 +142,12 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
     ClaimCodes
       .put(code)
       .then(function (result) {
+        const claimCode = result.row.toResponse()
+
         res.send(200, {
           status: 'updated',
-          claimCode: code,
+          claimCode: claimCode,
+          badge: req.badge.toResponse(),
         })
       })
       .error(req.error('Error updating claim code to claimed'))
@@ -151,7 +163,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
   function getCode(req, res, next) {
     res.send(200, {
       badge: req.badge.toResponse(),
-      claimCode: req.claimCode,
+      claimCode: req.claimCode.toResponse(),
     })
   }
 
@@ -173,7 +185,8 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       .then(function (result) {
         res.send(200, {
           status: 'deleted',
-          claimCode: code,
+          claimCode: code.toResponse(),
+          badge: req.badge.toResponse(),
         })
       })
       .error(req.error('Error deleting claim code'))
