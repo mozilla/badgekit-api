@@ -109,9 +109,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       .get(query, options)
       .then(function (claimCodes) {
         res.send(200, {
-          claimCodes: claimCodes.map(function(code) {
-            return code.toResponse()
-          }),
+          claimCodes: claimCodes.map(ClaimCodes.toResponse),
           badge: req.badge.toResponse(),
         })
       })
