@@ -150,7 +150,6 @@ CREATE TABLE `applications` (
   `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `assignedTo` VARCHAR(255) NULL,
   `assignedExpiration` TIMESTAMP NULL,
-  `webhook` VARCHAR(255) NULL,
   `processed` TIMESTAMP NULL,
   `programId` INT NULL REFERENCES `programs`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),

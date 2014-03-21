@@ -32,6 +32,7 @@ const Reviews = db.table('reviews', {
   },
   methods: {
     setReviewItems: setReviewItems,
+    del: del,
     toResponse: function () {
       return Reviews.toResponse(this)
     },
@@ -45,11 +46,7 @@ Reviews.toResponse = function toResponse(row) {
     author: row.author,
     comment: row.comment,
     reviewItems: (row.reviewItems || []).map(function(reviewItem) {
-      return {
-        criterionId: reviewItem.criterionId,
-        satisfied: reviewItem.satisfied,
-        comment: reviewItem.comment
-      }
+      return ReviewItems.toResponse(reviewItem);
     })
   };
 };
@@ -105,5 +102,15 @@ function setReviewItems(reviewItems, callback) {
     });
   });
 }
+
+function del(callback) {
+  const reviewId = this.id;
+  ReviewItems.del({ reviewId: reviewId }, function(err) {
+    if (err)
+      callback(err);
+
+    Reviews.del({ id: reviewId }, callback);
+  });
+};
 
 exports = module.exports = Reviews;

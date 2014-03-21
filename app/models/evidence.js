@@ -15,6 +15,14 @@ const Evidence = db.table('evidence', {
   ],
 });
 
+Evidence.toResponse = function toResponse(row) {
+  return {
+    url: row.url,
+    mediaType: row.mediaType,
+    reflection: row.reflection
+  }
+};
+
 Evidence.validateRow = makeValidator({
   id: optional('isInt'),
   applicationId: required('isInt'),

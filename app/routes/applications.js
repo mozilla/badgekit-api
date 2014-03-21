@@ -3,7 +3,7 @@ const Applications = require('../models/application');
 
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
-const hashString = require('../lib/hash-string')
+const hash = require('../lib/hash').hash
 
 const dbErrorHandler = errorHelper.makeDbHandler('application')
 
@@ -107,12 +107,9 @@ exports = module.exports = function applyApplicationRoutes (server) {
     const evidence = req.body.evidence || [];
     const row = fromPostToRow(req.body);
 
-    if (req.system) row.systemId = req.system.id
-    if (req.issuer) row.issuerId = req.issuer.id
-    if (req.program) row.programId = req.program.id
     if (req.badge) row.badgeId = req.badge.id
 
-    row.slug = hashString(Date.now().toString() + row.learner),
+    row.slug = hash('md5', Date.now().toString() + row.learner),
 
     putApplication(row, evidence, function (err, application) {
       if (err) {
@@ -191,14 +188,15 @@ exports = module.exports = function applyApplicationRoutes (server) {
     deleteApplication,
   ]);
   function deleteApplication (req, res, next) {
-    const row = req.application;
-    Applications.del({id: row.id}, function (err, result) {
+    Applications.getOne({id: req.application.id}, function (err, row) {
       if (err)
         return dbErrorHandler(err, row, req, next);
 
-      res.send({
-        status: 'deleted',
-        application: row.toResponse()
+      row.del(function(err) {
+        res.send({
+          status: 'deleted',
+          application: row.toResponse()
+        });
       });
     });
   }
@@ -234,8 +232,7 @@ function fromPostToRow (post) {
   return {
     learner: post.learner,
     assignedTo: post.assignedTo,
-    assignedExpiration: post.assignedExpiration,
-    webhook: post.webhook
+    assignedExpiration: post.assignedExpiration
   };
 }
 

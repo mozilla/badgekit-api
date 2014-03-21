@@ -15,6 +15,14 @@ const Criteria = db.table('criteria', {
   ]
 });
 
+Criteria.toResponse = function toResponse(row) {
+  return {
+    description: row.description.toString(),
+    required: row.required,
+    note: row.note.toString()
+  };
+};
+
 Criteria.validateRow = makeValidator({
   id: optional('isInt'),
   description: required('len', 1),

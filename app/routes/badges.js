@@ -176,14 +176,15 @@ exports = module.exports = function applyBadgeRoutes (server) {
     deleteBadge,
   ]);
   function deleteBadge (req, res, next) {
-    const badge = req.badge
-    Badges.del({id: badge.id}, function deletedRow (error, result) {
-      if (error)
-        return dbErrorHandler(error, badge, req, next);
+    Badges.getOne({id: req.badge.id}, function (err, row) {
+      if (err)
+        return dbErrorHandler(err, row, req, next);
 
-      res.send({
-        status: 'deleted',
-        badge: badge.toResponse(),
+      row.del(function(err) {
+        res.send({
+          status: 'deleted',
+          badge: row.toResponse()
+        });
       });
     });
   }

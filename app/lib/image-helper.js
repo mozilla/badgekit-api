@@ -7,7 +7,7 @@ module.exports = {
 
 const fs = require('fs')
 const Images = require('../models/image')
-const hashString = require('./hash-string')
+const hash = require('./hash').hash
 
 function getFromPost(req, opts) {
   opts = opts || {}
@@ -30,7 +30,7 @@ function createFromFile (file, callback) {
       return callback(err);
 
     const row = {
-      slug: hashString(Date.now() + file.path),
+      slug: hash('md5', Date.now() + file.path),
       mimetype: file.mimetype,
       data: data
     };
@@ -43,7 +43,7 @@ function createFromFile (file, callback) {
 
 function createFromUrl (url, callback) {
   const row = {
-    slug: hashString(Date.now() + url),
+    slug: hash('md5', Date.now() + url),
     url: url
   };
 

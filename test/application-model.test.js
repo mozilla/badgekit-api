@@ -20,10 +20,9 @@ test('validating rows', function (t) {
     learner: 'ridiculous-email',
     assignedTo: 'not an email address',
     assignedExpiration: 'decidely non-datelike',
-    webhook: 'what is this nonsense',
     processed: 'also definitely not a date'
   });
-  t.same(errors.length, 8);
+  t.same(errors.length, 7);
 
   errors = Applications.validateRow({
     id: 1,
@@ -32,7 +31,6 @@ test('validating rows', function (t) {
     learner: 'normal.email@example.org',
     assignedTo: 'plain.email@example.org',
     assignedExpiration: 'March 9, 1979 12:00:00',
-    webhook: 'http://example.org/webhook',
     processed: '3-22-2013 12:11 PM'
   });
   t.same(errors.length, 0);

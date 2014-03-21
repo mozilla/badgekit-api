@@ -29,6 +29,14 @@ const ReviewItems = db.table('reviewItems', {
   }
 });
 
+ReviewItems.toResponse = function toResponse(row) {
+  return {
+    criterionId: row.criterionId,
+    satisfied: row.satisfied,
+    comment: row.comment
+  };
+};
+
 ReviewItems.validateRow = makeValidator({
   id: optional('isInt'),
   reviewId: required('isInt'),

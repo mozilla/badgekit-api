@@ -129,8 +129,7 @@ spawn(app).then(function (api) {
       t.same(res.statusCode, 200, 'should not fail')
       return api.put(newAppUrl, form = {
         learner: 'newlearner@example.org',
-        assignedTo: 'somedude@example.org',
-        webhook: 'http://example.org/hook',
+        assignedTo: 'somedude@example.org'
         // can't test evidence, as formdata does not support arrays.  Need to look into workaround, as this is pretty important.
       })
     }).then(function (res) {
@@ -138,7 +137,6 @@ spawn(app).then(function (api) {
       t.same(res.body.status, 'updated')
       t.same(res.body.application.learner, form.learner)
       t.same(res.body.application.assignedTo, form.assignedTo)
-      t.same(res.body.application.webhook, form.webhook)
       t.end()
     }).catch(api.fail(t))
   })

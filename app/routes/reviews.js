@@ -2,10 +2,11 @@ const safeExtend = require('../lib/safe-extend')
 const Reviews = require('../models/review');
 const Applications = require('../models/application');
 const Badges = require('../models/badge');
+const Webhooks = require('../models/webhook');
 
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
-const hashString = require('../lib/hash-string')
+const hash = require('../lib/hash').hash
 const request = require('request')
 const log = require('../lib/logger')
 
@@ -101,11 +102,11 @@ exports = module.exports = function applyReviewRoutes (server) {
     const reviewItems = req.body.reviewItems;
     const row = fromPostToRow(req.body);
 
-    row.applicationId  = req.application.id;
+    row.applicationId = req.application.id;
 
-    row.slug = hashString(Date.now().toString() + row.author),
+    row.slug = hash('md5', Date.now().toString() + row.author),
 
-    putReview(row, req.application, reviewItems, req.badge.criteria, function (err, review) {
+    putReview(row, req.application, reviewItems, req.badge.criteria, req.system.id, function (err, review) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -149,7 +150,7 @@ exports = module.exports = function applyReviewRoutes (server) {
 
     delete row.created;
 
-    putReview(row, req.application, reviewItems, req.badge.criteria, function (err, review) {
+    putReview(row, req.application, reviewItems, req.badge.criteria, req.system.id, function (err, review) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -188,44 +189,49 @@ exports = module.exports = function applyReviewRoutes (server) {
     deleteReview,
   ]);
   function deleteReview (req, res, next) {
-    const row = req.review;
-    Reviews.del({id: row.id}, function (err, result) {
+    Reviews.getOne({id: req.review.id}, function (err, row) {
       if (err)
         return dbErrorHandler(err, row, req, next);
 
-      res.send({
-        status: 'deleted',
-        review: row.toResponse()
+      row.del(function(err) {
+        res.send({
+          status: 'deleted',
+          badge: row.toResponse()
+        });
       });
     });
   }
 };
 
-function putReview (row, application, reviewItems, criteria, callback) {
+function putReview (row, application, reviewItems, criteria, systemId, callback) {
   reviewItems = reviewItems || [];
   criteria = criteria || [];
 
   function done(err, newRow) {
     if (err)
       return callback(err);
+    
+    Webhooks.getOne({systemId: systemId}, function (err, hook) {
+      if (err)
+        return log.error(err, 'error dealing with webhooks when adding review')
 
-    if (application.webhook) {
-      // quite likely we'll want to reuse the webhook.js model instead of handling these differently.
-      // note that this is unsecured at the moment, need to investigate how to handle security for assessment webhooks
-      request.post({
-        url: application.webhook,
-        json: {
-          application: application.toResponse(),
-          review: newRow.toResponse(),
-          approved: checkCriteriaSatisifed()
-        }
-      }, function (err, res, body) {
+      if (!hook)
+        return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
+
+      var hookData = {
+        action: 'review',
+        application: application.toResponse(),
+        review: newRow.toResponse(),
+        approved: checkCriteriaSatisifed()
+      }
+
+      hook.call(hookData, function (err, res, body) {
         if (err)
-          return log.warn({code: 'ReviewWebhookRequestError', error: err})
-        else if (res.statusCode != 200)
-          return log.warn({code: 'ReviewWebhookBadResponse', status: res.statusCode, body: body})
-      });
-    }
+          return log.warn({code: 'WebhookRequestError', error: err})
+        if (res.statusCode != 200)
+          return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
+      })
+    });
 
     callback(null, newRow);
   }

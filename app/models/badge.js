@@ -64,6 +64,7 @@ const Badges = db.table('badges', {
   },
   methods: {
     setCriteria: setCriteria,
+    del: del,
     toResponse: function () {
       return Badges.toResponse(this)
     },
@@ -92,11 +93,7 @@ Badges.toResponse = function toResponse(row) {
     program: maybeObject(row.program),
     criteriaUrl: row.criteriaUrl,
     criteria: (row.criteria || []).map(function(criterion) {
-      return {
-        description: criterion.description.toString(),
-        required: criterion.required,
-        note: criterion.note.toString()
-      }
+      return Criteria.toResponse(criterion);
     })
   };
 }
@@ -166,5 +163,15 @@ function setCriteria(criteria, callback) {
     });
   });
 }
+
+function del(callback) {
+  const badgeId = this.id;
+  Criteria.del({ badgeId: badgeId }, function(err) {
+    if (err)
+      callback(err);
+
+    Badges.del({ id: badgeId }, callback);
+  });
+};
 
 exports = module.exports = Badges;

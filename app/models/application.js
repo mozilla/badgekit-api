@@ -18,7 +18,6 @@ const Applications = db.table('applications', {
     'created',
     'assignedTo',
     'assignedExpiration',
-    'webhook',
     'processed',
     'programId',
     'issuerId',
@@ -42,10 +41,11 @@ const Applications = db.table('applications', {
       local: 'id',
       foreign: { table: 'evidence', key: 'applicationId' },
       optional: true
-    },
+    }
   },
   methods: {
     setEvidence: setEvidence,
+    del: del,
     toResponse: function () {
       return Applications.toResponse(this)
     }
@@ -60,14 +60,9 @@ Applications.toResponse = function toResponse(row) {
     created: row.created,
     assignedTo: row.assignedTo,
     assignedExpiration: row.assignedExpiration,
-    webhook: row.webhook,
     badgeSlug: row.badge ? row.badge.slug : null,  // may want to send the entire badge instead, not sure
     evidence: (row.evidence || []).map(function(evidence) {
-      return {
-        url: evidence.url,
-        mediaType: evidence.mediaType,
-        reflection: evidence.reflection
-      }
+      return Evidence.toResponse(evidence);
     })
   };
 };
@@ -79,7 +74,6 @@ Applications.validateRow = makeValidator({
   learner: required('isEmail'),
   assignedTo: optional('isEmail'),
   assignedExpiration: optional('isDate'),
-  webhook: optional('isUrl'),
   processed: optional('isDate'),
   programId: optional('isInt'),
   issuerId: optional('isInt'),
@@ -131,5 +125,14 @@ function setEvidence(evidence, callback) {
   });
 }
 
+function del(callback) {
+  const applicationId = this.id;
+  Evidence.del({ applicationId: applicationId }, function(err) {
+    if (err)
+      callback(err);
+
+    Applications.del({ id: applicationId }, callback);
+  });
+};
 
 exports = module.exports = Applications;
