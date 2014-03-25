@@ -6,12 +6,8 @@ module.exports = {
 }
 
 const fs = require('fs')
-const crypto = require('crypto')
 const Images = require('../models/image')
-
-function hashString (str) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
+const hash = require('./hash').hash
 
 function getFromPost(req, opts) {
   opts = opts || {}
@@ -34,7 +30,7 @@ function createFromFile (file, callback) {
       return callback(err);
 
     const row = {
-      slug: hashString(Date.now() + file.path),
+      slug: hash('md5', Date.now() + file.path),
       mimetype: file.mimetype,
       data: data
     };
@@ -47,7 +43,7 @@ function createFromFile (file, callback) {
 
 function createFromUrl (url, callback) {
   const row = {
-    slug: hashString(Date.now() + url),
+    slug: hash('md5', Date.now() + url),
     url: url
   };
 

@@ -7,15 +7,7 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
-const Criteria = db.table('criteria', {
-  fields: [
-    'id',
-    'description',
-    'badgeId',
-    'required',
-    'note'
-  ]
-});
+const Criteria = require('./criteria')
 
 const Badges = db.table('badges', {
   fields: [
@@ -72,6 +64,7 @@ const Badges = db.table('badges', {
   },
   methods: {
     setCriteria: setCriteria,
+    del: del,
     toResponse: function () {
       return Badges.toResponse(this)
     },
@@ -100,11 +93,7 @@ Badges.toResponse = function toResponse(row) {
     program: maybeObject(row.program),
     criteriaUrl: row.criteriaUrl,
     criteria: (row.criteria || []).map(function(criterion) {
-      return {
-        description: criterion.description.toString(),
-        required: criterion.required,
-        note: criterion.note.toString()
-      }
+      return Criteria.toResponse(criterion);
     })
   };
 }
@@ -128,12 +117,6 @@ Badges.validateRow = makeValidator({
   programId: optional('isInt'),
   issuerId: optional('isInt'),
   systemId: optional('isInt'),
-});
-
-Criteria.validateRow = makeValidator({
-  id: optional('isInt'),
-  description: required('len', 1),
-  required: required('isIn', ['0','1'])
 });
 
 function setCriteria(criteria, callback) {
@@ -180,5 +163,15 @@ function setCriteria(criteria, callback) {
     });
   });
 }
+
+function del(callback) {
+  const badgeId = this.id;
+  Criteria.del({ badgeId: badgeId }, function(err) {
+    if (err)
+      callback(err);
+
+    Badges.del({ id: badgeId }, callback);
+  });
+};
 
 exports = module.exports = Badges;
