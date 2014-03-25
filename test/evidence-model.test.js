@@ -3,12 +3,6 @@ const Evidence = require('../app/models/evidence');
 
 const closeDb = Evidence.db.close.bind(Evidence.db);
 
-    'id',
-    'applicationId',
-    'url',
-    'mediaType',
-    'reflection'
-
 test('validating rows', function (t) {
   var errors;
 
