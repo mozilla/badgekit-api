@@ -73,6 +73,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       .error(req.error('Error inserting claim code'))
   }
 
+
   server.post(prefix.system + '/codes', findSystemBadge, addNewCode)
   server.post(prefix.issuer + '/codes', findIssuerBadge, addNewCode)
   server.post(prefix.program + '/codes', findProgramBadge, addNewCode)
@@ -116,26 +117,6 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       .error(req.error('Error getting claim code list'))
   }
 
-  server.post(prefix.system + '/codes/random',
-             findSystemBadge, makeRandomCode)
-  server.post(prefix.issuer + '/codes/random',
-             findIssuerBadge, makeRandomCode)
-  server.post(prefix.program + '/codes/random',
-             findProgramBadge, makeRandomCode)
-
-  function makeRandomCode(req, res, next) {
-    const row = {code: ClaimCodes.makeRandom(10), badgeId: req.badge.id}
-    ClaimCodes
-      .put(row)
-      .then(function (result) {
-        const claimCode = result.row
-        res.send(201, {
-          status: 'created',
-          claimCode: claimCode,
-        })
-      })
-      .error(req.error('Error inserting claim code'))
-  }
 
   server.post(prefix.system + '/codes/:code/claim',
              findSystemBadge, [claimCodeFinder, claim])
@@ -170,6 +151,7 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
       })
       .error(req.error('Error updating claim code to claimed'))
   }
+
 
   server.get(prefix.system + '/codes/:code',
              findSystemBadge, [claimCodeFinder, getCode])
