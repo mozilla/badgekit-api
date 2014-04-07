@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source .test-env
+npm test
+source .env
