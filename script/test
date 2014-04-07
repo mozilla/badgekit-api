@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 source .test-env
-npm test
+if [ -n "$1" ]; then
+  ./node_modules/.bin/tap test/"$1".test.js
+else
+  npm test
+fi
 source .env
