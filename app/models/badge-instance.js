@@ -25,7 +25,7 @@ const BadgeInstances = db.table('badgeInstances', {
       optional: false
     },
   },
-})
+});
 
 BadgeInstances.formatUserInput = function formatUserInput(obj) {
   return {
@@ -34,14 +34,14 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
     issuedOn: obj.issuedOn || dateFromUnixtime(Date.now()),
     expires: obj.expires ? dateFromUnixtime(obj.expires) : null,
     claimCode: obj.claimCode,
-  }
-}
+  };
+};
 
 BadgeInstances.validateRow = makeValidator({
   id: optional('isInt'),
   email: required('isEmail'),
   claimCode: optional('len', 0, 255),
   badgeId: required('isInt'),
-})
+});
 
-exports = module.exports = BadgeInstances
+exports = module.exports = BadgeInstances;
