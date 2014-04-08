@@ -43,7 +43,11 @@ exports = module.exports = function applyApplicationRoutes (server) {
   ]);
   function showAllApplications (req, res, next) {
     var query = {};
-    var options = {relationships: true};
+    var options = {
+      relationships: true,
+      relationshipsDepth: 2,
+      sort: ['badgeId', 'created'],
+    };
 
     if (req.badge) query.badgeId = req.badge.id;
     if (req.system) query.systemId = req.system.id;
@@ -54,7 +58,10 @@ exports = module.exports = function applyApplicationRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({applications: rows.map(Applications.toResponse)});
+      res.send({applications: rows.map(function (application) {
+        return Applications.toResponse(application, req);
+      })});
+
       return next();
     });
   }

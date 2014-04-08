@@ -71,7 +71,7 @@ const Badges = db.table('badges', {
   }
 });
 
-Badges.toResponse = function toResponse(row) {
+Badges.toResponse = function toResponse(row, request) {
   return {
     id: row.id,
     slug: row.slug,
@@ -86,7 +86,7 @@ Badges.toResponse = function toResponse(row) {
     limit: row.limit,
     unique: row.unique,
     created: row.created,
-    imageUrl: row.image ? row.image.toUrl() : undefined,
+    imageUrl: row.image ? row.image.toUrl(request) : undefined,
     archived: !!row.archived,
     system: maybeObject(row.system),
     issuer: maybeObject(row.issuer),

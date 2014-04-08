@@ -46,13 +46,13 @@ const Applications = db.table('applications', {
   methods: {
     setEvidence: setEvidence,
     del: del,
-    toResponse: function () {
-      return Applications.toResponse(this)
+    toResponse: function (request) {
+      return Applications.toResponse(this, request)
     }
   }
 });
 
-Applications.toResponse = function toResponse(row) {
+Applications.toResponse = function toResponse(row, request) {
   return {
     id: row.id,
     slug: row.slug,
@@ -60,9 +60,9 @@ Applications.toResponse = function toResponse(row) {
     created: row.created,
     assignedTo: row.assignedTo,
     assignedExpiration: row.assignedExpiration,
-    badgeSlug: row.badge ? row.badge.slug : null,  // may want to send the entire badge instead, not sure
+    badge: row.badge ? row.badge.toResponse(request) : null,
     evidence: (row.evidence || []).map(function(evidence) {
-      return Evidence.toResponse(evidence);
+      return Evidence.toResponse(evidence, request);
     })
   };
 };
