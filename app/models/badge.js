@@ -8,7 +8,7 @@ const optional = validation.optional;
 const required = validation.required;
 
 const Criteria = require('./criteria');
-
+const BadgeTypes = require('./badge-type');
 const Badges = db.table('badges', {
   fields: [
     'id',
