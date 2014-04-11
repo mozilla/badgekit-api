@@ -20,7 +20,8 @@
     "bunyan": "~0.22.1",
     "jws": "~0.2.5",
     "request": "~2.33.0",
-    "async": "~0.2.10"
+    "async": "~0.2.10",
+    "node-restify-swagger": "cmcavoy/node-restify-swagger"
   },
   "devDependencies": {
     "concat-stream": "~1.4.1",

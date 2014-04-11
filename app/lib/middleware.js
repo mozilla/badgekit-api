@@ -118,7 +118,8 @@ function verifyRequest() {
       return next()
 
     if (req.url == '/' ||
-        req.url == '/healthcheck')
+        req.url == '/healthcheck' ||
+        req.url.match(/^\/swagger/))
       return next()
 
     const token = getAuthToken(req)
