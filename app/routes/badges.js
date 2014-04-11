@@ -10,10 +10,29 @@ const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
 
-  server.get('/systems/:systemSlug/badges', [
-    middleware.findSystem(),
-    showAllBadges,
-  ]);
+  server.get(
+    {
+      url:'/systems/:systemSlug/badges',
+      swagger: {
+        summary: 'My hello call description',
+        notes: 'My hello call notes',
+        nickname: 'sayHelloCall'
+      },
+      validation: {
+        name: { isRequired: true, isIn: ['foo', 'bar'], scope: 'path', description: 'Your unreal name' },
+        status: { isRequired: true, isIn: ['foo', 'bar'], scope: 'query', description: 'Are you foo or bar?' },
+        email: { isRequired: false, isEmail: true, scope: 'query', description: 'Your real email address' },
+        age: { isRequired: true, isInt: true, scope: 'query', description: 'Your age' },
+        accept: { isRequired: true, isIn: ['true', 'false'], scope: 'query', swaggerType: 'boolean', description: 'Are you foo or bar?' },
+        password: { isRequired: true, description: 'New password' },
+        passwordRepeat: { equalTo: 'password', description: 'Repeated password'}
+      }
+    },
+    [
+      middleware.findSystem(),
+      showAllBadges,
+    ]);
+
   server.get('/systems/:systemSlug/issuers/:issuerSlug/badges', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
