@@ -68,14 +68,14 @@ exports = module.exports = function applyApplicationRoutes (server) {
 
   server.get('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
     middleware.findSystem(),
-    middleware.findBadge({where: {systemId: ['system', 'id']}}),
+    middleware.findBadge({relationships: true, where: {systemId: ['system', 'id']}}),
     middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
     showOneApplication,
   ]);
   server.get('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-    middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
+    middleware.findBadge({relationships: true, where: {issuerId: ['issuer', 'id']}}),
     middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
     showOneApplication,
   ]);
@@ -83,12 +83,16 @@ exports = module.exports = function applyApplicationRoutes (server) {
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-    middleware.findBadge({where: {programId: ['program', 'id']}}),
+    middleware.findBadge({relationships: true, where: {programId: ['program', 'id']}}),
     middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
     showOneApplication,
   ]);
   function showOneApplication (req, res, next) {
-    res.send({application: req.application.toResponse()});
+
+    var application = req.application;
+    application.badge = req.badge;
+
+    res.send({application: application.toResponse()});
     return next();
   }
 
