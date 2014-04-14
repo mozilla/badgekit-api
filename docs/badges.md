@@ -1,13 +1,15 @@
 # Badges
 
-## `GET /badges`
+## `Badge List`
 
-Retrieves all available badges
+Retrieves all available badges, filtered by system, issuer or program.
 
 ### Expected request
 
 ```
-GET /badges HTTP/1.1
+GET /systems/:systemSlug/badges HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/badges HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1.1
 ```
 
 #### Available request parameters
@@ -51,14 +53,16 @@ Content-Type: application/json
 
 *None*
 
-## `GET /badges/<slug>`
+## `Retrieve a specific badge`
 
 Retrieves a specific badge.
 
 ### Expected request
 
 ```
-GET /badges/<slug> HTTP/1.1
+GET /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug HTTP/1.1
 ```
 
 ### Expected response
@@ -101,15 +105,16 @@ Content-Type: application/json
   }
   ```
 
-## `POST /badges`
+## `Create a badge`
 
-Creates a new badge.
+Creates a new badge, or updates an existing badge.
 
 ### Expected request
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 ```
+
 POST /badges HTTP/1.1
 Content-Type: application/json
 
