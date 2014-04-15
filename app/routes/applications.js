@@ -119,6 +119,9 @@ exports = module.exports = function applyApplicationRoutes (server) {
     const row = fromPostToRow(req.body);
 
     if (req.badge) row.badgeId = req.badge.id
+    if (req.system) row.systemId = req.system.id;
+    if (req.issuer) row.issuerId = req.issuer.id;
+    if (req.program) row.programId = req.program.id;
 
     row.slug = hash('md5', Date.now().toString() + row.learner),
 
@@ -160,6 +163,10 @@ exports = module.exports = function applyApplicationRoutes (server) {
   function updateApplication (req, res, next) {
     const row = safeExtend(req.application, req.body);
     const evidence = req.body.evidence;
+
+    if (row.processed) {
+      row.processed = new Date(row.processed);
+    }
 
     delete row.created;
 

@@ -61,6 +61,7 @@ Applications.toResponse = function toResponse(row, request) {
     assignedTo: row.assignedTo,
     assignedExpiration: row.assignedExpiration,
     badge: row.badge ? row.badge.toResponse(request) : null,
+    processed: row.processed,
     evidence: (row.evidence || []).map(function(evidence) {
       return Evidence.toResponse(evidence, request);
     })

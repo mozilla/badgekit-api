@@ -20,6 +20,7 @@
     "bunyan": "~0.22.1",
     "jws": "~0.2.5",
     "request": "~2.33.0",
+    "underscore": "~1.6.0",
     "async": "~0.2.10"
   },
   "devDependencies": {

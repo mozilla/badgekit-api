@@ -9,6 +9,7 @@ const middleware = require('../lib/middleware')
 const hash = require('../lib/hash').hash
 const request = require('request')
 const log = require('../lib/logger')
+const _ = require('underscore');
 
 const dbErrorHandler = errorHelper.makeDbHandler('application')
 
@@ -106,6 +107,8 @@ exports = module.exports = function applyReviewRoutes (server) {
 
     row.slug = hash('md5', Date.now().toString() + row.author),
 
+    req.application.badge = req.badge;
+
     putReview(row, req.application, reviewItems, req.badge.criteria, req.system.id, function (err, review) {
       if (err) {
         if (!Array.isArray(err))
@@ -149,6 +152,7 @@ exports = module.exports = function applyReviewRoutes (server) {
     const reviewItems = req.body.reviewItems;
 
     delete row.created;
+    req.application.badge = req.badge;
 
     putReview(row, req.application, reviewItems, req.badge.criteria, req.system.id, function (err, review) {
       if (err) {
@@ -238,21 +242,13 @@ function putReview (row, application, reviewItems, criteria, systemId, callback)
 
   function checkCriteriaSatisifed() {
     const requiredCriteriaIds = criteria.filter(function(criterion) { return criterion.required })
-                                        .map(function(criterion) { return criterion.id })
-                                        .sort();
+                                        .map(function(criterion) { return criterion.id });
 
     const satisfiedCriteriaIds = reviewItems.filter(function(item) { return item.satisfied })
-                                            .map(function(item) { return item.criterionId })
-                                            .sort();
+                                            .map(function(item) { return parseInt(item.criterionId,10) });
 
-    if (requiredCriteriaIds.length !== satisfiedCriteriaIds.length) {
+    if (_.difference(requiredCriteriaIds, satisfiedCriteriaIds).length > 0) {
       return false;
-    }
-
-    for (var i = 0; i < requiredCriteriaIds.length; i++) {
-      if (requiredCriteriaIds[i] !== satisfiedCriteriaIds[i]) {
-        return false;
-      }
     }
     
     return true;
