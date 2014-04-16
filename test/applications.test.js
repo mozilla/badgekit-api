@@ -116,7 +116,7 @@ spawn(app).then(function (api) {
       t.same(res.statusCode, 201)
       t.same(res.body.status, 'created')
       t.same(res.body.application.learner, form.learner)
-      t.same(res.body.application.badgeSlug, 'chicago-scratch-badge')
+      t.same(res.body.application.badge.slug, 'chicago-scratch-badge')
       newAppUrl = '/systems/chicago/issuers/chicago-library/programs/mit-scratch/badges/chicago-scratch-badge/applications/' + res.body.application.slug
       t.end()
     }).catch(api.fail(t))

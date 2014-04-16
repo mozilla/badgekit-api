@@ -70,6 +70,15 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
+  test('Look up a badge via claim code', function (t) {
+    const url = '/systems/chicago/codes/single-use'
+    api.get(url).then(function (res) {
+      t.same(res.statusCode, 200, 'should get 200')
+      t.same(res.body.badge.slug, 'chicago-badge', 'should find chicago badge')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })

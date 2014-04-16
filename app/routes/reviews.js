@@ -244,7 +244,7 @@ function putReview (row, application, reviewItems, criteria, systemId, callback)
     const requiredCriteriaIds = criteria.filter(function(criterion) { return criterion.required })
                                         .map(function(criterion) { return criterion.id });
 
-    const satisfiedCriteriaIds = reviewItems.filter(function(item) { return item.satisfied })
+    const satisfiedCriteriaIds = reviewItems.filter(function(item) { return item.satisfied == '1'})
                                             .map(function(item) { return parseInt(item.criterionId,10) });
 
     if (_.difference(requiredCriteriaIds, satisfiedCriteriaIds).length > 0) {

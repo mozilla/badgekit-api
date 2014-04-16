@@ -38,6 +38,9 @@
     * **GET** /systems/:slug/codes
     * **GET** /systems/:slug/issuers/:slug/codes
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/codes
+    * **GET** /systems/:slug/codes/:code
+    * **GET** /systems/:slug/issuers/:slug/codes/:code
+    * **GET** /systems/:slug/issuers/:slug/programs/:slug/codes/:code
     * **GET** /systems/:slug/badges/:slug/codes
     * **GET** /systems/:slug/issuers/:slug/badges/:slug/codes
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes
