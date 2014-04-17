@@ -139,7 +139,7 @@ Content-Type: application/json
 
   {
     "code": "ResourceConflict",
-    "error": system with that `slug` already exists",
+    "error": "system with that `slug` already exists",
     "details": {
       "slug": "system-slug",
       "name": "System Name",
