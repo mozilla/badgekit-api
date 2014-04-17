@@ -1,13 +1,13 @@
 # Issuers
 
-## `GET /issuers`
+## Retrieve list of issuers
 
-Retrieves all available issuers.
+Retrieves all available issuers, filtered by system.
 
 ### Expected request
 
 ```
-GET /issuers HTTP/1.1
+GET /systems/:systemSlug/issuers HTTP/1.1
 ```
 
 ### Expected response
@@ -32,14 +32,14 @@ Content-Type: application/json
 
 *None*
 
-## `GET /issuers/<slug>`
+## Retrieve a specific issuer
 
 Retrieves a specific issuer.
 
 ### Expected request
 
 ```
-GET /issuers/<slug> HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug HTTP/1.1
 ```
 
 ### Expected response
@@ -71,11 +71,13 @@ Content-Type: application/json
   }
   ```
 
-## `POST /issuers`
+## Create a new issuer
 
 Creates a new issuer.
 
 ### Expected request
+
+`/systems/:systemSlug/issuers/:issuerSlug`
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
@@ -150,11 +152,13 @@ Content-Type: application/json
   }
   ```
 
-## `PUT /issuers/<slug>`
+## Update an issuer
 
 Updates an existing issuer.
 
 ### Expected request
+
+`PUT /systems/:systemSlug/issuers/:issuerSlug`
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
@@ -219,14 +223,14 @@ Content-Type: application/json
   }
   ```
 
-## `DELETE /issuers/<slug>`
+## Delete an existing issuer
 
 Deletes an existing issuer.
 
 ### Expected request
 
 ```
-DELETE /issuers/<slug> HTTP/1.1
+DELETE /system/:systemSlug/issuers/:issuerSlug HTTP/1.1
 ```
 
 ### Expected response
