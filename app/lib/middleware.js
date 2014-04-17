@@ -164,12 +164,13 @@ function verifyRequest() {
 
       const givenHash = auth.body.hash
       try {
-        const computedHash = hash(auth.body.alg, req._body)
+        const result = verifyHash(givenHash, auth.body.alg, req._body)
+        if (!result.verified) {
+          return next(new http403('Computed hash does not match given hash: '+givenHash+' != '+result.computed+''))
+        }
       } catch (e) {
         return next(new http403('Could not calculate hash, unsupported algorithm: '+auth.body.alg))
       }
-      if (givenHash !== computedHash)
-        return next(new http403('Computed hash does not match given hash: '+givenHash+' != '+computedHash+''))
     }
 
     if (!auth.key)
@@ -197,6 +198,16 @@ function verifyRequest() {
 
     function success() { next() }
   }
+}
+
+function verifyHash(given, alg, body) {
+  var computed = hash(alg, body)
+  if (given === computed)
+    return { verified: true, computed: computed }
+  computed = hash(alg, Buffer(body, 'utf8'))
+  if (given === computed)
+    return { verified: true, computed: computed }
+  return { verified: false, computed: computed }
 }
 
 function getAuthToken(req) {
