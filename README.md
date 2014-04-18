@@ -2,15 +2,29 @@
 
 The BadgeKit API provides back-end processing and data storage for issuing Open Badges. You can use the API in conjunction with the [BadgeKit app](https://github.com/mozilla/openbadges-badgekit) or can use the API itself, with your own front-ends for badge admin and for earners. With BadgeKit handling the data for badges and earner applications, you can deliver interaction with your community of badge earners, plugging into the API for data and to respond to badge issuing events.
 
-__Note that BadgeKit is not intended to handle earner data - the tools are designed to deliver admin functions for issuing Open Badges, while you provide earner interaction within your own site. This allows organizations to own and control the data for their own communities.__
+__Note that BadgeKit is not intended to handle earner data - the tools are designed to deliver admin functions for issuing Open Badges, while you provide earner interaction within your own site. This allows an organization to own and control the data for their own community of earners.__
 
-__The BadgeKit Web app links to the API to create an admin user interface for creating badges and managing applications for them - if you don't use the app, you can use the API in conjunction with your own system for creating badges and managing earner applications. Either way, you deliver the earner interaction to suit your community.__
+__The BadgeKit Web app links to the API to create an admin user interface for creating badges and managing applications for them - if you don't use the app, you can use the API in conjunction with your own systems for creating badges and managing earner applications. Either way, you deliver the earner interaction to suit the needs of your community.__
 
 ## Using the API
 
-The BadgeKit API provides a series of endpoints through which your sites can interact with badge data. Examples would be retrieving a list of currently published badges, creating a new badge or updating the data for an existing badge. When you make a request, the API will return JSON data. You can then present the returned data within your own site interface.
+The BadgeKit API provides a series of endpoints through which your sites can interact with data for badges, earner applications and issuer organization admin. Below are some examples of calls you can make to the API.
 
-In addition to the series of calls you can make to interact with data, the API also provides webhooks for badging events such as a badge being issued or an earner application being reviewed. By configuring a URL to receive notification of these events, you can build your own custom responses, for example informing an earner that their badge application was successful.
+Retrieve/ Update/ Add new:
+* badges
+* earner applications for badges
+* application reviews
+* _issuers within a system_
+* _programs within an issuer_
+* _badge/ application data for a particular issuers/ programs_.
+
+__Using issuer and program admin levels is entirely optional - you can simply configure BadgeKit to group all of your badge and application data within a single system.__
+
+When you make a request, the API returns JSON data. You can then present the returned data within your own site interface.
+
+In addition to the series of calls you can make to interact with data, the API also provides webhooks for badging events (such as a badge being issued or an earner application being reviewed). By configuring a URL to receive notification of these events, you can build your own custom responses, for example informing an earner that their badge application was successful.
+
+To get started accessing the API in your own sites, see [Using BadgeKit API](https://github.com/mozilla/badgekit-api/wiki/Using-BadgeKit-API).
 
 ### Authorization
 
@@ -34,4 +48,4 @@ The BadgeKit API currently uses the following configuration details:
 * `DB_NAME`: Name of the database to store BadgeKit data.
 * `DB_USER`: User who has full access to the `DB_NAME` table.
 * `DB_PASSWORD`: Password for the `DB_USER`.
-* `MASTER_SECRET`: The master secret used to sign global-access JWT tokens. This should not be shared widely – probably only with one frontend, e.g. `badgekit`.
+* `MASTER_SECRET`: The master secret used to sign global-access JWT tokens. This should not be shared widely – probably only with one front-end, e.g. `badgekit`.
