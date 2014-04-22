@@ -65,6 +65,13 @@ INSERT INTO `programs` SET
   `description` = 'Start learning now',
   `email` = 'admin@khanacademy.org';
 
+INSERT INTO `badgeTypes` SET
+  `systemId` = 1,
+  `programId` = 1,
+  `issuerId` = 1,
+  `slug` = 'community',
+  `name` = 'Community';
+
 INSERT INTO `badges` SET
   `id` = 1,
   `systemId` = 1,

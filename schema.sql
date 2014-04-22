@@ -84,9 +84,23 @@ CREATE TABLE `badges` (
   `programId` INT NULL REFERENCES `programs`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
   `systemId` INT NULL REFERENCES `systems`(`id`),
+  `badgeTypeId` INT NULL REFERENCES `badgeTypes`(`id`),
   UNIQUE KEY `slug_and_system` (`slug`, `systemId`),
   UNIQUE KEY `slug_and_issuer` (`slug`, `issuerId`),
   UNIQUE KEY `slug_and_program` (`slug`, `programId`),
+  UNIQUE KEY `slug_and_badge_type` (`slug`, `badgeTypeId`),
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `badgeTypes`;
+CREATE TABLE `badgeTypes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL UNIQUE,
+  `slug` VARCHAR(255) NOT NULL UNIQUE,
+  `programId` INT NULL REFERENCES `programs`(`id`),
+  `issuerId` INT NULL REFERENCES `issuers`(`id`),
+  `systemId` INT NULL REFERENCES `systems`(`id`),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;

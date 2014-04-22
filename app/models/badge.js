@@ -7,8 +7,8 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
-const Criteria = require('./criteria')
-
+const Criteria = require('./criteria');
+const BadgeTypes = require('./badge-type');
 const Badges = db.table('badges', {
   fields: [
     'id',
@@ -29,7 +29,8 @@ const Badges = db.table('badges', {
     'imageId',
     'systemId',
     'issuerId',
-    'programId'
+    'programId',
+    'badgeTypeId'
   ],
   relationships: {
     image: {
@@ -60,13 +61,19 @@ const Badges = db.table('badges', {
       type: 'hasMany',
       local: 'id',
       foreign: { table: 'criteria', key: 'badgeId' }
+    },
+    badgeType: {
+      type: 'hasOne',
+      local: 'badgeTypeId',
+      foreign: { table: 'badgeTypes', key: 'id' },
+      optional: true
     }
   },
   methods: {
     setCriteria: setCriteria,
     del: del,
     toResponse: function () {
-      return Badges.toResponse(this)
+      return Badges.toResponse(this);
     },
   }
 });
@@ -91,12 +98,14 @@ Badges.toResponse = function toResponse(row) {
     system: maybeObject(row.system),
     issuer: maybeObject(row.issuer),
     program: maybeObject(row.program),
+    badgeType: maybeObject(row.badgeType),
     criteriaUrl: row.criteriaUrl,
     criteria: (row.criteria || []).map(function(criterion) {
       return Criteria.toResponse(criterion);
     })
   };
 }
+
 function maybeObject(obj) {
   return (obj && obj.id) ? obj.toResponse() : undefined
 }
@@ -117,6 +126,7 @@ Badges.validateRow = makeValidator({
   programId: optional('isInt'),
   issuerId: optional('isInt'),
   systemId: optional('isInt'),
+  badgeTypeId: optional('isInt')
 });
 
 function setCriteria(criteria, callback) {
