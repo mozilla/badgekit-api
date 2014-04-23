@@ -22,3 +22,17 @@ Called when an instance of a badge is created (when a badge is rewarded, not whe
   issuedOn: {date / time of issuance},
 }
 ```
+
+## New Application Review Submitted
+
+Called when a review is submitted for a badge application.  Note that when a review is submitted that approves the application, the badge is NOT automatically awarded.  The receiver of this webhook will have to immediately call back to badgekit-api to award the badge if that is the desired behavior.
+
+### Message
+```
+{
+  action: 'review',
+  application: {application object}
+  review: {review object}
+  approved: {true/false, indicating whether the application was approved}
+}
+```
