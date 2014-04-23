@@ -25,7 +25,7 @@ Called when an instance of a badge is created (when a badge is rewarded, not whe
 
 ## New Application Review Submitted
 
-Called when a review is submitted for a badge application.  Note that when a review is submitted that approves the application, the badge is NOT automatically awarded.  The receiver of this webhook will have to immediately call back to badgekit-api to award the badge if that is the desired behavior.
+Called when a review is submitted for a badge application.  Note that when a review is submitted that approves the application, the badge is NOT automatically awarded.  The receiver of this webhook will have to immediately call back to BadgeKit API to award the badge if that is the desired behavior.  Similarly, the badge application will remain active and reviewable until a call is made to BadgeKit API that sets a 'processed' timestamp on the application.
 
 ### Message
 ```
