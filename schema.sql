@@ -91,6 +91,16 @@ CREATE TABLE `badges` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `badgeId` INT NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`badgeId`) REFERENCES `badges`(`id`) ON DELETE CASCADE
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `claimCodes`;
 CREATE TABLE `claimCodes` (
   `id` INT NOT NULL AUTO_INCREMENT,
