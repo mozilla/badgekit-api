@@ -65,7 +65,7 @@ function putModel(Model) {
         if (err)
           return callback(err)
 
-        const query = {slug: data.slug};
+        const query = {id: (result.insertId || result.row.id)};
         const options = {relationships: true};
         return Model.getOne(query, options, callback)
       });
