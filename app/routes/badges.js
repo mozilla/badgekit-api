@@ -1,3 +1,4 @@
+const async = require('async')
 const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
 
@@ -84,6 +85,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
   ]);
   function saveBadge (req, res, next) {
     const criteria = req.body.criteria || [];
+    const categories = req.body.categories || [];
     const row = fromPostToRow(req.body);
     const image = imageHelper.getFromPost(req, {required: true})
 
@@ -91,7 +93,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (req.issuer) row.issuerId = req.issuer.id
     if (req.program) row.programId = req.program.id
 
-    putBadge(row, image, criteria, function (err, badge) {
+    putBadge(row, image, criteria, categories, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -224,8 +226,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
     const row = safeExtend(req.badge, req.body);
     const image = imageHelper.getFromPost(req);
     const criteria = req.body.criteria || [];
+    const categories = req.body.categories || [];
     delete row.created;
-    putBadge(row, image, criteria, function (err, badge) {
+    putBadge(row, image, criteria, categories, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
@@ -241,12 +244,17 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
 };
 
-function putBadge (row, image, criteria, callback) {
+function putBadge (row, image, criteria, categories, callback) {
   putBadgeHelper(row, image, function(err, row) {
     if (err)
       return callback(err);
 
-    return row.setCriteria(criteria, callback);
+    async.parallel([
+      row.setCriteria.bind(row, criteria),
+      row.setCategories.bind(row, categories)
+    ], function (err, data) {
+      callback(err, data[0])
+    });
   });
 };
 
