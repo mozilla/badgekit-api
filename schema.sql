@@ -84,6 +84,7 @@ CREATE TABLE `badges` (
   `programId` INT NULL REFERENCES `programs`(`id`),
   `issuerId` INT NULL REFERENCES `issuers`(`id`),
   `systemId` INT NULL REFERENCES `systems`(`id`),
+  `type` VARCHAR(255) NOT NULL,
   UNIQUE KEY `slug_and_system` (`slug`, `systemId`),
   UNIQUE KEY `slug_and_issuer` (`slug`, `issuerId`),
   UNIQUE KEY `slug_and_program` (`slug`, `programId`),
