@@ -95,10 +95,9 @@ CREATE TABLE `badges` (
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `badgeId` INT NOT NULL,
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
   `value` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`badgeId`) REFERENCES `badges`(`id`) ON DELETE CASCADE
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
