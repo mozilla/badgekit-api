@@ -178,6 +178,8 @@ function setCriteria(criteria, callback) {
 
 function setCategories(categories, callback) {
   const badgeId = this.id;
+  if (!Array.isArray(categories))
+    categories = [categories];
 
   Category.del({badgeId: badgeId}, function (err) {
     if (err)
@@ -199,7 +201,7 @@ function setCategories(categories, callback) {
       if (!category || categories.indexOf(category) !== pos)
         return;
 
-      stream.write({badgeId: badgeId, category: category});
+      stream.write({badgeId: badgeId, value: category});
     });
 
     stream.end();
