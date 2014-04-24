@@ -1,5 +1,6 @@
 const safeExtend = require('../lib/safe-extend')
 const Applications = require('../models/application');
+const Badges = require('../models/badge');
 
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
@@ -118,25 +119,33 @@ exports = module.exports = function applyApplicationRoutes (server) {
     const evidence = req.body.evidence || [];
     const row = fromPostToRow(req.body);
 
-    if (req.badge) row.badgeId = req.badge.id
-    if (req.system) row.systemId = req.system.id;
-    if (req.issuer) row.issuerId = req.issuer.id;
-    if (req.program) row.programId = req.program.id;
+    row.badgeId = req.badge.id;
+    row.slug = hash('md5', Date.now().toString() + row.learner);
 
-    row.slug = hash('md5', Date.now().toString() + row.learner),
-
-    putApplication(row, evidence, function (err, application) {
+    Badges.getOne({ id: row.badgeId }, function(err, badgeRow) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
-      return res.send(201, {
-        status: 'created',
-        application: application.toResponse()
+      row.systemId = badgeRow.systemId;
+      row.issuerId = badgeRow.issuerId;
+      row.programId = badgeRow.programId;
+
+      putApplication(row, evidence, function (err, application) {
+        if (err) {
+          if (!Array.isArray(err))
+            return dbErrorHandler(err, row, res, next);
+          return res.send(400, errorHelper.validation(err));
+        }
+
+        return res.send(201, {
+          status: 'created',
+          application: application.toResponse()
+        });
       });
-    });
+    });    
   }
 
   server.put('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
