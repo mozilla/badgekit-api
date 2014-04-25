@@ -100,7 +100,9 @@ spawn(app).then(function (api) {
         consumerDescription: 'Some description, o',
         unique: 0,
         image: stream('test-image.png'),
-        criteriaUrl: 'http://example.org/criteria'
+        criteriaUrl: 'http://example.org/criteria',
+        type: 'Badge Type',
+        categories: 'Category One'
       })
     }).then(function (res) {
       t.same(res.statusCode, 201)

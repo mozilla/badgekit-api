@@ -1,13 +1,15 @@
 # Badges
 
-## `GET /badges`
+## `Badge List`
 
-Retrieves all available badges
+Retrieves all available badges, filtered by system, issuer or program.
 
 ### Expected request
 
 ```
-GET /badges HTTP/1.1
+GET /systems/:systemSlug/badges HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/badges HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1.1
 ```
 
 #### Available request parameters
@@ -51,14 +53,16 @@ Content-Type: application/json
 
 *None*
 
-## `GET /badges/<slug>`
+## `Retrieve a specific badge`
 
 Retrieves a specific badge.
 
 ### Expected request
 
 ```
-GET /badges/<slug> HTTP/1.1
+GET /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug HTTP/1.1
 ```
 
 ### Expected response
@@ -101,16 +105,23 @@ Content-Type: application/json
   }
   ```
 
-## `POST /badges`
+## `Create a badge`
 
-Creates a new badge.
+Creates a new badge, or updates an existing badge.
 
 ### Expected request
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 ```
-POST /badges HTTP/1.1
+POST /systems/:systemSlug/badges HTTP/1.1
+POST /systems/:systemSlug/issuers/:issuerSlug/badges HTTP/1.1
+POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
+```
+
+```
+HTTP/1.1
+
 Content-Type: application/json
 
 {
@@ -132,14 +143,12 @@ Content-Type: application/json
 ```
 
 ```
-POST /badges HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 name=Badge%20Name&slug=badge-slug&strapline=Badge%20Strapline&description=Badge%20Description&imageUrl=http%3A%2F%2Fexample.org%2Fimage.png
 ```
 
 ```
-POST /badges HTTP/1.1
 Content-Type: multipart/form-data; boundary=…
 
 --…
@@ -170,7 +179,6 @@ http://example.org/image.png
 Images can be uploaded and hosted by the issuer API.
 
 ```
-POST /badges HTTP/1.1
 Content-Type: multipart/form-data; boundary=…
 
 --…
@@ -184,20 +192,7 @@ Content-Transfer-Encoding: binary
 --…--
 ```
 
-*Currently unsupported, but being considered.*
-
 ```
-POST /badges HTTP/1.1
-Content-Type: application/json
-
-{
-  …,
-  "image": "data:image/png;base64,…"
-}
-```
-
-```
-POST /badges HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 …&image=data%3Aimage%2Fpng%3Bbase64%2C…
@@ -289,7 +284,13 @@ Updates an existing badge.
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 ```
-PUT /badges/<slug> HTTP/1.1
+PUT /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
+PUT /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
+PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug
+```
+
+
+```
 Content-Type: application/json
 
 {
@@ -311,14 +312,12 @@ Content-Type: application/json
 ```
 
 ```
-PUT /badges HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 name=New%20Badge%20Name&new-slug=badge-slug&strapline=New%20Badge%20Strapline&description=New%20Badge%20Description&image=http%3A%2F%2Fexample.org%2Fnew-image.png
 ```
 
 ```
-PUT /badges HTTP/1.1
 Content-Type: multipart/form-data; boundary=…
 
 --…
@@ -425,14 +424,16 @@ Content-Type: application/json
   }
   ```
 
-## `DELETE /badges/<slug>`
+## Delete a Badge
 
 Deletes an existing badge.
 
 ### Expected request
 
 ```
-DELETE /badges/<slug> HTTP/1.1
+DELETE /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
+DELETE /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
+DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug
 ```
 
 ### Expected response

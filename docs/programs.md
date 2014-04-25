@@ -1,13 +1,13 @@
 # Programs
 
-## `GET /programs`
+## Retrieve all programs, filtered by system and issuer.
 
 Retrieves all available programs.
 
 ### Expected request
 
 ```
-GET /programs HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs HTTP/1.1
 ```
 
 ### Expected response
@@ -32,14 +32,14 @@ Content-Type: application/json
 
 *None*
 
-## `GET /programs/<slug>`
+## Retrieve a specific program
 
 Retrieves a specific program.
 
 ### Expected request
 
 ```
-GET /programs/<slug> HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/<slug> HTTP/1.1
 ```
 
 ### Expected response
@@ -71,11 +71,15 @@ Content-Type: application/json
   }
   ```
 
-## `POST /programs`
+## Create a new program
 
 Creates a new program.
 
 ### Expected request
+
+```
+POST /systems/:systemSlug/issuers/:issuerSlug/programs HTTP/1.1
+```
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
@@ -150,12 +154,15 @@ Content-Type: application/json
   }
   ```
 
-## `PUT /programs/<slug>`
+## Update an existing program
 
 Updates an existing program.
 
 ### Expected request
 
+```
+PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug HTTP/1.1
+```
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 <a href="#post-parameters">See above for parameters.</a> You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
@@ -219,14 +226,14 @@ Content-Type: application/json
   }
   ```
 
-## `DELETE /programs/<slug>`
+## Delete a program
 
 Deletes an existing program.
 
 ### Expected request
 
 ```
-DELETE /programs/<slug> HTTP/1.1
+DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug HTTP/1.1
 ```
 
 ### Expected response
