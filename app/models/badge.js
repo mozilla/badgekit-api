@@ -94,6 +94,7 @@ Badges.toResponse = function toResponse(row) {
     limit: row.limit,
     unique: row.unique,
     created: row.created,
+    type: row.type,
     imageUrl: row.image ? row.image.toUrl() : undefined,
     archived: !!row.archived,
     system: maybeObject(row.system),

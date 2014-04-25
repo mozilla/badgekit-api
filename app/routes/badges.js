@@ -275,6 +275,7 @@ function fromPostToRow (post) {
     timeValue: post.timeValue,
     timeUnits: post.timeUnits,
     limit: post.limit,
+    type: post.type,
     unique: post.unique
   };
 }
