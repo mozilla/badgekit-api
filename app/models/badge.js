@@ -8,6 +8,7 @@ const optional = validation.optional;
 const required = validation.required;
 
 const Criteria = require('./criteria')
+const Category = require('./category')
 
 const Badges = db.table('badges', {
   fields: [
@@ -29,7 +30,8 @@ const Badges = db.table('badges', {
     'imageId',
     'systemId',
     'issuerId',
-    'programId'
+    'programId',
+    'type'
   ],
   relationships: {
     image: {
@@ -60,10 +62,16 @@ const Badges = db.table('badges', {
       type: 'hasMany',
       local: 'id',
       foreign: { table: 'criteria', key: 'badgeId' }
+    },
+    categories: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'categories', key: 'badgeId' },
     }
   },
   methods: {
     setCriteria: setCriteria,
+    setCategories: setCategories,
     del: del,
     toResponse: function () {
       return Badges.toResponse(this)
@@ -86,6 +94,7 @@ Badges.toResponse = function toResponse(row) {
     limit: row.limit,
     unique: row.unique,
     created: row.created,
+    type: row.type,
     imageUrl: row.image ? row.image.toUrl() : undefined,
     archived: !!row.archived,
     system: maybeObject(row.system),
@@ -94,6 +103,10 @@ Badges.toResponse = function toResponse(row) {
     criteriaUrl: row.criteriaUrl,
     criteria: (row.criteria || []).map(function(criterion) {
       return Criteria.toResponse(criterion);
+    }),
+    type: row.type,
+    categories: (row.categories || []).map(function(category) {
+      return Category.toResponse(category);
     })
   };
 }
@@ -161,6 +174,38 @@ function setCriteria(criteria, callback) {
 
       Badges.getOne({ id: badgeId }, { relationships: true }, callback);
     });
+  });
+}
+
+function setCategories(categories, callback) {
+  const badgeId = this.id;
+  if (!Array.isArray(categories))
+    categories = [categories];
+
+  Category.del({badgeId: badgeId}, function (err) {
+    if (err)
+      return callback(err);
+
+    const stream = Category.createWriteStream();
+
+    stream.on('error', function (err) {
+      callback(err);
+      callback = function () {};
+    });
+
+    stream.on('close', function () {
+      callback(null);
+    });
+
+    categories.forEach(function (category, pos) {
+      // Filter out empty and duplicate values
+      if (!category || categories.indexOf(category) !== pos)
+        return;
+
+      stream.write({badgeId: badgeId, value: category});
+    });
+
+    stream.end();
   });
 }
 
