@@ -37,6 +37,16 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
   }
 }
 
+BadgeInstances.toResponse = function toResponse(row) {
+  return {
+    slug: row.slug,
+    email: row.email,
+    expires: row.expires,
+    issuedOn: row.issuedOn,
+    claimCode: row.claimCode
+  }
+};
+
 BadgeInstances.validateRow = makeValidator({
   id: optional('isInt'),
   email: required('isEmail'),

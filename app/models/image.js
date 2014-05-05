@@ -14,14 +14,17 @@ const Images = db.table('images', {
     'data'
   ],
   methods: {
-    toUrl: function toUrl () {
+    toUrl: function toUrl (request) {
       if (this.url)
         return this.url.toString('ascii');
 
       if (!this.slug)
         return null;
 
-      return '/images/' + this.slug.toString('ascii');
+      var path = '/images/' + this.slug.toString('ascii');
+      if (request)
+        path = request.resolvePath(path)
+      return path
     }
   },
 });

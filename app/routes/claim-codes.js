@@ -1,3 +1,4 @@
+const Badges = require('../models/badge')
 const ClaimCodes = require('../models/claim-codes')
 const middleware = require('../lib/middleware')
 const errorHelper = require('../lib/error-helper')
@@ -190,5 +191,63 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
         })
       })
       .error(req.error('Error deleting claim code'))
+  }
+
+  server.get('/systems/:systemSlug/codes/:code', [
+    middleware.findSystem(),
+    getBadgeFromCode,
+  ]);
+  server.get('/systems/:systemSlug/issuers/:issuerSlug/codes/:code', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    getBadgeFromCode,
+  ]);
+  server.get('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/codes/:code', [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
+    getBadgeFromCode,
+  ]);
+  function getBadgeFromCode(req, res, next) {
+    var sqlString = 'SELECT (c.claimed && !c.multiuse) AS claimed, b.id AS badgeId FROM $table c INNER JOIN `badges` b ON b.id=c.badgeId WHERE c.code = ?';
+    var params = [req.params.code];
+
+    if (req.system) {
+      sqlString += ' AND b.systemId = ?';
+      params.push(req.system.id);
+    }
+
+    if (req.issuer) {
+      sqlString += ' AND b.issuerId = ?';
+      params.push(req.issuer.id);
+    }
+
+    if (req.program) {
+      sqlString += ' AND b.programId = ?';
+      params.push(req.program.id);
+    }
+
+    sqlString += ';';
+
+    ClaimCodes.get([sqlString, params])
+    .then(function (rows) {
+      if (rows.length) {
+        Badges.getOne({ id: rows[0].badgeId }, { relationships: true })
+        .then(function (badge) {
+          badge = badge.toResponse();
+          // it's a little weird to throw this claimed field on the badge as opposed
+          // to sending along the full claim code row itself as a seperate object, but 
+          // badgekit-api-client doesn't seem to like having multiple models returned 
+          // at the moment, so I'm doing this to play nicely with it.
+          badge.claimed = rows[0].claimed;
+          res.send(200, { badge: badge });
+        })
+        .error(req.error('Error finding badge from claim code'))
+      }
+      else {
+        next(errorHelper.notFound('Could not find the requested claim code ' + req.params.code));
+      }
+    })
+    .error(req.error('Error finding badge from claim code'))
   }
 }

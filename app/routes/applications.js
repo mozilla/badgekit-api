@@ -1,5 +1,6 @@
 const safeExtend = require('../lib/safe-extend')
 const Applications = require('../models/application');
+const Badges = require('../models/badge');
 
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
@@ -43,7 +44,11 @@ exports = module.exports = function applyApplicationRoutes (server) {
   ]);
   function showAllApplications (req, res, next) {
     var query = {};
-    var options = {relationships: true};
+    var options = {
+      relationships: true,
+      relationshipsDepth: 2,
+      sort: ['badgeId', 'created'],
+    };
 
     if (req.badge) query.badgeId = req.badge.id;
     if (req.system) query.systemId = req.system.id;
@@ -54,21 +59,24 @@ exports = module.exports = function applyApplicationRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({applications: rows.map(Applications.toResponse)});
+      res.send({applications: rows.map(function (application) {
+        return Applications.toResponse(application, req);
+      })});
+
       return next();
     });
   }
 
   server.get('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
     middleware.findSystem(),
-    middleware.findBadge({where: {systemId: ['system', 'id']}}),
+    middleware.findBadge({relationships: true, where: {systemId: ['system', 'id']}}),
     middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
     showOneApplication,
   ]);
   server.get('/systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/applications/:applicationSlug', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-    middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
+    middleware.findBadge({relationships: true, where: {issuerId: ['issuer', 'id']}}),
     middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
     showOneApplication,
   ]);
@@ -76,12 +84,16 @@ exports = module.exports = function applyApplicationRoutes (server) {
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-    middleware.findBadge({where: {programId: ['program', 'id']}}),
+    middleware.findBadge({relationships: true, where: {programId: ['program', 'id']}}),
     middleware.findApplication({relationships: true, where: {badgeId: ['badge', 'id']}}),
     showOneApplication,
   ]);
   function showOneApplication (req, res, next) {
-    res.send({application: req.application.toResponse()});
+
+    var application = req.application;
+    application.badge = req.badge;
+
+    res.send({application: application.toResponse()});
     return next();
   }
 
@@ -107,22 +119,33 @@ exports = module.exports = function applyApplicationRoutes (server) {
     const evidence = req.body.evidence || [];
     const row = fromPostToRow(req.body);
 
-    if (req.badge) row.badgeId = req.badge.id
+    row.badgeId = req.badge.id;
+    row.slug = hash('md5', Date.now().toString() + row.learner);
 
-    row.slug = hash('md5', Date.now().toString() + row.learner),
-
-    putApplication(row, evidence, function (err, application) {
+    Badges.getOne({ id: row.badgeId }, function(err, badgeRow) {
       if (err) {
         if (!Array.isArray(err))
           return dbErrorHandler(err, row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
-      return res.send(201, {
-        status: 'created',
-        application: application.toResponse()
+      row.systemId = badgeRow.systemId;
+      row.issuerId = badgeRow.issuerId;
+      row.programId = badgeRow.programId;
+
+      putApplication(row, evidence, function (err, application) {
+        if (err) {
+          if (!Array.isArray(err))
+            return dbErrorHandler(err, row, res, next);
+          return res.send(400, errorHelper.validation(err));
+        }
+
+        return res.send(201, {
+          status: 'created',
+          application: application.toResponse()
+        });
       });
-    });
+    });    
   }
 
   server.put('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
@@ -149,6 +172,10 @@ exports = module.exports = function applyApplicationRoutes (server) {
   function updateApplication (req, res, next) {
     const row = safeExtend(req.application, req.body);
     const evidence = req.body.evidence;
+
+    if (row.processed) {
+      row.processed = new Date(row.processed);
+    }
 
     delete row.created;
 

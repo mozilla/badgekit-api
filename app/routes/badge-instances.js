@@ -107,14 +107,16 @@ exports = module.exports = function applyBadgeRoutes (server) {
       var hookData, system
       BadgeInstances.put(row).then(function (result) {
         const instance = result.row
-        const relativeAssertionUrl = '/public/assertions/' + instance.slug
-        const assertionUrl = req.resolvePath(relativeAssertionUrl)
+        const relativeAssertionUrl = '/public/assertions/' + instance.slug;
+        const assertionUrl = req.resolvePath(relativeAssertionUrl);
 
+        var responseInstance = BadgeInstances.toResponse(instance);
+        responseInstance.assertionUrl = assertionUrl;
 
         res.header('Location', relativeAssertionUrl)
         res.send(201, {
           status: 'created',
-          location: assertionUrl,
+          instance: responseInstance,
         })
 
         // Webhook stuff shouldn't hold up the request, so we call
@@ -125,6 +127,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         hookData = {
           action: 'award',
           uid: instance.slug,
+          badge: req.badge.toResponse(),
           email: instance.email,
           assertionUrl: assertionUrl,
           issuedOn: unixtimeFromDate(instance.issuedOn),
@@ -141,7 +144,18 @@ exports = module.exports = function applyBadgeRoutes (server) {
             return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
         })
       }).error(function (err) {
-        log.error(err, 'error dealing with webhooks when awarding badge')
+        if (err.code === 'ER_DUP_ENTRY') {
+          BadgeInstances.getOne({email: row.email, badgeId: req.badge.id}).then(function (instance) {
+            const otherAssertionUrl = req.resolvePath('/public/assertions/' + instance.slug);
+            return res.send(409, {code: 'ResourceConflict', message: 'User ' + row.email + ' has already been awarded badge ' + req.badge.slug, details: { assertionUrl: otherAssertionUrl }});
+          })
+          .error(function (err) {
+            log.error(err, 'error fetching pre-existing badge instance');
+          })
+        }
+        else {
+          log.error(err, 'error dealing with webhooks when awarding badge')
+        }
       })
     }
   }

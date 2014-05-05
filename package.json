@@ -1,6 +1,6 @@
 {
   "name": "badgekit-api",
-  "version": "0.2.0",
+  "version": "0.2.4",
   "description": "A badge issuing platform",
   "author": "Mozilla OpenBadges",
   "license": "MPLv2",
@@ -20,6 +20,8 @@
     "bunyan": "~0.22.1",
     "jws": "~0.2.5",
     "request": "~2.33.0",
+    "underscore": "~1.6.0",
+    "newrelic": "~1.4.0",
     "async": "~0.2.10"
   },
   "devDependencies": {
