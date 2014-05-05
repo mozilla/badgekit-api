@@ -151,6 +151,15 @@ CREATE TABLE `criteria` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `tags`;
+CREATE TABLE `tags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `applications`;
 CREATE TABLE `applications` (
   `id` INT NOT NULL AUTO_INCREMENT,
