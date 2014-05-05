@@ -84,19 +84,22 @@ exports = module.exports = function applyBadgeRoutes (server) {
     saveBadge,
   ]);
   function saveBadge (req, res, next) {
-    const criteria = req.body.criteria || [];
-    const categories = req.body.categories || [];
-    const row = fromPostToRow(req.body);
-    const image = imageHelper.getFromPost(req, {required: true})
+    var options = {
+      row: fromPostToRow(req.body),
+      criteria: req.body.criteria || [],
+      categories: req.body.categories || [],
+      tags: req.body.tags || [],
+      image: imageHelper.getFromPost(req, {required: true})
+    }
 
-    if (req.system) row.systemId = req.system.id
-    if (req.issuer) row.issuerId = req.issuer.id
-    if (req.program) row.programId = req.program.id
+    if (req.system) options.row.systemId = req.system.id
+    if (req.issuer) options.row.issuerId = req.issuer.id
+    if (req.program) options.row.programId = req.program.id
 
-    putBadge(row, image, criteria, categories, function (err, badge) {
+    putBadge(options, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
-          return dbErrorHandler(err, row, res, next);
+          return dbErrorHandler(err, options.row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
@@ -223,15 +226,19 @@ exports = module.exports = function applyBadgeRoutes (server) {
     updateBadge,
   ]);
   function updateBadge (req, res, next) {
-    const row = safeExtend(req.badge, req.body);
-    const image = imageHelper.getFromPost(req);
-    const criteria = req.body.criteria || [];
-    const categories = req.body.categories || [];
-    delete row.created;
-    putBadge(row, image, criteria, categories, function (err, badge) {
+    var options = {
+      row: safeExtend(req.badge, req.body),
+      criteria: req.body.criteria || [],
+      categories: req.body.categories || [],
+      tags: req.body.tags || [],
+      image: imageHelper.getFromPost(req)
+    }
+
+    delete options.row.created;
+    putBadge(options, function (err, badge) {
       if (err) {
         if (!Array.isArray(err))
-          return dbErrorHandler(err, row, res, next);
+          return dbErrorHandler(err, options.row, res, next);
         return res.send(400, errorHelper.validation(err));
       }
 
@@ -244,14 +251,15 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
 };
 
-function putBadge (row, image, criteria, categories, callback) {
-  putBadgeHelper(row, image, function(err, row) {
+function putBadge (options, callback) {
+  putBadgeHelper(options.row, options.image, function(err, row) {
     if (err)
       return callback(err);
 
     async.parallel([
-      row.setCriteria.bind(row, criteria),
-      row.setCategories.bind(row, categories)
+      row.setCriteria.bind(row, options.criteria),
+      row.setCategories.bind(row, options.categories),
+      row.setTags.bind(row, options.tags)
     ], function (err, data) {
       callback(err, data[0])
     });

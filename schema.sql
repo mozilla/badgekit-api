@@ -151,6 +151,16 @@ CREATE TABLE `criteria` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `tags`;
+CREATE TABLE `tags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `badgeId` INT NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`badgeId`) REFERENCES `badges`(`id`) ON DELETE CASCADE
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
 DROP TABLE IF EXISTS `applications`;
 CREATE TABLE `applications` (
   `id` INT NOT NULL AUTO_INCREMENT,

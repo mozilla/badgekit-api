@@ -9,6 +9,7 @@ const required = validation.required;
 
 const Criteria = require('./criteria')
 const Category = require('./category')
+const Tags = require('./tag')
 
 const Badges = db.table('badges', {
   fields: [
@@ -67,11 +68,17 @@ const Badges = db.table('badges', {
       type: 'hasMany',
       local: 'id',
       foreign: { table: 'categories', key: 'badgeId' },
+    },
+    tags: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'tags', key: 'badgeId' }
     }
   },
   methods: {
     setCriteria: setCriteria,
     setCategories: setCategories,
+    setTags: setTags,
     del: del,
     toResponse: function () {
       return Badges.toResponse(this)
@@ -107,7 +114,10 @@ Badges.toResponse = function toResponse(row, request) {
     type: row.type,
     categories: (row.categories || []).map(function(category) {
       return Category.toResponse(category);
-    })
+    }),
+    tags: (row.tags || []).map(function(tag) {
+      return Tags.toResponse(tag);
+    }),
   };
 }
 function maybeObject(obj) {
@@ -203,6 +213,38 @@ function setCategories(categories, callback) {
         return;
 
       stream.write({badgeId: badgeId, value: category});
+    });
+
+    stream.end();
+  });
+}
+
+function setTags(tags, callback) {
+  const badgeId = this.id;
+  if (!Array.isArray(tags))
+    tags = [tags];
+
+  Tags.del({badgeId: badgeId}, function (err) {
+    if (err)
+      return callback(err);
+
+    const stream = Tags.createWriteStream();
+
+    stream.on('error', function (err) {
+      callback(err);
+      callback = function () {};
+    });
+
+    stream.on('close', function () {
+      callback(null);
+    });
+
+    tags.forEach(function (tag, pos) {
+      // Filter out empty and duplicate values
+      if (!tag || tags.indexOf(tag) !== pos)
+        return;
+
+      stream.write({badgeId: badgeId, value: tag});
     });
 
     stream.end();
