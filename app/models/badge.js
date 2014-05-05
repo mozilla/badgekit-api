@@ -224,6 +224,8 @@ function setTags(tags, callback) {
   if (!Array.isArray(tags))
     tags = [tags];
 
+  tags = tags.map(function (tag) { return tag.value || tag });
+  
   Tags.del({badgeId: badgeId}, function (err) {
     if (err)
       return callback(err);
