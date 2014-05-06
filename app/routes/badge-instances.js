@@ -107,13 +107,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
       var hookData, system
       BadgeInstances.put(row).then(function (result) {
         const instance = result.row
-        const relativeAssertionUrl = '/public/assertions/' + instance.slug;
-        const assertionUrl = req.resolvePath(relativeAssertionUrl);
+        var responseInstance = BadgeInstances.toResponse(instance, req);
 
-        var responseInstance = BadgeInstances.toResponse(instance);
-        responseInstance.assertionUrl = assertionUrl;
-
-        res.header('Location', relativeAssertionUrl)
+        res.header('Location', '/public/assertions/' + row.slug)
         res.send(201, {
           status: 'created',
           instance: responseInstance,
@@ -130,7 +126,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           uid: instance.slug,
           badge: req.badge.toResponse(),
           email: instance.email,
-          assertionUrl: assertionUrl,
+          assertionUrl: responseInstance.assertionUrl,
           issuedOn: unixtimeFromDate(instance.issuedOn),
           comment: comment
         }
@@ -160,6 +156,57 @@ exports = module.exports = function applyBadgeRoutes (server) {
         }
       })
     }
+  }
+
+  const getUserInstancesSuffix = '/instances/:email'
+  server.get(prefix.system + getUserInstancesSuffix, [
+    middleware.findSystem(),
+    getUserInstances
+  ]);
+  server.get(prefix.issuer + getUserInstancesSuffix, [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    getUserInstances
+  ]);
+  server.get(prefix.program + getUserInstancesSuffix, [
+    middleware.findSystem(),
+    middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+    middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
+    getUserInstances
+  ]);
+  function getUserInstances(req, res, next) {
+    const email = req.params.email;
+    const systemId = req.system ? req.system.id : null;
+    const issuerId = req.issuer ? req.issuer.id : null;
+    const programId = req.program ? req.program.id : null;
+
+    const query = 'SELECT i.`id` FROM $table i'
+               +  ' INNER JOIN `badges` b ON b.`id`=i.`badgeId`'
+               +  ' WHERE i.`email` = ?'
+               +  ' AND b.`systemId` = ?';
+
+    const queryParams = [email, systemId];
+
+    if (req.issuer) {
+      query += ' AND b.`issuerId` = ?';
+      queryParams.push(issuerId);
+    }
+
+    if (req.program) {
+      query += ' AND b.`programId` = ?';
+      queryParams.push(programId);
+    }
+
+    BadgeInstances.get([query, queryParams]).then(function (rows) {
+      var instanceIds = rows.map(function(row) { return row.id; });
+      return BadgeInstances.get( { id: instanceIds }, { relationships: true, relationshipsDepth: 2 });
+    }).then(function (rows) {
+      res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+    }).error(function (err) {
+      if (!err.restCode)
+        log.error(err, 'unknown error in getUserInstances route')
+      return next(err)
+    });
   }
 
   server.get('/public/assertions/:instanceSlug', getAssertion)
