@@ -124,6 +124,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         next()
 
         const system = req.system
+        const comment = req.body.comment || null;
         hookData = {
           action: 'award',
           uid: instance.slug,
@@ -131,6 +132,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           email: instance.email,
           assertionUrl: assertionUrl,
           issuedOn: unixtimeFromDate(instance.issuedOn),
+          comment: comment
         }
         return Webhooks.getOne({systemId: system.id})
       }).then(function (hook) {

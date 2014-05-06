@@ -63,6 +63,8 @@ CREATE TABLE `programs` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
+DROP TABLE IF EXISTS `tags`;
+
 DROP TABLE IF EXISTS `badges`;
 CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -148,6 +150,15 @@ CREATE TABLE `criteria` (
   `note` TEXT NOT NULL,
   `required` BOOL NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+CREATE TABLE `tags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `badgeId` INT NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`badgeId`) REFERENCES `badges`(`id`) ON DELETE CASCADE
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 

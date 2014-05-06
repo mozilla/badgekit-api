@@ -80,6 +80,7 @@ INSERT INTO `badges` SET
   `limit` = 5,
   `unique` = 1,
   `strapline` = 'A badge for Chicago',
+  `type` = 'Not too shabby',
   `imageId` = 1;
 
 INSERT INTO `badges` SET
@@ -97,6 +98,7 @@ INSERT INTO `badges` SET
   `limit` = null,
   `unique` = 0,
   `strapline` = 'A badge for Pittsburgh',
+  `type` = 'Not too shabby',
   `imageId` = 1;
 
 INSERT INTO `badges` SET
@@ -114,6 +116,7 @@ INSERT INTO `badges` SET
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'An archived badge',
+  `type` = 'Not too shabby',
   `archived` = 1,
   `imageId` = 1;
 
@@ -134,6 +137,7 @@ INSERT INTO `badges` SET
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'A badge for doing Scratch in Chicago',
+  `type` = 'Not too shabby',
   `imageId` = 1;
 
 INSERT INTO `badges` SET
@@ -152,6 +156,7 @@ INSERT INTO `badges` SET
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'A badge for doing Library in Chicago',
+  `type` = 'Not too shabby',
   `imageId` = 1;
 
 INSERT INTO `claimCodes` SET
