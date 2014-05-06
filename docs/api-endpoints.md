@@ -63,9 +63,9 @@
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/unclaim
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/unclaim
   * Issuing
-    * **GET** /systems/:slug/badges/:slug/instances
-    * **GET** /systems/:slug/issuers/:slug/badges/:slug/instances
-    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances
+    * **GET** /systems/:slug/instances/:email
+    * **GET** /systems/:slug/issuers/:slug/instances/:email
+    * **GET** /systems/:slug/issuers/:slug/programs/:slug/instances/:email
     * **GET** /systems/:slug/badges/:slug/instances/:id
     * **GET** /systems/:slug/issuers/:slug/badges/:slug/instances/:id
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:id

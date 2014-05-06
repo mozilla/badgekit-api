@@ -37,13 +37,18 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
   }
 }
 
-BadgeInstances.toResponse = function toResponse(row) {
+BadgeInstances.toResponse = function toResponse(row, req) {
+  const relativeAssertionUrl = '/public/assertions/' + row.slug;
+  const assertionUrl = req.resolvePath(relativeAssertionUrl);
+
   return {
     slug: row.slug,
     email: row.email,
     expires: row.expires,
     issuedOn: row.issuedOn,
-    claimCode: row.claimCode
+    claimCode: row.claimCode,
+    assertionUrl: assertionUrl,
+    badge: row.badge ? row.badge.toResponse(req) : null
   }
 };
 

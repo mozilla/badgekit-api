@@ -11,6 +11,7 @@ spawn(app).then(function (api) {
   test('creating a new badge instance', function (t) {
     const now = (Date.now()/1000|0)
     const expires = now + 8600
+    const email = 'brian@example.org'
 
     api.post('/systems/chicago/badges/chicago-badge/instances', {
       garbage: 'yep',
@@ -18,7 +19,7 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       t.same(res.statusCode, 400, 'should get validation errors')
       return api.post('/systems/chicago/badges/chicago-badge/instances', {
-        email: 'brian@example.org',
+        email: email,
         expires: expires,
       })
     }).then(function (res) {
@@ -62,6 +63,13 @@ spawn(app).then(function (api) {
       t.same(issuerOrg.url, 'http://cityofchicago.org')
       t.same(issuerOrg.description, 'The City of Chicago')
       t.same(issuerOrg.email, 'mayor-emanuel@cityofchicago.org')
+      return api.get('/systems/chicago/instances/' + email)
+    }).then(function(res) {
+      t.same(res.statusCode, 200, 'should be found')
+      t.ok(res.body.instances && res.body.instances.length === 1, 'should find one instance')
+      const instance = res.body.instances[0]
+      t.same(instance.email, email, 'should be correct email')
+      t.same(instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
       t.end()
     }).catch(api.fail(t))
   })
