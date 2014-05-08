@@ -5,6 +5,8 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
+const Issuers = require('./issuer');
+
 const Systems = db.table('systems', {
   fields: [
     'id',
@@ -44,7 +46,9 @@ Systems.toResponse = function toResponse(row) {
     name: row.name,
     email: row.email,
     imageUrl: row.image ? row.image.toUrl() : null,
-    issuers: row.issuers,
+    issuers: (row.issuers || []).map(function(issuer) {
+      return Issuers.toResponse(issuer);
+    }),
   }
 }
 
