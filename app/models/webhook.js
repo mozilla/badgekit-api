@@ -25,7 +25,7 @@ const Webhooks = db.table('webhooks', {
       const hookDataHash = sha256(hookDataString)
       const token = jws.sign({
         secret: this.secret,
-        header: {typ: 'JWT', alg: 'hs256'},
+        header: {typ: 'JWT', alg: 'HS256'},
         payload: {
           body: {
             alg: 'sha256',
