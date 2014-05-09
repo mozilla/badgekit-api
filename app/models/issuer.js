@@ -5,6 +5,8 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
+const Programs = require('./program');
+
 const Issuers = db.table('issuers', {
   fields: [
     'id',
@@ -51,7 +53,10 @@ Issuers.toResponse = function toResponse(row) {
     name: row.name,
     description: row.description,
     email: row.email,
-    imageUrl: row.image ? row.image.toUrl() : null
+    imageUrl: row.image ? row.image.toUrl() : null,
+    programs: (row.programs || []).map(function(program) {
+      return Programs.toResponse(program);
+    }),
   }
 }
 
