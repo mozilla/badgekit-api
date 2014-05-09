@@ -131,6 +131,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
           comment: comment
         }
         return Webhooks.getOne({systemId: system.id})
+      }, function(error) {
+        res.send(409, {status: "yuck"});
+        // Do more stuff here!  I don't know Node at all.
       }).then(function (hook) {
         if (!hook)
           return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
