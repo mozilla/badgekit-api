@@ -1,3 +1,4 @@
+/* this file is run automatically by db-migrate, please use migrations to create your initial schema */
 DROP TABLE IF EXISTS `consumers`;
 CREATE TABLE `consumers` (
   `id` INT NOT NULL AUTO_INCREMENT,

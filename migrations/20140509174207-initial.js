@@ -8,7 +8,7 @@ Rather than rewrite the initial schema, I'm cheating and just running it as the
 first migration. Breaking it up into sql statements, then running them in sequence.
 */
 exports.up = function(db, callback) {
-  var sql = fs.createReadStream('./migrations/schema.sql', { encoding:'utf-8' });
+  var sql = fs.createReadStream('./schema.sql', { encoding:'utf-8' });
   var statement = "";
   var statements = [];
   sql.on('readable', function(chunk) {

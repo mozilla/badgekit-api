@@ -6,15 +6,16 @@ const Promise = require('bluebird')
 const fs = require('fs')
 const db = require('../app/lib/db')
 const path = require('path')
+const migrations = require('../lib/migrations')
 
 if (!/test$/.exec(process.env.NODE_ENV)) {
   console.error('Must be in test environment: expected, NODE_ENV=test, got NODE_ENV='+process.env.NODE_ENV)
   process.exit(1)
 }
 
-function loadDatabase(callback) {
+function loadFixtures(callback) {
+  /* load test data */
   const lines = Buffer.concat([
-    fs.readFileSync(path.join(__dirname, '..', 'schema.sql')),
     fs.readFileSync(path.join(__dirname, 'test-data.sql')),
   ]).toString('utf8')
     .trim()
@@ -32,6 +33,15 @@ function loadDatabase(callback) {
     })
 
   })(0)
+}
+
+function loadDatabase(callback) {
+  var options = {};
+  options.config = db.getDbConfig('DATABASE');
+  migrations.up(options, function(err) {
+    if (err) throw(err);
+    loadFixtures(callback)
+  });
 }
 
 module.exports = function spawner(app, callback) {
