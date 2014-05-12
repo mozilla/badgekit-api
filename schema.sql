@@ -215,7 +215,7 @@ CREATE TABLE `reviewItems` (
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `primaryBadge` INT NOT NULL,
+  `primaryBadgeId` INT NOT NULL,
   `numberRequired` INT NOT NULL,
   `action` ENUM('issue', 'queue-application'),
   PRIMARY KEY (`id`)
