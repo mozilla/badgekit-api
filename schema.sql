@@ -211,3 +211,20 @@ CREATE TABLE `reviewItems` (
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `milestones`;
+CREATE TABLE `milestones` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `primaryBadge` INT NOT NULL,
+  `numberRequired` INT NOT NULL,
+  `action` ENUM('issue', 'queue-application')
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `milestoneBadges`;
+CREATE TABLE `milestones` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `milestoneId` INT NOT NULL REFERENCES `milestones`(`id`),
+  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+) CHARACTER SET utf8
+  ENGINE=InnoDB;
