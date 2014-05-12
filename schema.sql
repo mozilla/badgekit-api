@@ -217,14 +217,16 @@ CREATE TABLE `milestones` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `primaryBadge` INT NOT NULL,
   `numberRequired` INT NOT NULL,
-  `action` ENUM('issue', 'queue-application')
+  `action` ENUM('issue', 'queue-application'),
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `milestoneBadges`;
-CREATE TABLE `milestones` (
+CREATE TABLE `milestoneBadges` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `milestoneId` INT NOT NULL REFERENCES `milestones`(`id`),
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
