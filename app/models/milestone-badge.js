@@ -15,7 +15,7 @@ const MilestoneBadges = db.table('milestoneBadges', {
     milestone: {
       type: 'hasOne',
       local: 'milestoneId',
-      foreign: { table: 'milestone', key: 'id' }
+      foreign: { table: 'milestone', key: 'id' },
     },
   },
 });
