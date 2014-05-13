@@ -4,9 +4,17 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
+const Badges = require('./badge')
+const MilestoneBadges = require('./milestone-badge')
+
 const Milestones = db.table('milestones', {
-  fields: ['id', 'primaryBadgeId', 'numberRequired'],
+  fields: ['id', 'systemId', 'primaryBadgeId', 'numberRequired', 'action'],
   relationships: {
+    system: {
+      type: 'hasOne',
+      local: 'systemId',
+      foreign: { table: 'systems', key: 'id' },
+    },
     primaryBadge: {
       type: 'hasOne',
       local: 'primaryBadgeId',
@@ -21,16 +29,34 @@ const Milestones = db.table('milestones', {
       },
       via: {
         table: 'milestoneBadges',
-        local: 'id',
+        local: 'milestoneId',
         foreign: 'badgeId',
       },
     },
   },
+  methods: {
+    toResponse: function () {
+      return Milestones.toResponse(this)
+    },
+  },
 });
+
+Milestones.toResponse = function toResponse(obj) {
+  const primaryBadge = obj.primaryBadge
+      ? Badges.toResponse(obj.primaryBadge)
+      : null;
+  return {
+    id: obj.id,
+    action: obj.action,
+    numberRequired: obj.numberRequired,
+    primaryBadge: primaryBadge,
+    supportBadges: (obj.supportBadges || []).map(Badges.toResponse),
+  };
+}
 
 Milestones.validateRow = makeValidator({
   id: optional('isInt'),
-  primaryBadge: required('isInt'),
+  primaryBadgeId: required('isInt'),
   numberRequired: required('isInt'),
 });
 

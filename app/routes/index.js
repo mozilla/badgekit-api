@@ -8,6 +8,7 @@ const applyImageRoutes = require('./images');
 const applyClaimCodesRoutes = require('./claim-codes');
 const applyApplicationRoutes = require('./applications');
 const applyReviewRoutes = require('./reviews');
+const applyMilestoneRoutes = require('./milestones');
 
 exports = module.exports = function applyAllRoutes (server) {
 
@@ -32,6 +33,7 @@ exports = module.exports = function applyAllRoutes (server) {
     applyClaimCodesRoutes,
     applyApplicationRoutes,
     applyReviewRoutes,
+    applyMilestoneRoutes,
   ].forEach(callWith(server));
 
 };

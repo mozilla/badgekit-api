@@ -215,9 +215,10 @@ CREATE TABLE `reviewItems` (
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `systemId` INT NOT NULL,
   `primaryBadgeId` INT NOT NULL,
   `numberRequired` INT NOT NULL,
-  `action` ENUM('issue', 'queue-application'),
+  `action` ENUM('issue', 'queue-application') DEFAULT 'issue',
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
@@ -227,6 +228,7 @@ CREATE TABLE `milestoneBadges` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `milestoneId` INT NOT NULL REFERENCES `milestones`(`id`),
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `milestone_and_badge` (`milestoneId`, `badgeId`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
