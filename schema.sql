@@ -218,7 +218,7 @@ CREATE TABLE `milestones` (
   `systemId` INT NOT NULL,
   `primaryBadgeId` INT NOT NULL,
   `numberRequired` INT NOT NULL,
-  `action` ENUM('issue', 'queue-application') DEFAULT 'issue',
+  `action` ENUM('issue', 'queue-application') NOT NULL DEFAULT 'issue',
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8
   ENGINE=InnoDB;

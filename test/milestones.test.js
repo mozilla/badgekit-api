@@ -25,6 +25,31 @@ spawn(app).then(function (api) {
       .catch(api.fail(t))
   })
 
+  test('Create a new milestone', function (t) {
+    const postData = {
+      systemId: 90,
+      primaryBadgeId: 4,
+      numberRequired: 1,
+      supportBadges: [5, 1],
+    }
+    api.post('/systems/chicago/milestones', postData)
+      .then(function (res) {
+        t.same(res.statusCode, 201, '201 Created')
+        t.ok(res.body.milestone, 'has milestone')
+        const milestone = res.body.milestone
+        const primaryBadge = milestone.primaryBadge
+        const supportBadges =
+          milestone.supportBadges.map(function (o) {
+            return o.id
+          }).sort()
+        t.same(supportBadges, [1, 5], 'has 2 support badges')
+        t.same(primaryBadge.id, 4, 'has correct primary badge')
+        t.end()
+      })
+      .catch(api.fail(t))
+  })
+
+
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })

@@ -1,5 +1,8 @@
+const Promise = require('bluebird')
 const Milestones = require('../models/milestone');
+const MilestoneBadges = require('../models/milestone-badge')
 const middleware = require('../lib/middleware');
+const errorHelper = require('../lib/error-helper')
 
 exports = module.exports = function applyBadgeRoutes(server) {
   server.get('/systems/:systemSlug/milestones', [
@@ -15,7 +18,52 @@ exports = module.exports = function applyBadgeRoutes(server) {
           milestones: milestones.map(Milestones.toResponse)
         });
       })
+      .catch(handleError(req, next));
+  }
 
+  server.post('/systems/:systemSlug/milestones', [
+    middleware.findSystem(),
+    saveMilestone,
+  ]);
+  function saveMilestone(req, res, next) {
+    const postData = req.body;
+    const row = {
+      systemId: req.system.id,
+      numberRequired: postData.numberRequired,
+      primaryBadgeId: postData.primaryBadgeId,
+      action: postData.action,
+    };
+
+    if (!row.action)
+      delete row.action;
+
+    const errors = Milestones.validateRow(row);
+    if (errors.length)
+      return res.send(400, errorHelper.validation(errors));
+
+    var milestoneId;
+    Milestones.put(row)
+      .then(function (result) {
+        milestoneId = result.insertId;
+        return Promise.map(postData.supportBadges, function (badgeId) {
+          return MilestoneBadges.put({
+            milestoneId: milestoneId,
+            badgeId: badgeId,
+          });
+        });
+      })
+      .then(function (results) {
+        const query = { id: milestoneId };
+        const options = { relationships: true };
+
+        return Milestones.getOne(query, options);
+      })
+      .then(function (milestone) {
+        return res.send(201, {
+          status: 'created',
+          milestone: milestone.toResponse()
+        });
+      })
       .catch(handleError(req, next));
   }
 
@@ -37,6 +85,8 @@ exports = module.exports = function applyBadgeRoutes(server) {
       })
       .catch(handleError(req, next));
   }
+
+
 }
 
 function handleError(req, next) {

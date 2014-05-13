@@ -58,6 +58,11 @@ Milestones.validateRow = makeValidator({
   id: optional('isInt'),
   primaryBadgeId: required('isInt'),
   numberRequired: required('isInt'),
+  action: optional(function (value) {
+    const valid = ['issue', 'queue-application']
+    if (valid.indexOf(value) == -1)
+      throw new TypeError('Value must be one of the following: ' + valid.join(', '))
+  })
 });
 
 module.exports = Milestones;
