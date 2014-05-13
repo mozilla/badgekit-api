@@ -13,6 +13,18 @@ spawn(app).then(function (api) {
       .catch(api.fail(t))
   })
 
+  test('Get one milestone', function (t) {
+    api.get('/systems/chicago/milestones/1')
+      .then(function (res) {
+        const milestone = res.body.milestone
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(milestone.id, 1, 'has correct ID')
+        t.same(milestone.primaryBadge.slug, 'chicago-badge', 'has correct primary badge')
+        t.end()
+      })
+      .catch(api.fail(t))
+  })
+
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })

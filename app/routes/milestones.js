@@ -16,9 +16,32 @@ exports = module.exports = function applyBadgeRoutes(server) {
         });
       })
 
-      .catch(function (err) {
-        req.log.error(err);
-        return next(err);
-      });
+      .catch(handleError(req, next));
+  }
+
+  server.get('/systems/:systemSlug/milestones/:milestoneId', [
+    middleware.findSystem(),
+    showMilestone,
+  ]);
+  function showMilestone(req, res, next) {
+    const query = {
+      id: req.params.milestoneId,
+      systemId: req.system.id
+    };
+    const options = { relationships: true };
+    Milestones.getOne(query, options)
+      .then(function (milestone) {
+        return res.send(200, {
+          milestone: milestone.toResponse()
+        });
+      })
+      .catch(handleError(req, next));
+  }
+}
+
+function handleError(req, next) {
+  return function (err) {
+    req.log.error(err);
+    return next(err);
   };
 }
