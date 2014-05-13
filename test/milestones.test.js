@@ -1,6 +1,7 @@
 const test = require('tap').test
 const app = require('../')
 const spawn = require('./spawn')
+const MilestoneBadges = require('../app/models/milestone-badge')
 
 spawn(app).then(function (api) {
   test('Get all milestones', function (t) {
@@ -44,6 +45,24 @@ spawn(app).then(function (api) {
           }).sort()
         t.same(supportBadges, [1, 5], 'has 2 support badges')
         t.same(primaryBadge.id, 4, 'has correct primary badge')
+        t.end()
+      })
+      .catch(api.fail(t))
+  })
+
+  test('Delete a milestone', function (t) {
+    api.del('/systems/chicago/milestones/999')
+      .then(function (res) {
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(res.body.status, 'deleted', 'has status `deleted`')
+        return MilestoneBadges.get({milestoneId: 999})
+      })
+      .then(function (results) {
+        t.same(results.length, 0, 'no milestone badges for deleted milestone')
+        return api.del('/systems/chicago/milestones/999')
+      })
+      .then(function (res) {
+        t.same(res.statusCode, 404, '404 Not Found')
         t.end()
       })
       .catch(api.fail(t))

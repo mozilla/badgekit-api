@@ -257,6 +257,12 @@ INSERT INTO `milestones` SET
   `numberRequired` = 2,
   `action` = 'issue';
 
+INSERT INTO `milestones` SET
+  `id` = 999,
+  `systemId` = 1,
+  `primaryBadgeId` = 4,
+  `numberRequired` = 1;
+
 INSERT INTO `milestoneBadges` SET
   `milestoneId` = 1,
   `badgeId` = 4;
@@ -264,3 +270,11 @@ INSERT INTO `milestoneBadges` SET
 INSERT INTO `milestoneBadges` SET
   `milestoneId` = 1,
   `badgeId` = 5;
+
+INSERT INTO `milestoneBadges` SET
+  `milestoneId` = 999,
+  `badgeId` = 5;
+
+INSERT INTO `milestoneBadges` SET
+  `milestoneId` = 999,
+  `badgeId` = 1;

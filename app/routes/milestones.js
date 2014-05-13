@@ -1,4 +1,5 @@
 const Promise = require('bluebird')
+const restify = require('restify')
 const Milestones = require('../models/milestone');
 const MilestoneBadges = require('../models/milestone-badge')
 const middleware = require('../lib/middleware');
@@ -86,6 +87,26 @@ exports = module.exports = function applyBadgeRoutes(server) {
       .catch(handleError(req, next));
   }
 
+  server.del('/systems/:systemSlug/milestones/:milestoneId', [
+    middleware.findSystem(),
+    deleteMilestone,
+  ]);
+  function deleteMilestone(req, res, next) {
+    const query = {
+      id: req.params.milestoneId,
+      systemId: req.system.id
+    };
+    const options = { limit: 1 };
+    Milestones.del(query, options)
+      .then(function (result) {
+        if (!result.affectedRows)
+          return res.send(404, new restify.NotFoundError('Could not find milestone with id ' + query.id));
+        return res.send(200, {
+          status: 'deleted'
+        });
+      })
+      .catch(handleError(req, next));
+  }
 
 }
 

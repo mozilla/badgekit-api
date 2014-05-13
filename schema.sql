@@ -1,4 +1,22 @@
+DROP TABLE IF EXISTS `milestoneBadges`;
+DROP TABLE IF EXISTS `milestones`;
+DROP TABLE IF EXISTS `reviewItems`;
+DROP TABLE IF EXISTS `reviews`;
+DROP TABLE IF EXISTS `evidence`;
+DROP TABLE IF EXISTS `applications`;
+DROP TABLE IF EXISTS `tags`;
+DROP TABLE IF EXISTS `criteria`;
+DROP TABLE IF EXISTS `images`;
+DROP TABLE IF EXISTS `badgeInstances`;
+DROP TABLE IF EXISTS `claimCodes`;
+DROP TABLE IF EXISTS `categories`;
+DROP TABLE IF EXISTS `badges`;
+DROP TABLE IF EXISTS `programs`;
+DROP TABLE IF EXISTS `issuers`;
+DROP TABLE IF EXISTS `webhooks`;
+DROP TABLE IF EXISTS `systems`;
 DROP TABLE IF EXISTS `consumers`;
+
 CREATE TABLE `consumers` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `apiKey` VARCHAR(255) NOT NULL UNIQUE,
@@ -9,7 +27,6 @@ CREATE TABLE `consumers` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `systems`;
 CREATE TABLE `systems` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL UNIQUE,
@@ -22,7 +39,6 @@ CREATE TABLE `systems` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `webhooks`;
 CREATE TABLE `webhooks` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `url` VARCHAR(255) NOT NULL,
@@ -33,7 +49,6 @@ CREATE TABLE `webhooks` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `issuers`;
 CREATE TABLE `issuers` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL,
@@ -48,7 +63,6 @@ CREATE TABLE `issuers` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `programs`;
 CREATE TABLE `programs` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL,
@@ -63,9 +77,7 @@ CREATE TABLE `programs` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `tags`;
 
-DROP TABLE IF EXISTS `badges`;
 CREATE TABLE `badges` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL,
@@ -94,7 +106,6 @@ CREATE TABLE `badges` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
@@ -103,7 +114,6 @@ CREATE TABLE `categories` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `claimCodes`;
 CREATE TABLE `claimCodes` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(255) NOT NULL,
@@ -116,7 +126,6 @@ CREATE TABLE `claimCodes` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `badgeInstances`;
 CREATE TABLE `badgeInstances` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL UNIQUE,
@@ -130,7 +139,6 @@ CREATE TABLE `badgeInstances` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL UNIQUE,
@@ -142,7 +150,6 @@ CREATE TABLE `images` (
 ) CHARACTER SET binary
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `criteria`;
 CREATE TABLE `criteria` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
@@ -162,7 +169,6 @@ CREATE TABLE `tags` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `applications`;
 CREATE TABLE `applications` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL,
@@ -179,7 +185,6 @@ CREATE TABLE `applications` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `evidence`;
 CREATE TABLE `evidence` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `applicationId` INT NOT NULL REFERENCES `applications`(`id`),
@@ -190,7 +195,6 @@ CREATE TABLE `evidence` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE `reviews` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `slug` VARCHAR(255) NOT NULL,
@@ -201,7 +205,6 @@ CREATE TABLE `reviews` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `reviewItems`;
 CREATE TABLE `reviewItems` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `reviewId` INT NOT NULL REFERENCES `reviews`(`id`),
@@ -212,23 +215,37 @@ CREATE TABLE `reviewItems` (
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `systemId` INT NOT NULL,
   `primaryBadgeId` INT NOT NULL,
   `numberRequired` INT NOT NULL,
   `action` ENUM('issue', 'queue-application') NOT NULL DEFAULT 'issue',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`systemId`)
+    REFERENCES `systems`(`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`primaryBadgeId`)
+    REFERENCES `badges`(`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `milestoneBadges`;
 CREATE TABLE `milestoneBadges` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `milestoneId` INT NOT NULL REFERENCES `milestones`(`id`),
-  `badgeId` INT NOT NULL REFERENCES `badges`(`id`),
+  `milestoneId` INT NOT NULL,
+  `badgeId` INT NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `milestone_and_badge` (`milestoneId`, `badgeId`)
+  UNIQUE KEY `milestone_and_badge` (`milestoneId`, `badgeId`),
+  FOREIGN KEY (`milestoneId`)
+    REFERENCES `milestones`(`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  FOREIGN KEY (`badgeId`)
+    REFERENCES `badges`(`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) CHARACTER SET utf8
   ENGINE=InnoDB;
