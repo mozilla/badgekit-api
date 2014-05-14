@@ -199,7 +199,12 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
     BadgeInstances.get([query, queryParams]).then(function (rows) {
       var instanceIds = rows.map(function(row) { return row.id; });
-      return BadgeInstances.get( { id: instanceIds }, { relationships: true, relationshipsDepth: 2 });
+      if (instanceIds.length) {
+        return BadgeInstances.get( { id: instanceIds }, { relationships: true, relationshipsDepth: 2 });
+      }
+      else {
+        return Promise.resolve([]);
+      }
     }).then(function (rows) {
       res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
     }).error(function (err) {
