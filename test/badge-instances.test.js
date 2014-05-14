@@ -70,13 +70,12 @@ spawn(app).then(function (api) {
       const instance = res.body.instances[0]
       t.same(instance.email, email, 'should be correct email')
       t.same(instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
-      return api.get('/systems/chicago/badges/chicago-badge/instances')
+      return api.get('/systems/chicago/badges/chicago-badge/instances/' + email)
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be found')
-      t.ok(res.body.instances && res.body.instances.length === 1, 'should find one instance')
-      const instance = res.body.instances[0]
-      t.same(instance.email, email, 'should be correct email')
-      t.same(instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
+      t.ok(res.body.instance, 'should find instance')
+      t.same(res.body.instance.email, email, 'should be correct email')
+      t.same(res.body.instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
       return api.del('/systems/chicago/badges/chicago-badge/instances/' + email)
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be successful')

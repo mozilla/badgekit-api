@@ -42,6 +42,45 @@ const findProgramBadge = [
   }),
 ]
 
+const findSystemBadgeInstance = [
+  middleware.findSystem(),
+  middleware.findBadge({where: {systemId: ['system', 'id']}}),
+  middleware.findBadgeInstance({
+    field: 'email', 
+    param: 'instanceEmail', 
+    where: {badgeId: ['badge', 'id']},
+    relationships: true, 
+    relationshipsDepth: 2
+  }),
+]
+
+const findIssuerBadgeInstance = [
+  middleware.findSystem(),
+  middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+  middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
+  middleware.findBadgeInstance({
+    field: 'email', 
+    param: 'instanceEmail', 
+    where: {badgeId: ['badge', 'id']},
+    relationships: true, 
+    relationshipsDepth: 2
+  }),
+]
+
+const findProgramBadgeInstance = [
+  middleware.findSystem(),
+  middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+  middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
+  middleware.findBadge({where: {programId: ['program', 'id']}}),
+  middleware.findBadgeInstance({
+    field: 'email', 
+    param: 'instanceEmail', 
+    where: {badgeId: ['badge', 'id']},
+    relationships: true, 
+    relationshipsDepth: 2
+  }),
+]
+
 const prefix = {
   system: '/systems/:systemSlug',
   issuer: '/systems/:systemSlug/issuers/:issuerSlug',
@@ -177,34 +216,25 @@ exports = module.exports = function applyBadgeRoutes (server) {
     });
   }
 
+  const getInstanceSuffix = '/badges/:badgeSlug/instances/:instanceEmail'
+  server.get(prefix.system + getInstanceSuffix,
+             findSystemBadgeInstance, getBadgeInstance)
+  server.get(prefix.issuer + getInstanceSuffix,
+             findIssuerBadgeInstance, getBadgeInstance)
+  server.get(prefix.program + getInstanceSuffix,
+             findProgramBadgeInstance, getBadgeInstance)
+  function getBadgeInstance(req, res, next) {
+    return res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
+  }
+
+
   const deleteInstanceSuffix = '/badges/:badgeSlug/instances/:instanceEmail'
-  server.del(prefix.system + deleteInstanceSuffix, [
-             middleware.findSystem(),
-             middleware.findBadge({where: {systemId: ['system', 'id']}}),
-             middleware.findBadgeInstance({field: 'email', param: 'instanceEmail', 
-                                           where: {badgeId: ['badge', 'id']},
-                                           relationships: true, relationshipsDepth: 2}),
-             deleteBadgeInstance
-  ]);
-  server.del(prefix.issuer + deleteInstanceSuffix, [
-             middleware.findSystem(),
-             middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-             middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
-             middleware.findBadgeInstance({field: 'email', param: 'instanceEmail', 
-                                           where: {badgeId: ['badge', 'id']},
-                                           relationships: true, relationshipsDepth: 2}),
-             deleteBadgeInstance
-  ]);
-  server.del(prefix.program + deleteInstanceSuffix, [
-             middleware.findSystem(),
-             middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-             middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-             middleware.findBadge({where: {programId: ['program', 'id']}}),
-             middleware.findBadgeInstance({field: 'email', param: 'instanceEmail', 
-                                           where: {badgeId: ['badge', 'id']},
-                                           relationships: true, relationshipsDepth: 2}),
-             deleteBadgeInstance
-  ]);
+  server.del(prefix.system + deleteInstanceSuffix, 
+             findSystemBadgeInstance, deleteBadgeInstance)
+  server.del(prefix.issuer + deleteInstanceSuffix, 
+             findIssuerBadgeInstance, deleteBadgeInstance)
+  server.del(prefix.program + deleteInstanceSuffix,
+             findProgramBadgeInstance, deleteBadgeInstance)
   function deleteBadgeInstance(req, res, next) {
     BadgeInstances.del({id: req.badgeInstance.id}).then(function () {
       return res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
