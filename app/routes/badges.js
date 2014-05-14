@@ -1,7 +1,7 @@
 const async = require('async')
 const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
-
+const Milestones = require('../models/milestone');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
@@ -145,8 +145,23 @@ exports = module.exports = function applyBadgeRoutes (server) {
     showOneBadge,
   ]);
   function showOneBadge (req, res, next) {
-    res.send({badge: req.badge.toResponse()});
-    return next();
+    const badge = req.badge;
+    const system = req.system;
+    const query = {
+      primaryBadgeId: badge.id,
+      systemId: system.id
+    };
+    const options = { relationships: true };
+
+    Milestones.get(query, options)
+      .then(function (milestones) {
+        badge.milestones = milestones;
+        return res.send({badge: badge});
+      })
+      .catch(function (err) {
+        req.log.error(err);
+        return next(err);
+      });
   }
 
   server.del('/systems/:systemSlug/badges/:badgeSlug', [

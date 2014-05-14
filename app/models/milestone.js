@@ -4,7 +4,6 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
-const Badges = require('./badge')
 const MilestoneBadges = require('./milestone-badge')
 
 const Milestones = db.table('milestones', {
@@ -42,6 +41,7 @@ const Milestones = db.table('milestones', {
 });
 
 Milestones.toResponse = function toResponse(obj) {
+  const Badges = require('./badge')
   const primaryBadge = obj.primaryBadge
       ? Badges.toResponse(obj.primaryBadge)
       : null;

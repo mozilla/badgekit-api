@@ -68,7 +68,6 @@ spawn(app).then(function (api) {
       .catch(api.fail(t))
   })
 
-
   test(':cleanup:', function (t) {
     api.done(); t.end()
   })

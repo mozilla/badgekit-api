@@ -73,6 +73,7 @@ spawn(app).then(function (api) {
   test('get a single badge', function (t) {
     api.get('/systems/chicago/badges/chicago-badge').then(function (res) {
       t.same(res.body.badge.slug, 'chicago-badge')
+      t.ok(res.body.badge.milestones.length, 'has some milestones')
       return api.get('/systems/chicago/badges/badge-does-not-exist')
     }).then(function (res) {
       t.same(res.statusCode, 404)
