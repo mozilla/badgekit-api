@@ -149,13 +149,70 @@ exports = module.exports = function applyBadgeRoutes (server) {
           })
           .error(function (err) {
             log.error(err, 'error fetching pre-existing badge instance');
+            return next(err);
           })
         }
         else {
           log.error(err, 'error dealing with webhooks when awarding badge')
+          return next(err);
         }
       })
     }
+  }
+
+  const getInstancesSuffix = '/badges/:badgeSlug/instances'
+  server.get(prefix.system + getInstancesSuffix,
+             findSystemBadge, getBadgeInstances)
+  server.get(prefix.issuer + getInstancesSuffix,
+             findIssuerBadge, getBadgeInstances)
+  server.get(prefix.program + getInstancesSuffix,
+             findProgramBadge, getBadgeInstances)
+  function getBadgeInstances(req, res, next) {
+    BadgeInstances.get({ badgeId: req.badge.id}, {relationships: true, relationshipsDepth: 2}).then(function (rows) {
+      return res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+    })
+    .error(function (err) {
+      log.error(err, 'error fetching badge instances');
+      return next(err);
+    });
+  }
+
+  const deleteInstanceSuffix = '/badges/:badgeSlug/instances/:instanceEmail'
+  server.del(prefix.system + deleteInstanceSuffix, [
+             middleware.findSystem(),
+             middleware.findBadge({where: {systemId: ['system', 'id']}}),
+             middleware.findBadgeInstance({field: 'email', param: 'instanceEmail', 
+                                           where: {badgeId: ['badge', 'id']},
+                                           relationships: true, relationshipsDepth: 2}),
+             deleteBadgeInstance
+  ]);
+  server.del(prefix.issuer + deleteInstanceSuffix, [
+             middleware.findSystem(),
+             middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+             middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
+             middleware.findBadgeInstance({field: 'email', param: 'instanceEmail', 
+                                           where: {badgeId: ['badge', 'id']},
+                                           relationships: true, relationshipsDepth: 2}),
+             deleteBadgeInstance
+  ]);
+  server.del(prefix.program + deleteInstanceSuffix, [
+             middleware.findSystem(),
+             middleware.findIssuer({where: {systemId: ['system', 'id']}}),
+             middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
+             middleware.findBadge({where: {programId: ['program', 'id']}}),
+             middleware.findBadgeInstance({field: 'email', param: 'instanceEmail', 
+                                           where: {badgeId: ['badge', 'id']},
+                                           relationships: true, relationshipsDepth: 2}),
+             deleteBadgeInstance
+  ]);
+  function deleteBadgeInstance(req, res, next) {
+    BadgeInstances.del({id: req.badgeInstance.id}).then(function () {
+      return res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
+    })
+    .error(function (err) {
+      log.error(err, 'error deleting badge instance');
+      return next(err);
+    });
   }
 
   const getUserInstancesSuffix = '/instances/:email'
