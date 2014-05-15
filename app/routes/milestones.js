@@ -1,5 +1,6 @@
 const Promise = require('bluebird')
 const restify = require('restify')
+const safeExtend = require('../lib/safe-extend')
 const Milestones = require('../models/milestone');
 const MilestoneBadges = require('../models/milestone-badge')
 const middleware = require('../lib/middleware');
@@ -86,6 +87,48 @@ exports = module.exports = function applyBadgeRoutes(server) {
       })
       .catch(handleError(req, next));
   }
+
+  server.put('/systems/:systemSlug/milestones/:milestoneId', [
+    middleware.findSystem(),
+    updateMilestone,
+  ]);
+  function updateMilestone(req, res, next) {
+    const milestoneId = req.params.milestoneId;
+    const postData = req.body;
+    const query = {
+      id: milestoneId,
+      systemId: req.system.id
+    };
+    Milestones.getOne(query)
+      .then(function (milestone) {
+        const update = safeExtend(milestone, postData);
+        return Milestones.put(update);
+      })
+      .then(function (result) {
+        return MilestoneBadges.del({
+          milestoneId: milestoneId,
+        });
+      })
+      .then(function () {
+        return Promise.map(postData.supportBadges, function (badgeId) {
+          return MilestoneBadges.put({
+            milestoneId: milestoneId,
+            badgeId: badgeId,
+          });
+        });
+      })
+      .then(function (results) {
+        return Milestones.getOne(query, {relationships: true});
+      })
+      .then(function (milestone) {
+        return res.send(200, {
+          status: 'updated',
+          milestone: milestone.toResponse()
+        });
+      })
+      .catch(handleError(req, next));
+  }
+
 
   server.del('/systems/:systemSlug/milestones/:milestoneId', [
     middleware.findSystem(),

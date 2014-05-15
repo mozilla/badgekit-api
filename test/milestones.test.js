@@ -50,6 +50,24 @@ spawn(app).then(function (api) {
       .catch(api.fail(t))
   })
 
+  test('Update a milestone', function (t) {
+    const postData = {
+      numberRequired: 200,
+      supportBadges: [1],
+    }
+    api.put('/systems/chicago/milestones/1', postData)
+      .then(function (res) {
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(res.body.status, 'updated', 'has correct status')
+        t.same(res.body.milestone.numberRequired, 200, 'has correct # required')
+        t.same(res.body.milestone.supportBadges.length, 1, 'right number of support badges')
+        t.same(res.body.milestone.supportBadges[0].id, 1, 'has correct support badge')
+        t.end()
+      })
+      .catch(api.fail(t))
+  })
+
+
   test('Delete a milestone', function (t) {
     api.del('/systems/chicago/milestones/999')
       .then(function (res) {
