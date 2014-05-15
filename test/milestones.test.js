@@ -67,7 +67,6 @@ spawn(app).then(function (api) {
       .catch(api.fail(t))
   })
 
-
   test('Delete a milestone', function (t) {
     api.del('/systems/chicago/milestones/999')
       .then(function (res) {
