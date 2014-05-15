@@ -220,7 +220,7 @@ CREATE TABLE `milestones` (
   `systemId` INT NOT NULL,
   `primaryBadgeId` INT NOT NULL,
   `numberRequired` INT NOT NULL,
-  `action` ENUM('issue', 'queue-application') NOT NULL DEFAULT 'issue',
+  `action` ENUM('issue', 'queue-application') DEFAULT 'issue',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`systemId`)
     REFERENCES `systems`(`id`)

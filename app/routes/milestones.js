@@ -36,9 +36,6 @@ exports = module.exports = function applyBadgeRoutes(server) {
       action: postData.action,
     };
 
-    if (!row.action)
-      delete row.action;
-
     const errors = Milestones.validateRow(row);
     if (errors.length)
       return res.send(400, errorHelper.validation(errors));
