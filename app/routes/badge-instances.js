@@ -167,6 +167,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           email: instance.email,
           assertionUrl: responseInstance.assertionUrl,
           issuedOn: unixtimeFromDate(instance.issuedOn),
+          evidenceUrl: instance.evidenceUrl,
           comment: comment
         }
         return Webhooks.getOne({systemId: system.id})

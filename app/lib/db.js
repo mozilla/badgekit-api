@@ -1,15 +1,23 @@
 var streamsql = require('streamsql');
 var mysql = require('mysql');
+var config = require('./config');
 
-var options = {
-  driver: 'mysql',
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+
+function getDbConfig (prefix) {
+  prefix = prefix || 'DATABASE';
+  prefix += '_';
+  return {
+    driver:     config(prefix+'DRIVER', 'mysql'),
+    host:       config(prefix+'HOST', 'localhost'),
+    user:       config(prefix+'USER'),
+    password:   config(prefix+'PASSWORD'),
+    database:   config(prefix+'DATABASE')
+  };
 }
 
-var db = streamsql.connect(options);
+var db = streamsql.connect(getDbConfig());
+
+db.getDbConfig = getDbConfig;
 
 function handleDisconnect() {
   db.connection = mysql.createConnection(options);
@@ -20,7 +28,7 @@ function handleDisconnect() {
     }
     db.query = db.driver.getQueryFn(db.connection);
     db.queryStream = db.driver.getStreamFn(db.connection);
-  });   
+  });
 
   setErrorHandler();
 }
@@ -36,6 +44,6 @@ function setErrorHandler() {
   });
 }
 
-setErrorHandler();  
+setErrorHandler();
 
 exports = module.exports = db;

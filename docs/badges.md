@@ -37,6 +37,7 @@ Content-Type: application/json
       "issuerUrl": "http://example.org/issuer",
       "rubricUrl": "http://example.org/rubric",
       "criteriaUrl": "http://example.org/criteria",
+      "evidenceUrl": "http://example.org/evidence",
       "timeValue": 10,
       "timeUnits": "minutes",
       "limit": 5,

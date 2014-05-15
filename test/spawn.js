@@ -6,32 +6,48 @@ const Promise = require('bluebird')
 const fs = require('fs')
 const db = require('../app/lib/db')
 const path = require('path')
+const migrations = require('../lib/migrations')
+const async = require('async')
 
 if (!/test$/.exec(process.env.NODE_ENV)) {
   console.error('Must be in test environment: expected, NODE_ENV=test, got NODE_ENV='+process.env.NODE_ENV)
   process.exit(1)
 }
 
+function loadFixtures(callback) {
+  var sql = fs.createReadStream(path.join(__dirname, 'test-data.sql'), { encoding:'utf-8' });
+  var statement = "";
+  var statements = [];
+  sql.on('readable', function(chunk) {
+    while (null !== (chunk = sql.read(1))) {
+      statement += chunk;
+      if (chunk == ';') {
+        statements.push(statement);
+        statement = "";
+      }
+    };
+  });
+
+  sql.on('end', function() {
+    async.each(statements, function(sqlStatement, done) {
+      db.sql(sqlStatement);
+      done();
+    }, callback);
+  });
+};
+
 function loadDatabase(callback) {
-  const lines = Buffer.concat([
-    fs.readFileSync(path.join(__dirname, '..', 'schema.sql')),
-    fs.readFileSync(path.join(__dirname, 'test-data.sql')),
-  ]).toString('utf8')
-    .trim()
-    .split(';')
-    .map(function (s) {return s.trim()})
-    .filter(Boolean)
-
-  ;(function next(i) {
-    const sql = lines[i]
-    if (!sql) return callback()
-
-    db.query(sql, function (err) {
-      if (err) return callback(err)
-      return next(++i)
-    })
-
-  })(0)
+  var options = {};
+  options.config = db.getDbConfig('DATABASE');
+  //
+  migrations.down(options, function(err) {
+    if(err) throw(err); console.error("db dropppppped");
+    migrations.up(options, function(err) {
+      if (err) throw(err);
+      console.error("db up'd");
+      loadFixtures(callback)
+    });
+  });
 }
 
 module.exports = function spawner(app, callback) {

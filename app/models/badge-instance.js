@@ -15,6 +15,7 @@ const BadgeInstances = db.table('badgeInstances', {
     'issuedOn',
     'expires',
     'claimCode',
+    'evidenceUrl',
     'badgeId',
   ],
   relationships: {
@@ -34,6 +35,7 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
     issuedOn: obj.issuedOn || dateFromUnixtime(Date.now()),
     expires: obj.expires ? dateFromUnixtime(obj.expires) : null,
     claimCode: obj.claimCode,
+    evidenceUrl: obj.evidenceUrl || null
   }
 }
 
@@ -48,6 +50,7 @@ BadgeInstances.toResponse = function toResponse(row, req) {
     issuedOn: row.issuedOn,
     claimCode: row.claimCode,
     assertionUrl: assertionUrl,
+    evidenceUrl: row.evidenceUrl,
     badge: row.badge ? row.badge.toResponse(req) : null
   }
 };
