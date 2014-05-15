@@ -7,6 +7,7 @@ const fs = require('fs')
 const db = require('../app/lib/db')
 const path = require('path')
 const migrations = require('../lib/migrations')
+const async = require('async')
 
 if (!/test$/.exec(process.env.NODE_ENV)) {
   console.error('Must be in test environment: expected, NODE_ENV=test, got NODE_ENV='+process.env.NODE_ENV)
@@ -14,33 +15,38 @@ if (!/test$/.exec(process.env.NODE_ENV)) {
 }
 
 function loadFixtures(callback) {
-  /* load test data */
-  const lines = Buffer.concat([
-    fs.readFileSync(path.join(__dirname, 'test-data.sql')),
-  ]).toString('utf8')
-    .trim()
-    .split(';')
-    .map(function (s) {return s.trim()})
-    .filter(Boolean)
+  var sql = fs.createReadStream(path.join(__dirname, 'test-data.sql'), { encoding:'utf-8' });
+  var statement = "";
+  var statements = [];
+  sql.on('readable', function(chunk) {
+    while (null !== (chunk = sql.read(1))) {
+      statement += chunk;
+      if (chunk == ';') {
+        statements.push(statement);
+        statement = "";
+      }
+    };
+  });
 
-  ;(function next(i) {
-    const sql = lines[i]
-    if (!sql) return callback()
-
-    db.query(sql, function (err) {
-      if (err) return callback(err)
-      return next(++i)
-    })
-
-  })(0)
-}
+  sql.on('end', function() {
+    async.each(statements, function(sqlStatement, done) {
+      db.sql(sqlStatement);
+      done();
+    }, callback);
+  });
+};
 
 function loadDatabase(callback) {
   var options = {};
   options.config = db.getDbConfig('DATABASE');
-  migrations.up(options, function(err) {
-    if (err) throw(err);
-    loadFixtures(callback)
+  //
+  migrations.down(options, function(err) {
+    if(err) throw(err); console.error("db dropppppped");
+    migrations.up(options, function(err) {
+      if (err) throw(err);
+      console.error("db up'd");
+      loadFixtures(callback)
+    });
   });
 }
 
