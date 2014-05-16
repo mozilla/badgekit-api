@@ -156,7 +156,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     Milestones.get(query, options)
       .then(function (milestones) {
         badge.milestones = milestones;
-        return res.send({badge: badge});
+        return res.send({badge: Badges.toResponse(badge)});
       })
       .catch(function (err) {
         req.log.error(err);
