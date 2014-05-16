@@ -1,3 +1,4 @@
+const Stream = require('stream')
 const http = require('http')
 const request = require('request')
 const FormData = require('form-data')
@@ -34,6 +35,16 @@ function loadDatabase(callback) {
   })(0)
 }
 
+function hasBufferOrStream(obj) {
+  for (var field in obj) {
+    if (Buffer.isBuffer(obj[field]))
+      return true;
+    if (obj[field] instanceof Stream)
+      return true;
+  }
+  return false;
+}
+
 module.exports = function spawner(app, callback) {
   function makeRequestFn(port) {
     const baseUrl = 'http://127.0.0.1:'+port
@@ -45,24 +56,35 @@ module.exports = function spawner(app, callback) {
       }
 
       if (form) {
-        const formData = new FormData()
-
-        for (var field in form) {
-          formData.append(field, form[field])
-        }
-
+        var req, formData;
         const options = {
           url: baseUrl + url,
           method: method.toUpperCase(),
-          headers: formData.getHeaders(),
         }
+        if (hasBufferOrStream(form)) {
+          formData = new FormData()
 
-        const req = request(options)
-        formData.pipe(req)
+          for (var field in form) {
+            formData.append(field, form[field])
+          }
+
+          options.headers = formData.getHeaders()
+
+          req = request(options)
+          formData.pipe(req)
+        } else {
+          formData = JSON.stringify(form)
+          options.headers = {
+            'Content-Type': 'application/json',
+            'Content-Length': formData.length,
+          }
+          req = request(options)
+          req.write(formData)
+          req.end()
+        }
         req.pipe(concat(function (body) {
           resolve(req.response.statusCode, JSON.parse(body), req.response.headers)
         }))
-
       } else {
         request[method.toLowerCase()](baseUrl + url, function (err, res, body) {
           if (err) throw err
