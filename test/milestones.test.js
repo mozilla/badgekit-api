@@ -26,6 +26,15 @@ spawn(app).then(function (api) {
       .catch(api.fail(t))
   })
 
+  test('Get a milestone that does not exist', function (t) {
+    api.get('/systems/chicago/milestones/1910241')
+      .then(function (res) {
+        t.same(res.statusCode, 404, 'HTTP 404')
+        t.same(res.body.code, 'ResourceNotFound')
+        t.end()
+      })
+  })
+
   test('Create a new milestone', function (t) {
     const postData = {
       systemId: 90,
@@ -65,6 +74,36 @@ spawn(app).then(function (api) {
         t.end()
       })
       .catch(api.fail(t))
+  })
+
+  test('Add a badge to a milestone', function (t) {
+    const postData = {badgeId: 4}
+    api.post('/systems/chicago/milestones/1/add-badge', postData)
+      .then(function (res) {
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(res.body.status, 'updated', 'has correct status')
+        t.same(res.body.milestone.supportBadges.length, 2, 'right number of support badges')
+        t.same(res.body.milestone.supportBadges[0].id, 1, 'has correct support badge')
+        t.same(res.body.milestone.supportBadges[1].id, 4, 'has correct support badge')
+        return api.post('/systems/chicago/milestones/1/add-badge', postData)
+      })
+      .then(function (res) {
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(res.body.status, 'updated', 'has correct status')
+        t.same(res.body.milestone.supportBadges.length, 2, 'right number of support badges')
+        t.end()
+      })
+      .catch(api.fail(t))
+  })
+
+  test('Add a badge to a milestone that does not exist', function (t) {
+    const postData = {badgeId: 4}
+    api.post('/systems/chicago/milestones/19824/add-badge', postData)
+      .then(function (res) {
+        t.same(res.statusCode, 404, 'HTTP 404')
+        t.same(res.body.code, 'ResourceNotFound')
+        t.end()
+      })
   })
 
   test('Delete a milestone', function (t) {
