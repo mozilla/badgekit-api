@@ -148,7 +148,48 @@ exports = module.exports = function applyBadgeRoutes(server) {
     MilestoneBadges.put(rowData)
       .then(function () {
         const query = { id: milestoneId, systemId: req.system.id };
-        return Milestones.getOne(query, {relationships: true})
+        return Milestones.getOne(query, {relationships: true});
+      })
+      .then(function (milestone) {
+        return res.send(200, {
+          status: 'updated',
+          milestone: milestone.toResponse()
+        });
+      })
+      .catch(handleError(req, next));
+  }
+
+  server.post('/systems/:systemSlug/milestones/:milestoneId/remove-badge', [
+    middleware.findSystem(),
+    middleware.findMilestone({
+      where: { systemId: ['system', 'id' ]},
+      relationships: true,
+    }),
+    removeBadgeFromMilestone,
+  ]);
+  function removeBadgeFromMilestone(req, res, next) {
+    const milestoneId = req.params.milestoneId;
+    const badgeId = parseInt(req.body.badgeId, 10);
+    const milestone = req.milestone;
+    const supportBadgeIds =
+      milestone.supportBadges.map(function (badge) {
+        return badge.id
+      });
+
+    if (supportBadgeIds.indexOf(badgeId) === -1) {
+      return res.send(200, {
+        status: 'updated',
+        milestone: milestone.toResponse()
+      });
+    }
+    const query = {
+      milestoneId: milestoneId,
+      badgeId: badgeId
+    };
+    MilestoneBadges.del(query, { limit: 1 })
+      .then(function () {
+        const query = { id: milestoneId, systemId: req.system.id };
+        return Milestones.getOne(query, {relationships: true});
       })
       .then(function (milestone) {
         return res.send(200, {

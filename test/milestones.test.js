@@ -106,6 +106,25 @@ spawn(app).then(function (api) {
       })
   })
 
+  test('Remove badge from a milestone', function (t) {
+    const postData = {badgeId: 4}
+    api.post('/systems/chicago/milestones/1/remove-badge', postData)
+      .then(function (res) {
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(res.body.status, 'updated', 'has correct status')
+        t.same(res.body.milestone.supportBadges.length, 1, 'right number of support badges')
+        t.same(res.body.milestone.supportBadges[0].id, 1, 'has correct support badge')
+        return api.post('/systems/chicago/milestones/1/remove-badge', postData)
+      })
+      .then(function (res) {
+        t.same(res.statusCode, 200, '200 OK')
+        t.same(res.body.status, 'updated', 'has correct status')
+        t.same(res.body.milestone.supportBadges.length, 1, 'right number of support badges')
+        t.end()
+      })
+      .catch(api.fail(t))
+  })
+
   test('Delete a milestone', function (t) {
     api.del('/systems/chicago/milestones/999')
       .then(function (res) {
