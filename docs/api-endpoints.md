@@ -20,8 +20,8 @@
     * **PUT** /systems/:slug/issuers/:slug/programs/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug
     * **GET** /public/systems/:slug/issuers/:slug/programs/:slug
-* Badges
-  * Managing: Badges can belong directly to a system, an issuer, or a program.
+* Badge Management
+  * Badges (can belong directly to a system, issuer or program)
     * **GET** /systems/:slug/badges
     * **GET** /systems/:slug/issuers/:slug/badges
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges
@@ -59,7 +59,7 @@
     * **POST** /systems/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/claim
-  * Issuing
+  * Issuing (badge instances)
     * **GET** /systems/:slug/instances/:email
     * **GET** /systems/:slug/issuers/:slug/instances/:email
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/instances/:email
@@ -76,7 +76,7 @@
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email
     * **GET** /public/assertions/:slug
-  * Assessment
+  * Assessment (managing earner applications for badges)
     * **GET** /systems/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/applications
