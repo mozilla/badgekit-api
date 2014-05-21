@@ -2,7 +2,7 @@
 
 ## `GET /systems`
 
-Retrieves all available systems.
+Retrieves all available systems in the BadgeKit API instance.
 
 ### Expected request
 
@@ -15,14 +15,43 @@ GET /systems HTTP/1.1
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "systems": [
-  	{
-  	  "name": "System Name",
-  	  "slug": "system-slug",
-  	  "description": "System description"
-  	},
+    {
+      "id": 1,
+      "slug": "system-slug",
+      "url": "http://systemsite.com",
+      "name": "System Name",
+      "email": "admin@systemsite.com",
+      "imageUrl": "http://systemsite.com/image.jpg",
+      "issuers": [
+        {
+          "id": 1,
+          "slug": "issuer-slug",
+          "url": "http://issuersite.com",
+          "name": "Issuer Name",
+          "description": "Issuer description.",
+          "email": "admin@issuersite.com",
+          "imageUrl": "http://issuersite.com/image.jpg",
+          "programs": [ 
+            {
+              "id": 1,
+              "slug": "program-slug",
+              "url": "http://programsite.com",
+              "name": "Program Name",
+              "description": "Program description.",
+              "email": "admin@programsite.com",
+              "imageUrl": "http://programsite.com/image.jpg"
+            },
+              ...
+          ]
+        },
+          ...
+      ]
+  },
   	...
   ]
 }
@@ -47,12 +76,41 @@ GET /systems/<slug> HTTP/1.1
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "system": {
-    "name": "System Name",
+    "id": 1,
     "slug": "system-slug",
-    "description": "System Description"
+    "url": "http://systemsite.com",
+    "name": "System Name",
+    "email": "admin@systemsite.com",
+    "imageUrl": "http://systemsite.com/image.jpg",
+    "issuers": [
+    {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [
+        {
+          "id": 1,
+          "slug": "program-slug",
+          "url": "http://programsite.com",
+          "name": "Program Name",
+          "description": "Program description.",
+          "email": "admin@programsite.com",
+          "imageUrl": "http://programsite.com/image.jpg"
+        },
+          ...
+      ]
+    },
+      ...
+    ]
   }
 }
 ```
@@ -61,15 +119,17 @@ Content-Type: application/json
 
 * **System not found**
 
-  ```
-  HTTP/1.1 404 Not Found
-  Content-Type: application/json
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+```
 
-  {
-    "code": "ResourceNotFound",
-    "message": "Could not find system with slug `<attempted slug>`"
-  }
-  ```
+```json
+{
+  "code": "ResourceNotFound",
+  "message": "Could not find system field: `slug`, value: <attempted-slug>"
+}
+```
 
 ## `POST /systems`
 
@@ -260,3 +320,7 @@ Content-Type: application/json
     "message": "Could not find system with slug `<attempted slug>`"
   }
   ```
+
+## `GET /public/systems/<slug>`
+
+Retrieves a specific public system.
