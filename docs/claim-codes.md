@@ -1,0 +1,23 @@
+# Claim Codes
+
+* **GET** /systems/:slug/codes/:code
+* **GET** /systems/:slug/issuers/:slug/codes/:code
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/codes/:code
+* **GET** /systems/:slug/badges/:slug/codes
+* **GET** /systems/:slug/issuers/:slug/badges/:slug/codes
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes
+* **POST** /systems/:slug/badges/:slug/codes
+* **POST** /systems/:slug/issuers/:slug/badges/:slug/codes
+* **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes
+* **POST** /systems/:slug/badges/:slug/codes/random
+* **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/random
+* **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/random
+* **GET** /systems/:slug/badges/:slug/codes/:code
+* **GET** /systems/:slug/issuers/:slug/badges/:slug/codes/:code
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code
+* **DELETE** /systems/:slug/badges/:slug/codes/:code
+* **DELETE** /systems/:slug/issuers/:slug/badges/:slug/codes/:code
+* **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code
+* **POST** /systems/:slug/badges/:slug/codes/:code/claim
+* **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/claim
+* **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/claim
