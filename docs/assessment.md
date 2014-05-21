@@ -1,0 +1,35 @@
+# Assessment
+
+* **GET** /systems/:slug/applications
+* **GET** /systems/:slug/issuers/:slug/applications
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/applications
+* **GET** /systems/:slug/badges/:slug/applications
+* **GET** /systems/:slug/issuers/:slug/badges/:slug/applications
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications
+* **POST** /systems/:slug/badges/:slug/applications
+* **POST** /systems/:slug/issuers/:slug/badges/:slug/applications
+* **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications
+* **PUT** /systems/:slug/badges/:slug/applications/:slug
+* **PUT** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug
+* **PUT** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug
+* **GET** /systems/:slug/badges/:slug/applications/:slug
+* **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug
+* **DELETE** /systems/:slug/badges/:slug/applications/:slug
+* **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug
+* **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug
+* **GET** /systems/:slug/badges/:slug/applications/:slug/reviews
+* **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews
+* **GET** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **POST** /systems/:slug/badges/:slug/applications/:slug/reviews
+* **POST** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews
+* **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews
+* **PUT** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **PUT** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **PUT** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **DELETE** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
+* **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
