@@ -5,18 +5,21 @@
     * **GET** /systems/:slug
     * **PUT** /systems/:slug
     * **DELETE** /systems/:slug
+    * **GET** /public/systems/:slug
   * Issuers
     * **GET** /systems/:slug/issuers
     * **POST** /systems/:slug/issuers
     * **GET** /systems/:slug/issuers/:slug
     * **PUT** /systems/:slug/issuers/:slug
     * **DELETE** /systems/:slug/issuers/:slug
+    * **GET** /public/systems/:slug/issuers/:slug
   * Programs
     * **GET** /systems/:slug/issuers/:slug/programs
     * **POST** /systems/:slug/issuers/:slug/programs
     * **GET** /systems/:slug/issuers/:slug/programs/:slug
     * **PUT** /systems/:slug/issuers/:slug/programs/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug
+    * **GET** /public/systems/:slug/issuers/:slug/programs/:slug
 * Badges
   * Managing: Badges can belong directly to a system, an issuer, or a program.
     * **GET** /systems/:slug/badges
@@ -35,9 +38,6 @@
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug
   * Claim Codes
-    * **GET** /systems/:slug/codes
-    * **GET** /systems/:slug/issuers/:slug/codes
-    * **GET** /systems/:slug/issuers/:slug/programs/:slug/codes
     * **GET** /systems/:slug/codes/:code
     * **GET** /systems/:slug/issuers/:slug/codes/:code
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/codes/:code
@@ -59,9 +59,6 @@
     * **POST** /systems/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/claim
-    * **POST** /systems/:slug/badges/:slug/codes/:code/unclaim
-    * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/unclaim
-    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/unclaim
   * Issuing
     * **GET** /systems/:slug/instances/:email
     * **GET** /systems/:slug/issuers/:slug/instances/:email
@@ -78,6 +75,7 @@
     * **DELETE** /systems/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email
+    * **GET** /public/assertions/:slug
   * Assessment
     * **GET** /systems/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/applications
@@ -88,30 +86,35 @@
     * **POST** /systems/:slug/badges/:slug/applications
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/applications
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications
-    * **GET** /systems/:slug/badges/:slug/applications/:id
-    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:id
-    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id
-    * **GET** /systems/:slug/badges/:slug/applications/:id/evidence
-    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/evidence
-    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/evidence
-    * **POST** /systems/:slug/badges/:slug/applications/:id/evidence
-    * **POST** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/evidence
-    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/evidence
-    * **GET** /systems/:slug/badges/:slug/applications/:id/evidence/:id
-    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/evidence/:id
-    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/evidence/:id
-    * **DELETE** /systems/:slug/badges/:slug/applications/:id/evidence/:id
-    * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/evidence/:id
-    * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/evidence/:id
-    * **GET** /systems/:slug/badges/:slug/applications/:id/reviews/:id
-    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/reviews/:id
-    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/reviews/:id
-    * **POST** /systems/:slug/badges/:slug/applications/:id/reviews
-    * **POST** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/reviews
-    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/reviews
-    * **PUT** /systems/:slug/badges/:slug/applications/:id/reviews/:id
-    * **PUT** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/reviews/:id
-    * **PUT** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/reviews/:id
-    * **DELETE** /systems/:slug/badges/:slug/applications/:id/reviews/:id
-    * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:id/reviews/:id
-    * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:id/reviews/:id
+    * **PUT** /systems/:slug/badges/:slug/applications/:slug
+    * **PUT** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug
+    * **PUT** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug
+    * **GET** /systems/:slug/badges/:slug/applications/:slug
+    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug
+    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug
+    * **DELETE** /systems/:slug/badges/:slug/applications/:slug
+    * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug
+    * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug
+    * **GET** /systems/:slug/badges/:slug/applications/:slug/reviews
+    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews
+    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews
+    * **GET** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **GET** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **POST** /systems/:slug/badges/:slug/applications/:slug/reviews
+    * **POST** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews
+    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews
+    * **PUT** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **PUT** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **PUT** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **DELETE** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
+    * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
+  * Images
+    * **GET** /public/images/:imageId
+  * Milestones
+    * **GET** /systems/:slug/milestones
+    * **POST** /systems/:slug/milestones
+    * **GET** /systems/:slug/milestones/:milestoneId
+    * **PUT** /systems/:slug/milestones/:milestoneId
+    * **DELETE** /systems/:slug/milestones/:milestoneId
