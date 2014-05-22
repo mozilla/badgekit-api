@@ -1,5 +1,17 @@
 # Systems
 
+A system represents the top admin level within BadgeKit - an instance can contain one or more systems, a system can contain one or more issuers and an issuer can contain one or more programs. All BadgeKit API needs to function is one system, which badges will be automatically included in. Badges can optionally be associated with a system, issuer or program.
+
+| NAME | VALUE |
+|:---|:---|
+| `id` | integer - _id from database entry_ |
+| `slug` | string - _used to identify system in API endpoints_ |
+| `url` | string |
+| `name` | string |
+| `email` | string |
+| `imageUrl` | string |
+| `issuers` | array - _[issuers](issuers.md) in the system (may contain [programs](programs.md))_ |
+
 ## `GET /systems`
 
 Retrieves all available systems in the BadgeKit API instance.
@@ -57,13 +69,25 @@ Content-Type: application/json
 }
 ```
 
+#### Response structure
+
+* systems `[ ]`
+ * id
+ * slug
+ * url
+ * name
+ * email
+ * imageUrl
+ * [issuers](issuers.md) `[ ]`
+   * [programs](programs.md) `[ ]`
+
 ### Potential errors
 
 *None*
 
 ## `GET /systems/<slug>`
 
-Retrieves a specific system.
+Retrieves a specific system using its slug.
 
 ### Expected request
 
@@ -115,6 +139,18 @@ Content-Type: application/json
 }
 ```
 
+#### Response structure
+
+* system
+ * id
+ * slug
+ * url
+ * name
+ * email
+ * imageUrl
+ * [issuers](issuers.md) `[ ]`
+   * [programs](programs.md) `[ ]`
+
 ### Potential errors
 
 * **System not found**
@@ -139,9 +175,6 @@ Creates a new system.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-
-<a name="post-parameters"></a>
-
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|-------------------------|
 | **slug** | required | Short, computer-friendly name for the system. Good slugs are lowercase and use dashes instead of spaces, e.g. `city-of-chicago`. Maximum of 50 characters and each system must have a unique slug.
@@ -156,27 +189,45 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 ```
 HTTP/1.1 201 Created
 Content-Type: application/json
+```
 
+```json
 {
   "status": "created",
   "system": {
+    "id": 1,
     "slug": "system-slug",
     "name": "System Name",
-    "url": "https://example.org/system/",
-    "email": "system-badges@example.org",
-    "description": "System Description"
+    "url": "http://systemsite.com",
+    "email": "admin@systemsite.com",
+    "imageUrl": "http://systemsite.com/image.jpg",
+    "issuers": [ ]
   }
 }
 ```
+
+#### Response structure
+
+* status
+  * system
+    * id
+    * slug
+    * name
+    * url
+    * email
+    * imageUrl
+    * issuers `[ ]`
 
 ### Potential errors
 
 * **Invalid data**
 
-  ```
+```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ValidationError",
     "message": "Could not validate required fields",
@@ -189,22 +240,24 @@ Content-Type: application/json
       ...
     ]
   }
-  ```
+```
 
 * **Duplicate entry**
 
-  ```
+```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ResourceConflict",
     "error": system with that `slug` already exists",
     "details": {
       "slug": "system-slug",
       "name": "System Name",
-      "url": "https://example.org/system/",
-      "email": "system-badges@example.org",
+      "url": "http://systemsite.com",
+      "email": "admin@systemsite.com",
       "description": "System Description"
     }
   }
@@ -218,22 +271,35 @@ Updates an existing system.
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-<a href="#post-parameters">See above for parameters.</a> You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
+| Parameters             | Required        | Description              |
+|:-----------------------|-----------------|-------------------------|
+| **slug** | required | Short, computer-friendly name for the system. Good slugs are lowercase and use dashes instead of spaces, e.g. `city-of-chicago`. Maximum of 50 characters and each system must have a unique slug.
+| **name** | required | Name of the system. Maximum of 255 characters.
+| **url** | required | URL for the system. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | optional | A short, human-friendly description of the system. Maximum of 255 characters
+| **email** | optional | Email address associated with the badge administrator of the system.
+| **image** | optional | Image for the system. Should be either multipart data or a URL.
+
+You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
 ### Expected response
 
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "status": "updated",
   "system": {
+    "id": 1,
     "slug": "system-slug",
-    "name": Updated System Name",
-    "url": "https://example.org/system/",
-    "email": "system-badges@example.org",
-    "description": "Updated System Description"
+    "name": "System Name",
+    "url": "http://systemsite.com",
+    "email": "admin@systemsite.com",
+    "imageUrl": "http://systemsite.com/image.jpg",
+    "issuers": [ ]
   }
 }
 ```
@@ -242,10 +308,12 @@ Content-Type: application/json
 
 * **Invalid data**
 
-  ```
+```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ValidationError",
     "message": "Could not validate required fields",
@@ -258,26 +326,28 @@ Content-Type: application/json
       ...
     ]
   }
-  ```
+```
 
 * **Duplicate entry**
 
-  ```
+```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ResourceConflict",
     "error": "system with that `slug` already exists",
     "details": {
       "slug": "system-slug",
       "name": "System Name",
-      "url": "https://example.org/system/",
-      "email": "system-badges@example.org",
+      "url": "http://systemsite.com",
+      "email": "admin@systemsite.com",
       "description": "System Description"
     }
   }
-  ```
+```
 
 ## `DELETE /systems/<slug>`
 
@@ -294,15 +364,19 @@ DELETE /systems/<slug> HTTP/1.1
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "status": "deleted",
   "system": {
+    "id": 1,
     "slug": "system-slug",
     "name": "System Name",
-    "url": "https://example.org/system/",
-    "email": "system-badges@example.org",
-    "description": "System Description"
+    "url": "http://systemsite.com",
+    "email": "admin@systemsite.com",
+    "imageUrl": "http://systemsite.com/image.jpg",
+    "issuers": [ ]
   }
 }
 ```
@@ -311,15 +385,17 @@ Content-Type: application/json
 
 * **System not found**
 
-  ```
+```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ResourceNotFound",
     "message": "Could not find system with slug `<attempted slug>`"
   }
-  ```
+```
 
 ## `GET /public/systems/<slug>`
 
