@@ -12,6 +12,14 @@ A system represents the top admin level within BadgeKit - an instance can contai
 | `imageUrl` | string |
 | `issuers` | array - _[issuers](issuers.md) in the system (may contain [programs](programs.md))_ |
 
+## Endpoints
+
+* [`GET /systems`](#get-systems)
+* [`GET /systems/<slug>`](#get-systemsslug)
+* [`POST /systems`](#post-systems)
+* [`PUT /systems/<slug>`](#put-systemsslug)
+* [`DELETE /systems/<slug>`](#delete-systemsslug)
+
 ## `GET /systems`
 
 Retrieves all available systems in the BadgeKit API instance.
@@ -252,7 +260,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceConflict",
-    "error": system with that `slug` already exists",
+    "error": "system with that `slug` already exists",
     "details": {
       "slug": "system-slug",
       "name": "System Name",
