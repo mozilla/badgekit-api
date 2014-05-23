@@ -1,19 +1,23 @@
+# API Endpoints
+
+See the following overview of the available BadgeKit API endpoints - browse to the linked docs for each object/ process for more detailed information.
+
 * Containers
-  * Systems
+  * [Systems](systems.md)
     * **GET** /systems
     * **POST** /systems
     * **GET** /systems/:slug
     * **PUT** /systems/:slug
     * **DELETE** /systems/:slug
     * **GET** /public/systems/:slug
-  * Issuers
+  * [Issuers](issuers.md)
     * **GET** /systems/:slug/issuers
     * **POST** /systems/:slug/issuers
     * **GET** /systems/:slug/issuers/:slug
     * **PUT** /systems/:slug/issuers/:slug
     * **DELETE** /systems/:slug/issuers/:slug
     * **GET** /public/systems/:slug/issuers/:slug
-  * Programs
+  * [Programs](programs.md)
     * **GET** /systems/:slug/issuers/:slug/programs
     * **POST** /systems/:slug/issuers/:slug/programs
     * **GET** /systems/:slug/issuers/:slug/programs/:slug
@@ -21,7 +25,7 @@
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug
     * **GET** /public/systems/:slug/issuers/:slug/programs/:slug
 * Badge Management
-  * Badges (can belong directly to a system, issuer or program)
+  * [Badges](badges.md) (can belong directly to a system, issuer or program)
     * **GET** /systems/:slug/badges
     * **GET** /systems/:slug/issuers/:slug/badges
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/badges
@@ -37,7 +41,7 @@
     * **DELETE** /systems/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug
-  * Claim Codes
+  * [Claim Codes](claim-codes.md)
     * **GET** /systems/:slug/codes/:code
     * **GET** /systems/:slug/issuers/:slug/codes/:code
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/codes/:code
@@ -59,7 +63,7 @@
     * **POST** /systems/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/codes/:code/claim
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes/:code/claim
-  * Issuing (badge instances)
+  * [Issuing](issuing.md) (badge instances)
     * **GET** /systems/:slug/instances/:email
     * **GET** /systems/:slug/issuers/:slug/instances/:email
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/instances/:email
@@ -76,7 +80,7 @@
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email
     * **GET** /public/assertions/:slug
-  * Assessment (managing earner applications for badges)
+  * [Assessment](#assessment) (managing earner applications for badges)
     * **GET** /systems/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/applications
@@ -118,3 +122,5 @@
     * **GET** /systems/:slug/milestones/:milestoneId
     * **PUT** /systems/:slug/milestones/:milestoneId
     * **DELETE** /systems/:slug/milestones/:milestoneId
+
+See also [authorization](authorization.md) and [webhooks](webhooks.md).
