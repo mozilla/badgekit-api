@@ -4,18 +4,20 @@ The BadgeKit API docs include the information you need to get started using the 
 
 * [API Endpoints](api-endpoints.md)
  * Containers:
-  * [Systems](systems.md)
-  * [Issuers](issuers.md)
-  * [Programs](programs.md)
+    * [Systems](systems.md)
+    * [Issuers](issuers.md)
+    * [Programs](programs.md)
  * Badge Management:
-  * [Badges](badges.md)
-  * [Claim Codes](claim-codes.md)
-  * [Issuing](issuing.md)
-  * [Assessment](assessment.md)
+    * [Badges](badges.md)
+    * [Claim Codes](claim-codes.md)
+    * [Issuing](issuing.md)
+    * [Assessment](assessment.md)
 * [Webhooks](webhooks.md)
 * [Authorization](authorization.md)
 
-You will also find detailed guides to carrying out common processes, together with sample code excerpts, in the [BadgeKit API wiki](https://github.com/mozilla/badgekit-api/wiki):
+You can interact with badge and application data managed by the API using the endpoints. The data you send to the API endpoints needs to be signed for authentication, and the data you receive from it is signed before it is sent. To detect badging events carried out through the API, such as badges being issued and badge applications being reviewed, you can configure a webhook URL to which BadgeKit API will send data.
+
+The API docs provide a reference for the endpoints and webhooks. You will also find detailed guides to carrying out common processes, together with sample code excerpts, in the [BadgeKit API wiki](https://github.com/mozilla/badgekit-api/wiki):
 
 * [Using BadgeKit API](https://github.com/mozilla/badgekit-api/wiki/Using-BadgeKit-API)
 * [Retrieving Badges](https://github.com/mozilla/badgekit-api/wiki/Retrieving-Badges)
@@ -24,7 +26,7 @@ You will also find detailed guides to carrying out common processes, together wi
 * [Awarding Badges](https://github.com/mozilla/badgekit-api/wiki/Awarding-Badges)
 * [Badge Issued Webhooks](https://github.com/mozilla/badgekit-api/wiki/Badge-Issued-Webhooks)
 
-If you have any problems using BadgeKit or the API, feel free to get in touch using one of the following methods:
+For additional support using BadgeKit or the API, feel free to get in touch using one of the following methods:
 
 * Post general questions in our [Community Google Groups](http://bit.ly/OBIGeneral) and post technical questions in our [Dev Google Group](http://bit.ly/OBIDev).
 * Reach members of the Open Badges team directly on IRC (irc.mozilla.org) on the #badges channel.
