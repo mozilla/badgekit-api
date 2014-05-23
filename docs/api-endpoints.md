@@ -80,7 +80,7 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email
     * **GET** /public/assertions/:slug
-  * [Assessment](#assessment) (managing earner applications for badges)
+  * [Assessment](assessment.md) (managing earner applications for badges)
     * **GET** /systems/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/programs/:slug/applications
