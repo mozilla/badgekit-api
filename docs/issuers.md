@@ -1,6 +1,6 @@
 # Issuers
 
-Issuers represent mid-level admin in BadgeKit. Each issuer belongs to a single [system](system.md), optionally along with other issuers. An issuer can contain one or more [programs](programs.md). Badges can be associated with an issuer, which will typically be a single organization within a badging system, such as a library, museum or school.
+Issuers represent mid-level admin in BadgeKit. Each issuer belongs to a single [system](systems.md), optionally along with other issuers. An issuer can contain one or more [programs](programs.md). Badges can be associated with an issuer, which will typically be a single organization within a badging system, such as a library, museum or school.
 
 | NAME | VALUE |
 |:---|:---|
@@ -15,9 +15,9 @@ Issuers represent mid-level admin in BadgeKit. Each issuer belongs to a single [
 
 ## Endpoints
 
-* [`GET /systems/<slug>/issuers`](#get-issuers)
-* [`POST /systems/<slug>/issuers`](#post-issuers)
+* [`GET /systems/<slug>/issuers`](#get-systemsslugissuers)
 * [`GET /systems/<slug>/issuers/<slug>`](#get-systemsslugissuersslug)
+* [`POST /systems/<slug>/issuers`](#post-systemsslugissuers)
 * [`PUT /systems/<slug>/issuers/<slug>`](#put-systemsslugissuersslug)
 * [`DELETE /systems/<slug>/issuers/<slug>`](#delete-systemsslugissuersslug)
 
@@ -256,7 +256,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceConflict",
-    "error": issuer with that `slug` already exists",
+    "error": "issuer with that `slug` already exists",
     "details": {
       "slug": "issuer-slug",
       "name": "Issuer Name",
