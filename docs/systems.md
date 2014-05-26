@@ -100,7 +100,7 @@ Retrieves a specific system using its slug.
 ### Expected request
 
 ```
-GET /systems/<slug> HTTP/1.1
+GET /systems/:systemSlug HTTP/1.1
 ```
 
 ### Expected response
@@ -180,6 +180,10 @@ Content-Type: application/json
 Creates a new system.
 
 ### Expected request
+
+```
+POST /systems
+```
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
@@ -277,6 +281,10 @@ Updates an existing system.
 
 ### Expected request
 
+```
+PUT /systems/:systemSlug
+```
+
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 | Parameters             | Required        | Description              |
@@ -364,7 +372,7 @@ Deletes an existing system.
 ### Expected request
 
 ```
-DELETE /systems/<slug> HTTP/1.1
+DELETE /systems/:systemSlug HTTP/1.1
 ```
 
 ### Expected response
