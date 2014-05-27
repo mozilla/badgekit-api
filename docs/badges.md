@@ -1,6 +1,56 @@
 # Badges
 
-## `Badge List`
+A badge represents the generic data for an earnable badge (not an awarded badge, which is a [badge instance](issuing.md)). Badges can be published or archived. Each badge can belong to a [system](systems.md), [issuer](issuers.md) or [program](programs.md).
+
+| NAME | VALUE |
+|:---|:---|
+| `id` | integer - _id from database entry_ |
+| `slug` | string - _used to identify badge in API endpoints_ |
+| `name` | string |
+| `strapline` | string - _Short tagline description._ |
+| `earnerDescription` | string - _Description for potential earners._ |
+| `consumerDescription` | string - _Description for viewers of badge e.g. college admin or employer._ |
+| `issuerUrl` | string |
+| `rubricUrl` | string - _Link to supporting material._ |
+| `timeValue` | integer |
+| `timeUnits` | _Can be `minutes`, `hours`, `days` or `weeks`._ |
+| `limit` | integer - _Optional limit for number of times badge can be earned._ |
+| `unique` | boolean |
+| `created` | timestamp |
+| `imageUrl` | string |
+| `type` | string - _Can be automatically assigned in BadgeKit Web app._ |
+| `archived` | boolean |
+| `system` | _System is represented by ID in database - system details are returned from API endpoints as nested JSON._ |
+| `criteriaUrl` | string |
+| `criteria` | array - _Includes `id`, `description`, `required` status and `note`._ |
+| `categories` | array |
+| `tags` | array |
+| `milestones` | array |
+
+## Endpoints
+
+* [Retrieve Badge List](#retrieve-badge-list)
+ * `GET /systems/<slug>/badges`
+ * `GET /systems/<slug>/issuers/<slug>/badges`
+ * `GET /systems/<slug>/issuers/<slug>/programs/<slug>/badges`
+* [Retrieve Specific Badge](#retrieve-specific-badge)
+ * `GET /systems/<slug>/badges/<slug>`
+ * `GET /systems/<slug>/issuers/<slug>/badges/<slug>`
+ * `GET /systems/<slug>/issuers/<slug>/programs/<slug>`
+* [Create New Badge](#create-new-badge)
+ * `POST /systems/<slug>/badges`
+ * `POST /systems/<slug>/issuers/<slug>/badges`
+ * `POST / systems/<slug>/issuers/<slug>/programs/<slug>`
+* [Update a Badge](#update-a-badge)
+ * `PUT /systems/<slug>/badges/<slug>`
+ * `PUT /systems/<slug>/issuers/<slug>/badges/<slug>`
+ * `PUT /systems/<slug>/issuers/<slug>/programs/<slug>/badges/<slug>`
+* [Delete a Badge](#delete-a-badge)
+ * `DELETE /systems/<slug>/badges/<slug>`
+ * `DELETE /systems/<slug>/issuers/<slug>/badges/<slug>`
+ * `DELETE /systems/<slug>/issuers/<slug>/programs/<slug>/badges/<slug>`
+
+## Retrieve Badge List
 
 Retrieves all available badges, filtered by system, issuer or program.
 
@@ -14,8 +64,7 @@ GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1
 
 #### Available request parameters
 
-* **`archived`:** `[true|false|any]`
-  Whether to include archived badges.
+* **`archived`:** `[true|false|any]` (optional) - _Whether to include archived badges._
   * `true` will return only archived badges
   * `false` (default) will return only unarchived badges
   * `any` will return badges regardless of archived status
@@ -25,37 +74,101 @@ GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "badges": [
     {
-      "name": "Badge Name",
+      "id": 1,
       "slug": "badge-slug",
-      "strapline": "Badge Strapline",
-      "earnerDescription": "Badge Description",
-      "consumerDescription": "Badge Description for Consumers",
-      "issuerUrl": "http://example.org/issuer",
-      "rubricUrl": "http://example.org/rubric",
-      "criteriaUrl": "http://example.org/criteria",
-      "timeValue": 10,
+      "name": "Badge Name",
+      "strapline": "Badge strapline.",
+      "earnerDescription": "Badge description for potential earners.",
+      "consumerDescription": "Badge description for interested consumers.",
+      "issuerUrl": "http://issuersite.com",
+      "rubricUrl": "http://issuersite.com/rubric",
+      "timeValue": 0,
       "timeUnits": "minutes",
       "limit": 5,
       "unique": false,
-      "imageUrl": "http://example.org/badge.png",
-      "archived": false
+      "created": "2014-05-21T19:22:09.000Z",
+      "imageUrl": "http://issuersite.com/badge.png",
+      "type": "badge type",
+      "archived": false,
+      "system": {
+          "id": 1,
+          "slug": "system-slug",
+          "url": "http://systemsite.com",
+          "name": "System Name",
+          "email": "admin@systemsite.com",
+          "imageUrl": "http://systemsite.com/image.jpg",
+          "issuers": [ ]
+      }
+      "criteriaUrl": "http://issuersite.com/criteria",
+      "criteria": [
+          {
+              "id": 1, 
+              "description": "Criteria description.",
+              "required": true,
+              "note": "Note about criteria for assessor."
+          },
+          ...
+      ],
+      "categories": [ ],
+      "tags": [ ],
+      "milestones": [ ]
     },
     ...
   ]
 }
 ```
 
+#### Response structure
+
+* badges `[ ]`
+	* id
+	* slug
+	* name
+	* strapline
+	* earnerDescription
+	* consumerDescription
+	* issuerUrl
+	* rubricUrl
+	* timeValue
+	* timeUnits
+	* limit
+	* unique
+	* created
+	* imageUrl
+	* type
+	* archived
+	* system `[ ]`
+		* id
+		* slug
+		* url
+		* name
+		* email
+		* imageUrl
+		* issuers `[ ]`
+	* criteriaUrl
+	* criteria `[ ]`
+		* id
+		* description
+		* required
+		* note
+	* categories `[ ]`
+	* tags `[ ]`
+	* milestones `[ ]`
+
+
 ### Potential errors
 
 *None*
 
-## `Retrieve a specific badge`
+## Retrieve Specific Badge
 
-Retrieves a specific badge.
+Retrieves a specific badge using its slug.
 
 ### Expected request
 
@@ -105,7 +218,7 @@ Content-Type: application/json
   }
   ```
 
-## `Create a badge`
+## `Create New Badge`
 
 Creates a new badge, or updates an existing badge.
 
@@ -275,11 +388,13 @@ Content-Type: application/json
   }
   ```
 
-## `PUT /badges/<slug>`
+## Update a Badge
 
 Updates an existing badge.
 
 ### Expected request
+
+`PUT /badges/<slug>`
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
