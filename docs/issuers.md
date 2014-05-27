@@ -212,15 +212,15 @@ Content-Type: application/json
 #### Response structure
 
 * status
-  * issuer
-    * id
-    * slug
-    * url
-    * name
-    * description
-    * email
-    * imageUrl
-    * programs `[ ]`
+* issuer
+  * id
+  * slug
+  * url
+  * name
+  * description
+  * email
+  * imageUrl
+  * programs `[ ]`
 
 ### Potential errors
 
@@ -312,6 +312,19 @@ Content-Type: application/json
   }
 }
 ```
+
+#### Response structure
+
+* status
+* issuer
+  * id
+  * slug
+  * url
+  * name
+  * description
+  * email
+  * imageUrl
+  * programs `[ ]`
 
 ### Potential errors
 
