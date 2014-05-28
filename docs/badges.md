@@ -656,7 +656,7 @@ Deletes an existing badge.
 ```
 DELETE /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
 DELETE /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
-DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug
+DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug HTTP/1.1
 ```
 
 ### Expected response
