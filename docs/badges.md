@@ -4,28 +4,28 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 
 | NAME | VALUE |
 |:---|:---|
-| `id` | integer - _id from database entry_ |
-| `slug` | string - _used to identify badge in API endpoints_ |
-| `name` | string |
-| `strapline` | string - _Short tagline description._ |
-| `earnerDescription` | string - _Description for potential earners._ |
-| `consumerDescription` | string - _Description for viewers of badge e.g. college admin or employer._ |
-| `issuerUrl` | string |
-| `rubricUrl` | string - _Link to supporting material._ |
-| `timeValue` | integer |
-| `timeUnits` | _Can be `minutes`, `hours`, `days` or `weeks`._ |
-| `limit` | integer - _Optional limit for number of times badge can be earned._ |
-| `unique` | boolean |
-| `created` | timestamp |
-| `imageUrl` | string |
-| `type` | string - _Can be automatically assigned in BadgeKit Web app._ |
-| `archived` | boolean |
-| `system` | _System is represented by ID in database - system details are returned from API endpoints as nested JSON._ |
-| `criteriaUrl` | string |
-| `criteria` | array - _Includes `id`, `description`, `required` status and `note`._ |
-| `categories` | array |
-| `tags` | array |
-| `milestones` | array |
+| `id` | __integer__ - _ID from database entry_ |
+| `slug` | __string__ - _Used to identify badge in API endpoints_ |
+| `name` | __string__ |
+| `strapline` | __string__ - _Short tagline description._ |
+| `earnerDescription` | __string__ - _Description for potential earners._ |
+| `consumerDescription` | __string__ - _Description for viewers of badge e.g. college admin or employer._ |
+| `issuerUrl` | __string__ |
+| `rubricUrl` | __string__ - _Link to supporting material._ |
+| `timeValue` | __integer__ |
+| `timeUnits` | __enum__ - _Can be `minutes`, `hours`, `days` or `weeks`._ |
+| `limit` | __integer__ - _Optional limit for number of times badge can be earned._ |
+| `unique` | __boolean__ |
+| `created` | __timestamp__ |
+| `imageUrl` | __string__ |
+| `type` | __string__ |
+| `archived` | __boolean__ |
+| `system` | __integer__ - _System is represented by ID in database - system details are returned from API endpoints as nested JSON._ |
+| `criteriaUrl` | __string__ |
+| `criteria` | __array__ - _Includes `id`, `description`, `required` status and `note`._ |
+| `categories` | __array__ - _Each category is a string._ |
+| `tags` | __array__- _Each tag is a string._ |
+| [`milestones`](milestones.md) | __array__ - _A milestone badge is awarded when a set of other badges are earned._ |
 
 ## Endpoints
 
@@ -298,27 +298,26 @@ POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
 ```
 
 | Parameters             | Required        | Description              |
-|:-----------------------|-----------------|-------------------------|
-| **slug** | required | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
-| **name** | required | Name of the badge. Maximum 255 characters.
-| **strapline** | optional | Short tagline style description of the badge. Maximum 140 characters.
-| **earnerDescription** | required | Description of the badge for potential earners.
-| **consumerDescription** | required | Description of the badge for consumers viewing it.
-| **type** | required | Short string representing badge type. Maximum 255 characters.
-| **issuerUrl** | optional | URL for badge issuer.
-| **rubricUrl** | optional | Link to any rubric material associated with the badge.
-| **timeValue** | optional | Badges can be associated with a time limit for earning.
-| **timeUnits** | optional | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
-| **earnerDescription** | required | Description of the badge for potential earners.
-| **limit** | optional | Badges can be awarded to a fixed maximum number of earners.
-| **unique** | optional | _boolean_ Badges can be unique.
-| **image** OR **imageUrl** | required | Image for the program. Should be either multipart data or a URL.
-| **archived** | optional | Boolean indicating archived status for badge.
-| **criteriaUrl** | optional | Link to badge criteria.
-| **criteria** | optional | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
-| **categories** | optional | Array of category names for the badge.
-| **tags** | optional | Array of tag names for the badge.
-| **milestones** | optional | Array of [milestones](milestones.md).
+|:-----------------------|-----------------|--------------------------|
+| **slug** | _required_ | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
+| **name** | _required_ | Name of the badge. Maximum 255 characters.
+| **strapline** | _optional_ | Short tagline style description of the badge. Maximum 140 characters.
+| **earnerDescription** | _required_ | Description of the badge for potential earners.
+| **consumerDescription** | _required_ | Description of the badge for consumers viewing it.
+| **issuerUrl** | _optional_ | URL for badge issuer.
+| **rubricUrl** | _optional_ | Link to any rubric material associated with the badge.
+| **timeValue** | _optional_ | Badges can be associated with a time limit for earning.
+| **timeUnits** | _optional_ | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
+| **limit** | _optional_ | Badges can be awarded to a fixed maximum number of earners.
+| **unique** | _required_ | Boolean indicator of badge uniqueness.
+| **image** OR **imageUrl** | _required_ | Image for the program. Should be either multipart data or a URL.
+| **archived** | _optional_ | Boolean indicating archived status for badge.
+| **criteriaUrl** | _required_ | Link to badge criteria.
+| **criteria** | _optional_ | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
+| **type** | _required_ | Short string representing badge type. Maximum 255 characters.
+| **categories** | _optional_ | Array of category names for the badge.
+| **tags** | _optional_ | Array of tag names for the badge.
+| **milestones** | _optional_ | Array of [milestones](milestones.md).
 
 ### Expected response
 
@@ -415,10 +414,12 @@ Content-Type: application/json
 
 * **Invalid data**
 
-  ```
+ ```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ValidationError",
     "message": "Could not validate required fields",
@@ -431,43 +432,43 @@ Content-Type: application/json
       ...
     ]
   }
-  ```
+```
 
 * **Duplicate entry**
 
-  ```
+```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ResourceConflict",
     "error": "badge with that `slug` already exists",
     "details": {
       "name": "Badge Name",
       "slug": "badge-slug",
-      "strapline": "Badge Strapline",
-      "earnerDescription": "Badge Description",
-      "consumerDescription": "Badge Description for Consumers",
-      "issuerUrl": "http://example.org/issuer",
-      "rubricUrl": "http://example.org/rubric",
-      "criteriaUrl": "http://example.org/criteria",
+      "strapline": "Badge strapline.",
+      "earnerDescription": "Badge description for earners.",
+      "consumerDescription": "Badge description for consumers.",
+      "issuerUrl": "http://issuersite.com",
+      "rubricUrl": "http://issuersite.com/rubric",
+      "criteriaUrl": "http://issuersite.com/criteria",
       "timeValue": 10,
       "timeUnits": "minutes",
       "limit": 5,
       "unique": false,
-      "imageUrl": "http://example.org/badge.png",
+      "imageUrl": "http://issuersite.com/badge.png",
       "archived": false
     }
   }
-  ```
+```
 
 ## Update a Badge
 
 Updates an existing badge.
 
 ### Expected request
-
-`PUT /badges/<slug>`
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
@@ -477,99 +478,131 @@ PUT /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
 PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug
 ```
 
+| Parameters             | Description              |
+|:-----------------------|--------------------------|
+| **slug** | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
+| **name** | Name of the badge. Maximum 255 characters.
+| **strapline** | Short tagline style description of the badge. Maximum 140 characters.
+| **earnerDescription** | Description of the badge for potential earners.
+| **consumerDescription** | Description of the badge for consumers viewing it.
+| **issuerUrl** | URL for badge issuer.
+| **rubricUrl** | Link to any rubric material associated with the badge.
+| **timeValue** | Badges can be associated with a time limit for earning.
+| **timeUnits** | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
+| **limit** | Badges can be awarded to a fixed maximum number of earners.
+| **unique** | Boolean indicator of badge uniqueness.
+| **image** OR **imageUrl** | Image for the program. Should be either multipart data or a URL.
+| **archived** | Boolean indicating archived status for badge.
+| **criteriaUrl** | Link to badge criteria.
+| **criteria** | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
+| **type** | Short string representing badge type. Maximum 255 characters.
+| **categories** | Array of category names for the badge.
+| **tags** | Array of tag names for the badge.
+| **milestones** | Array of [milestones](milestones.md).
 
-```
-Content-Type: application/json
-
-{
-  "name": "Badge Name",
-  "slug": "badge-slug",
-  "strapline": "Badge Strapline",
-  "earnerDescription": "Badge Description",
-  "consumerDescription": "Badge Description for Consumers",
-  "issuerUrl": "http://example.org/issuer",
-  "rubricUrl": "http://example.org/rubric",
-  "criteriaUrl": "http://example.org/criteria",
-  "timeValue": 10,
-  "timeUnits": "minutes",
-  "limit": 5,
-  "unique": false,
-  "imageUrl": "http://example.org/badge.png",
-  "archived": false
-}
-```
-
-```
-Content-Type: application/x-www-form-urlencoded
-
-name=New%20Badge%20Name&new-slug=badge-slug&strapline=New%20Badge%20Strapline&description=New%20Badge%20Description&image=http%3A%2F%2Fexample.org%2Fnew-image.png
-```
-
-```
-Content-Type: multipart/form-data; boundary=…
-
---…
-content-disposition: form-data; name="name"
-
-New Badge Name
---…
-content-disposition: form-data; name="slug"
-
-new-badge-slug
---…
-content-disposition: form-data; name="strapline"
-
-New Badge Strapline
---…
-content-disposition: form-data; name="description"
-
-New Badge Description
---…
-content-disposition: form-data; name="image"
-
-http://example.org/new-image.png
---…--
-```
-
-#### Alternatively…
-
-Images may be uploaded in the same manner as creating a new badge.
+You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
 ### Expected response
 
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "status": "updated",
   "badge": {
-    "name": "Badge Name",
+    "id": 1,
     "slug": "badge-slug",
-    "strapline": "Badge Strapline",
-    "earnerDescription": "Badge Description",
-    "consumerDescription": "Badge Description for Consumers",
-    "issuerUrl": "http://example.org/issuer",
-    "rubricUrl": "http://example.org/rubric",
-    "criteriaUrl": "http://example.org/criteria",
+    "name": "Badge Name",
+    "strapline": "Badge strapline.",
+    "earnerDescription": "Badge description for potential earners.",
+    "consumerDescription": "Badge description for consumers.",
+    "issuerUrl": "http://issuersite.com",
+    "rubricUrl": "http://issuersite.com/rubric",
     "timeValue": 10,
     "timeUnits": "minutes",
     "limit": 5,
     "unique": false,
-    "imageUrl": "http://example.org/badge.png",
-    "archived": false
+    "created": "2014-05-21T19:22:09.000Z",
+    "imageUrl": "http://issuersite.com/badge.png",
+    "type": "badge type",
+    "archived": false,
+    "system": {
+      "id": 1,
+      "slug": "system-slug",
+      "url": "http://systemsite.com",
+      "name": "System Name",
+      "email": "admin@systemsite.com",
+      "imageUrl": "http://systemsite.com/image.jpg",
+      "issuers": [ ]
+    },
+    "criteriaUrl": "http://issuersite.com/criteria",
+    "criteria": [
+      {
+        "id": 1,
+        "description": "criteria description",
+        "required": 1,
+        "note": "note for assessor"
+      },
+      ...
+    ],
+    "categories": [ ],
+    "tags": [ ],
+    "milestones": [ ]
   }
 }
 ```
+
+#### Response structure
+
+* status
+* badge
+	* id
+	* slug
+	* name
+	* strapline
+	* earnerDescription
+	* consumerDescription
+	* issuerUrl
+	* rubricUrl
+	* timeValue
+	* timeUnits
+	* limit
+	* unique
+	* created
+	* imageUrl
+	* type
+	* archived
+	* system `[ ]`
+		* id
+		* slug
+		* url
+		* name
+		* email
+		* imageUrl
+		* issuers `[ ]`
+	* criteriaUrl
+	* criteria `[ ]`
+		* id
+		* description
+		* required
+		* note
+	* categories `[ ]`
+	* tags `[ ]`
+	* milestones `[ ]`
 
 ### Potential errors
 
 * **Invalid data**
 
-  ```
+```
   HTTP/1.1 400 Bad Request
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ValidationError",
     "message": "Could not validate required fields",
@@ -582,14 +615,16 @@ Content-Type: application/json
       ...
     ]
   }
-  ```
+```
 
 * **Duplicate entry**
 
-  ```
+```
   HTTP/1.1 409 Conflict
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ResourceConflict",
     "error": "badge with that `slug` already exists",
@@ -610,7 +645,7 @@ Content-Type: application/json
       "archived": false
     }
   }
-  ```
+```
 
 ## Delete a Badge
 
@@ -629,24 +664,33 @@ DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:ba
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "status": "deleted",
   "badge": {
-    "name": "Badge Name",
+    "id": 1,
     "slug": "badge-slug",
-    "strapline": "Badge Strapline",
-    "earnerDescription": "Badge Description",
-    "consumerDescription": "Badge Description for Consumers",
-    "issuerUrl": "http://example.org/issuer",
-    "rubricUrl": "http://example.org/rubric",
-    "criteriaUrl": "http://example.org/criteria",
+    "name": "Badge Name",
+    "strapline": "Badge strapline.",
+    "earnerDescription": "Badge description for potential earners.",
+    "consumerDescription": "Badge description for consumers.",
+    "issuerUrl": "http://issuersite.com",
+    "rubricUrl": "http://issuersite.com/rubric",
     "timeValue": 10,
     "timeUnits": "minutes",
     "limit": 5,
     "unique": false,
-    "imageUrl": "http://example.org/badge.png",
-    "archived": false
+    "created": "2014-05-21T19:22:09.000Z",
+    "imageUrl": "http://issuersite.com/badge.png",
+    "type": "badge type",
+    "archived": false,
+    "criteriaUrl": "http://issuersite.com/criteria",
+    "criteria": [ ],
+    "categories": [ ],
+    "tags": [ ],
+    "milestones": [ ]
   }
 }
 ```
@@ -655,12 +699,14 @@ Content-Type: application/json
 
 * **Badge not found**
 
-  ```
+```
   HTTP/1.1 404 Not Found
   Content-Type: application/json
+```
 
+```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find badge with slug `<attempted slug>`"
+    "message": "Could not find badge field: `slug`, value: `<attempted-slug>`"
   }
-  ```
+```
