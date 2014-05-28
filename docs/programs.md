@@ -238,14 +238,14 @@ PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug HTTP/1.1
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-| Parameters             | Required        | Description              |
-|:-----------------------|-----------------|-------------------------|
-| **slug** | required | Short, computer-friendly name for the program. Good slugs are lowercase and use dashes instead of spaces, e.g. `cpl-rahms-readers`. Maximum of 50 characters and each program must have a unique slug.
-| **name** | required | Name of the program. Maximum of 255 characters.
-| **url** | required | URL for the program. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
-| **description** | optional | A short, human-friendly description of the program. Maximum of 255 characters
-| **email** | optional | Email address associated with the badge administrator of the program.
-| **image** | optional | Image for the program. Should be either multipart data or a URL.
+| Parameters             | Description              |
+|:-----------------------|--------------------------|
+| **slug** | Short, computer-friendly name for the program. Good slugs are lowercase and use dashes instead of spaces, e.g. `cpl-rahms-readers`. Maximum of 50 characters and each program must have a unique slug.
+| **name** | Name of the program. Maximum of 255 characters.
+| **url** | URL for the program. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | A short, human-friendly description of the program. Maximum of 255 characters
+| **email** | Email address associated with the badge administrator of the program.
+| **image** | Image for the program. Should be either multipart data or a URL.
 
 You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
