@@ -175,7 +175,7 @@ Content-Type: application/json
 ```json
 {
   "badge": {
-      id": 1,
+      "id": 1,
       "slug": "badge-slug",
       "name": "Badge Name",
       "strapline": "Badge strapline.",
