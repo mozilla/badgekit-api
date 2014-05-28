@@ -294,7 +294,7 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 ```
 POST /systems/:systemSlug/badges HTTP/1.1
 POST /systems/:systemSlug/issuers/:issuerSlug/badges HTTP/1.1
-POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
+POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1.1
 ```
 
 | Parameters             | Required        | Description              |
@@ -475,7 +475,7 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 ```
 PUT /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
 PUT /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
-PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug
+PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug HTTP/1.1
 ```
 
 | Parameters             | Description              |
