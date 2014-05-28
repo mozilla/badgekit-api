@@ -9,6 +9,7 @@ The BadgeKit API docs include the information you need to get started using the 
     * [Programs](programs.md)
  * Badge Management:
     * [Badges](badges.md)
+      * [Milestones](milestones.md)
     * [Claim Codes](claim-codes.md)
     * [Issuing](issuing.md)
     * [Assessment](assessment.md)
