@@ -116,7 +116,7 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
   * Images
     * **GET** /public/images/:imageId
-  * Milestones
+  * [Milestones](milestones.md)
     * **GET** /systems/:slug/milestones
     * **POST** /systems/:slug/milestones
     * **GET** /systems/:slug/milestones/:milestoneId
