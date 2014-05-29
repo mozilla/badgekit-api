@@ -287,14 +287,14 @@ PUT /systems/:systemSlug
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-| Parameters             | Required        | Description              |
-|:-----------------------|-----------------|-------------------------|
-| **slug** | required | Short, computer-friendly name for the system. Good slugs are lowercase and use dashes instead of spaces, e.g. `city-of-chicago`. Maximum of 50 characters and each system must have a unique slug.
-| **name** | required | Name of the system. Maximum of 255 characters.
-| **url** | required | URL for the system. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
-| **description** | optional | A short, human-friendly description of the system. Maximum of 255 characters
-| **email** | optional | Email address associated with the badge administrator of the system.
-| **image** | optional | Image for the system. Should be either multipart data or a URL.
+| Parameters             | Description              |
+|:-----------------------|--------------------------|
+| **slug** | Short, computer-friendly name for the system. Good slugs are lowercase and use dashes instead of spaces, e.g. `city-of-chicago`. Maximum of 50 characters and each system must have a unique slug.
+| **name** | Name of the system. Maximum of 255 characters.
+| **url** | URL for the system. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | A short, human-friendly description of the system. Maximum of 255 characters
+| **email** | Email address associated with the badge administrator of the system.
+| **image** | Image for the system. Should be either multipart data or a URL.
 
 You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
