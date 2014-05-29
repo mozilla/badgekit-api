@@ -272,6 +272,7 @@ Delete a badge instance within a system, issuer or program context.
 DELETE /systems/:slug/badges/:slug/instances/:email
 DELETE /systems/:slug/issuers/:slug/badges/:slug/instances/:email
 DELETE /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email
+```
 
 ### Expected response
 
