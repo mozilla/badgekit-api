@@ -76,6 +76,8 @@ Note that when a review is submitted that approves the application, the badge is
 
 In BadgeKit, issuing a badge to an earner means creating a [badge instance](issuing.md#create-a-badge-instance). When a badge instance is created, the API sends a message to the webhook including the details of the badge instance and assertion. The message includes the action (which will be `award`), the UID, the badge awarded, the earner email, the assertion URL, the date issued and an optional comment.
 
+The `award` action webhook is sent whenever a badge is issued, whether this involves an application/ review process, a claim code or a badge being issued directly to an email address. This allows issuers to carry out follow-up tasks with the earner, such as offering to push a new badge to a backpack.
+
 ### Example Message
 
 ```json
@@ -111,4 +113,4 @@ In BadgeKit, issuing a badge to an earner means creating a [badge instance](issu
 For more on handling the webhook data, see the following pages in the BadgeKit API wiki:
 
 * [Application Review Webhooks](https://github.com/mozilla/badgekit-api/wiki/Application-Review-Webhooks) 
-* [Badge Issued Webhooks](https://github.com/mozilla/badgekit-api/wiki/Badge-Issued-Webhooks).
+* [Badge Issued Webhooks](https://github.com/mozilla/badgekit-api/wiki/Badge-Issued-Webhooks)
