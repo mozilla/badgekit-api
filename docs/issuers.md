@@ -279,14 +279,14 @@ PUT /systems/:systemSlug/issuers/:issuerSlug
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
-| Parameters             | Required        | Description              |
-|:-----------------------|-----------------|-------------------------|
-| **slug** | required | Short, computer-friendly name for the issuer. Good slugs are lowercase and use dashes instead of spaces, e.g. `chicago-public-library`. Maximum of 50 characters and each issuer must have a unique slug.
-| **name** | required | Name of the issuer. Maximum of 255 characters.
-| **url** | required | URL for the issuer. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
-| **description** | optional | A short, human-friendly description of the issuer. Maximum of 255 characters
-| **email** | optional | Email address associated with the badge administrator of the issuer.
-| **image** | optional | Image for the issuer. Should be either multipart data or a URL.
+| Parameters             | Description              |
+|:-----------------------|--------------------------|
+| **slug** | Short, computer-friendly name for the issuer. Good slugs are lowercase and use dashes instead of spaces, e.g. `chicago-public-library`. Maximum of 50 characters and each issuer must have a unique slug.
+| **name** | Name of the issuer. Maximum of 255 characters.
+| **url** | URL for the issuer. Must be fully qualified, e.g. https://www.example.org, **NOT** just  www.example.org.
+| **description** | A short, human-friendly description of the issuer. Maximum of 255 characters
+| **email** | Email address associated with the badge administrator of the issuer.
+| **image** | Image for the issuer. Should be either multipart data or a URL.
 
 You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
 
