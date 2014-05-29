@@ -285,13 +285,13 @@ Content-Type: application/json
  * action
  * numberRequired
  * primaryBadge
-   * id
-   * slug
-   * ...
+    * id
+    * slug
+    * ...
  * supportBadges `[ ]`
-   * id
-   * slug
-   * ...
+    * id
+    * slug
+    * ...
 
 #### Potential Errors
 
@@ -393,13 +393,13 @@ Content-Type: application/json
  * action
  * numberRequired
  * primaryBadge
-   * id
-   * slug
-   * ...
+    * id
+    * slug
+    * ...
  * supportBadges `[ ]`
-   * id
-   * slug
-   * ...
+    * id
+    * slug
+    * ...
 
 #### Potential Errors
 
