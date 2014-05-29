@@ -230,10 +230,94 @@ Content-Type: application/json
 
 Create a claim code for a badge.
 
+### Expected request
+
 ```
 POST /systems/:slug/badges/:slug/codes
 POST /systems/:slug/issuers/:slug/badges/:slug/codes
 POST /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes
+```
+
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
+| Parameters             | Required        | Description              |
+|:-----------------------|-----------------|--------------------------|
+| **code** | required | The claim code you are creating. String with maximum length 255 characters. |
+| **claimed** | optional | Boolean indicator of whether the badge has been claimed.
+| **multiuse** | optional | Boolean indicator of whether the badge is multiuse or not (single use).
+| **email** | optional |
+
+### Expected response
+
+```
+HTTP/1.1 201 Created
+Content-Type: application/json
+```
+
+```json
+{
+  "status": "created",
+  "claimCode": {
+    "id": 1,
+    "code": "abcde12345",
+    "claimed": false,
+    "multiuse": false
+  },
+  "badge": {
+    ...
+  }
+}
+```
+
+#### Response structure
+
+* status
+* claimCode
+ * id
+ * code
+ * claimed
+ * multiuse
+* [badge](badges.md)
+
+#### Potential errors
+
+* **Invalid data**
+
+```
+  HTTP/1.1 400 Bad Request
+  Content-Type: application/json
+```
+
+```json
+  {
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
+      {
+        "message": "String is not in range",
+        "field": "code",
+        "value": "..."
+      },
+      ...
+    ]
+  }
+```
+
+* **Duplicate entry**
+
+```
+  HTTP/1.1 409 Conflict
+  Content-Type: application/json
+```
+
+```json
+  {
+    "code": "ResourceConflict",
+    "error": "claimCode with that `code` already exists",
+    "details": {
+        ...
+    }
+  }
 ```
 
 ## Create Random Code
@@ -268,7 +352,7 @@ Content-Type: application/json
   "status": "created",
   "claimCode": {
     "id": 1,
-    "code": "0fba9c4457",
+    "code": "abcde12345",
     "claimed": false,
     "multiuse": false
   },
