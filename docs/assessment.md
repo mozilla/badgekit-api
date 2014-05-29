@@ -2,9 +2,34 @@
 
 Badges can be issued following assessment of earner applications. Issuers can allow earners to submit applications for badges, forwarding these applications to the API. Reviewers can then assess pending applications, making awarding decisions and submitting reviews. When a review is submitted, issuers can detect this at their [webhook](webhooks.md). Typically an issuer will respond to an approved review by offering the earner the badge, creating a [badge instance](issuing.md) and marking the application as processed using the updating endpoint below.
 
+## Applications
+
+| NAME | VALUE |
+|:---|:---|
+| `id` | __integer__ - _id from database_ |
+| `slug` | __string__ |
+| `learner` | __email address__ - _earner email_ |
+| `created` | __timestamp__ |
+| `assignedTo` | __string__ _email login for assigned reviewer_ |
+| `assignedExpiration` | __timestamp__ |
+| `badge` | [badge](badges.md) - _badge applied for_ |
+| `processed` | __timestamp__ - _e.g. set when review is submitted or when badge instance is created_ |
+| `evidence` | __array__ - _each evidence item can include `url`, `mediaType` (which can be `image` or `link`) and `reflection` (which is a string)_ |
+
+## Reviews
+
+| NAME | VALUE |
+|:---|:---|
+| `id` | __integer__ - _id from database_ |
+| `slug` | __string__ |
+| `author` | __email address__ - _reviewer email_ |
+| `comment` | __string__ - _applicant feedback_ |
+| `reviewItems` | __array__ - _one for each criteria item for badge, each reviewItem can include `criterionId` for badge criteria, `satisfied` status and `comment`_ |
+| `approved` | __boolean__ - _indicates success of application_ |
+
 ## Endpoints
 
-* [Retrieve Applications](retrieve-applications)
+* [Retrieve Applications](#retrieve-applications)
  * `GET /systems/:slug/applications`
  * `GET /systems/:slug/issuers/:slug/applications`
  * `GET /systems/:slug/issuers/:slug/programs/:slug/applications`
@@ -47,31 +72,6 @@ Badges can be issued following assessment of earner applications. Issuers can al
  * `DELETE /systems/:slug/badges/:slug/applications/:slug/reviews/:slug`
  * `DELETE /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug`
  * `DELETE /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug`
-
-## Applications
-
-| NAME | VALUE |
-|:---|:---|
-| `id` | __integer__ - _id from database_ |
-| `slug` | __string__ |
-| `learner` | __email address__ - _earner email_ |
-| `created` | __timestamp__ |
-| `assignedTo` | __string__ _email login for assigned reviewer_ |
-| `assignedExpiration` | __timestamp__ |
-| `badge` | [badge](badges.md) - _badge applied for_ |
-| `processed` | __timestamp__ - _e.g. set when review is submitted or when badge instance is created_ |
-| `evidence` | __array__ - _each evidence item can include `url`, `mediaType` (which can be `image` or `link`) and `reflection` (which is a string)_ |
-
-## Reviews
-
-| NAME | VALUE |
-|:---|:---|
-| `id` | __integer__ - _id from database_ |
-| `slug` | __string__ |
-| `author` | __email address__ - _reviewer email_ |
-| `comment` | __string__ - _applicant feedback_ |
-| `reviewItems` | __array__ - _one for each criteria item for badge, each reviewItem can include `criterionId` for badge criteria, `satisfied` status and `comment`_ |
-| `approved` | __boolean__ - _indicates success of application_ |
 
 ## Retrieve Applications
 
