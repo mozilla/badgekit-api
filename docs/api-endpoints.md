@@ -1,6 +1,6 @@
 # API Endpoints
 
-See the following overview of the available BadgeKit API endpoints - browse to the linked docs for each object/ process for more detailed information.
+See the following overview of the available BadgeKit API endpoints - browse to the linked docs in each section for more detailed information.
 
 * Containers
   * [Systems](systems.md)
@@ -9,21 +9,18 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **GET** /systems/:slug
     * **PUT** /systems/:slug
     * **DELETE** /systems/:slug
-    * **GET** /public/systems/:slug
   * [Issuers](issuers.md)
     * **GET** /systems/:slug/issuers
     * **POST** /systems/:slug/issuers
     * **GET** /systems/:slug/issuers/:slug
     * **PUT** /systems/:slug/issuers/:slug
     * **DELETE** /systems/:slug/issuers/:slug
-    * **GET** /public/systems/:slug/issuers/:slug
   * [Programs](programs.md)
     * **GET** /systems/:slug/issuers/:slug/programs
     * **POST** /systems/:slug/issuers/:slug/programs
     * **GET** /systems/:slug/issuers/:slug/programs/:slug
     * **PUT** /systems/:slug/issuers/:slug/programs/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug
-    * **GET** /public/systems/:slug/issuers/:slug/programs/:slug
 * Badge Management
   * [Badges](badges.md) (can belong directly to a system, issuer or program)
     * **GET** /systems/:slug/badges
@@ -79,7 +76,6 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email
-    * **GET** /public/assertions/:slug
   * [Assessment](assessment.md) (managing earner applications for badges)
     * **GET** /systems/:slug/applications
     * **GET** /systems/:slug/issuers/:slug/applications
@@ -114,8 +110,6 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/badges/:slug/applications/:slug/reviews/:slug
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews/:slug
-  * Images
-    * **GET** /public/images/:imageId
   * [Milestones](milestones.md)
     * **GET** /systems/:slug/milestones
     * **POST** /systems/:slug/milestones
@@ -124,3 +118,11 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/milestones/:milestoneId
 
 See also [authorization](authorization.md) and [webhooks](webhooks.md).
+
+<!--
+* **GET** /public/systems/:slug 
+* **GET** /public/systems/:slug/issuers/:slug
+* **GET** /public/systems/:slug/issuers/:slug/programs/:slug 
+* **GET** /public/assertions/:slug
+* **GET** /public/images/:imageId
+-->
