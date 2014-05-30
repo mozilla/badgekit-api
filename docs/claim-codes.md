@@ -149,7 +149,7 @@ Content-Type: application/json
 ```json
 {
  "code": "ResourceNotFound",
- "message": "Could not find the request claim code: `<attempted-code>`"
+ "message": "Could not find the request claim code: <attempted-code>"
 }
 ```
 
@@ -222,7 +222,7 @@ Content-Type: application/json
 ```json
 {
  "code": "ResourceNotFound",
- "message": "Could not find the request claim code: `<attempted-code>`"
+ "message": "Could not find the request claim code: <attempted-code>"
 }
 ```
 
@@ -449,7 +449,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find claimCode field: `code`, value: `<attempted-code>`"
+    "message": "Could not find claimCode field: `code`, value: <attempted-code>"
   }
 ```
 
@@ -531,6 +531,6 @@ Content-Type: application/json
 ```json
 {
     "code": "ResourceNotFound",
-    "message": "Could not find claimCode field: `code`, value: `<attempted-code>`"
+    "message": "Could not find claimCode field: `code`, value: <attempted-code>"
 }
 ```
