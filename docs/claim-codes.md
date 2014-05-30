@@ -44,7 +44,7 @@ Earners can use claim codes to claim badges. For example, a claim code can be di
 
 ## Retrieve Claim Codes
 
-Retrieves all claim codes for a badge within a system, issuer or program/.
+Retrieves all claim codes for a badge within a system, issuer or program.
 
 ### Expected request
 
@@ -384,7 +384,7 @@ Delete a claim code.
 
 ```
 DELETE /systems/:systemSlug/badges/:badgeSlug/codes/:code
-DELETE /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug
+DELETE /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug/codes/:code
 DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug/codes/:code
 ```
 
