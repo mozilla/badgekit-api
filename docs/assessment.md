@@ -478,7 +478,7 @@ Content-Type: application/json
 
 ### Potential errors
 
-* **Issuer not found**
+* **Application not found**
 
 ```
   HTTP/1.1 404 Not Found
@@ -602,7 +602,7 @@ Content-Type: application/json
 
 ### Potential errors
 
-* **Issuer not found**
+* **Review not found**
 
 ```
   HTTP/1.1 404 Not Found
@@ -842,7 +842,7 @@ Content-Type: application/json
 
 ### Potential errors
 
-* **Program not found**
+* **Review not found**
 
 ```
   HTTP/1.1 404 Not Found
