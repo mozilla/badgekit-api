@@ -1,6 +1,6 @@
 # System Callbacks (Webhooks)
 
-The system level object includes the configuration of a single webhook URL which will receive notifications when events occur in that system. To configure a webhook in your BadgeKit API database, add a record to the `webhooks` table, indicating the URL to send the webhook notifications to plus a secret you can use to authenticate the data received. For a more detailed overview of configuring your webhook, see [Application Review Webhooks - Configuring a Webhook](https://github.com/mozilla/badgekit-api/wiki/Application-Review-Webhooks#configuring-a-webhook).
+The system level object includes the configuration of a single webhook URL which will receive notifications when events occur in that system. To configure a webhook in your BadgeKit API database, add a record to the `webhooks` table, indicating the URL to send the webhook notifications to, plus a secret you can use to authenticate the data received. For a more detailed overview of configuring your webhook, see [Application Review Webhooks - Configuring a Webhook](https://github.com/mozilla/badgekit-api/wiki/Application-Review-Webhooks#configuring-a-webhook).
 
 If you're reading this documentation and need to configure a webhook on [BadgeKit.org](http://badgekit.org) please contact your BadgeKit support person.
 
@@ -83,7 +83,7 @@ The `award` action webhook is sent whenever a badge is issued, whether this invo
 ```json
 {
     "action": "award",
-    "uid": "abcdefghijkl123456789098",
+    "uid": "abcdefghijkl1234567890",
     "badge": 
     {
         "id": 11,
@@ -92,7 +92,7 @@ The `award` action webhook is sent whenever a badge is issued, whether this invo
     },
 
     "email": "anearner@adomain.com",
-    "assertionUrl": "http://issuersite.com/public/assertions/abcdefghijkl123456789098",
+    "assertionUrl": "http://issuersite.com/public/assertions/abcdefghijkl1234567890",
     "issuedOn": 1400094712,
     "comment": null
 }
