@@ -181,9 +181,9 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 |:-----------------------|-----------------|--------------------------|
 | **email** | required | The email address for the earner the badge is being issued to. |
 | **claimCode** | optional | A claim code for the badge. |
-| **slug** | optional | Instance slug. |
-| **issuedOn** | optional | Date issued. |
-| **expires** | optional | Date instance expires. |
+| **slug** | optional | Instance slug. (API will generate if not provided.) |
+| **issuedOn** | optional | Timestamp representing date issued. (API will generate if not provided.) |
+| **expires** | optional | Timestamp representing date instance expires. |
 
 ### Expected response
 
