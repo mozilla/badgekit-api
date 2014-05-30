@@ -409,7 +409,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find system with slug `<attempted slug>`"
+    "message": "Could not find system with slug <attempted slug>"
   }
 ```
 
