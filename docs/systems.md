@@ -46,6 +46,7 @@ Content-Type: application/json
       "slug": "system-slug",
       "url": "http://systemsite.com",
       "name": "System Name",
+      "description": "System description.",
       "email": "admin@systemsite.com",
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [
@@ -85,6 +86,7 @@ Content-Type: application/json
  * slug
  * url
  * name
+ * description
  * email
  * imageUrl
  * [issuers](issuers.md) `[ ]`
@@ -118,6 +120,7 @@ Content-Type: application/json
     "slug": "system-slug",
     "url": "http://systemsite.com",
     "name": "System Name",
+    "description": "System description.",
     "email": "admin@systemsite.com",
     "imageUrl": "http://systemsite.com/image.jpg",
     "issuers": [
@@ -155,6 +158,7 @@ Content-Type: application/json
  * slug
  * url
  * name
+ * description
  * email
  * imageUrl
  * [issuers](issuers.md) `[ ]`
@@ -211,6 +215,7 @@ Content-Type: application/json
     "id": 1,
     "slug": "system-slug",
     "name": "System Name",
+    "description": "System description.",
     "url": "http://systemsite.com",
     "email": "admin@systemsite.com",
     "imageUrl": "http://systemsite.com/image.jpg",
@@ -226,6 +231,7 @@ Content-Type: application/json
     * id
     * slug
     * name
+    * description
     * url
     * email
     * imageUrl
@@ -269,6 +275,7 @@ Content-Type: application/json
     "details": {
       "slug": "system-slug",
       "name": "System Name",
+      "description": "System description.",
       "url": "http://systemsite.com",
       "email": "admin@systemsite.com",
       "description": "System Description"
@@ -313,6 +320,7 @@ Content-Type: application/json
     "id": 1,
     "slug": "system-slug",
     "name": "System Name",
+    "description": "System description.",
     "url": "http://systemsite.com",
     "email": "admin@systemsite.com",
     "imageUrl": "http://systemsite.com/image.jpg",
@@ -361,7 +369,7 @@ Content-Type: application/json
       "name": "System Name",
       "url": "http://systemsite.com",
       "email": "admin@systemsite.com",
-      "description": "System Description"
+      "description": "System description."
     }
   }
 ```
@@ -390,6 +398,7 @@ Content-Type: application/json
     "id": 1,
     "slug": "system-slug",
     "name": "System Name",
+    "description": "System description.",
     "url": "http://systemsite.com",
     "email": "admin@systemsite.com",
     "imageUrl": "http://systemsite.com/image.jpg",
@@ -413,8 +422,3 @@ Content-Type: application/json
     "message": "Could not find system with slug <attempted slug>"
   }
 ```
-<!--
-## `GET /public/systems/<slug>`
-
-Retrieves a specific public system.
--->
