@@ -4,14 +4,14 @@ Issuers represent mid-level admin in BadgeKit. Each issuer belongs to a single [
 
 | NAME | VALUE |
 |:---|:---|
-| `id` | integer - _id from database entry_ |
-| `slug` | string - _used to identify issuer in API endpoints_ |
-| `url` | string |
-| `name` | string |
-| `description` | string |
-| `email` | string |
-| `imageUrl` | string |
-| `programs` | array - _[programs](programs.md) in the issuer_ |
+| `id` | integer - _ID from database entry._ |
+| `slug` | string - _Short, computer-friendly name for the issuer. Used to identify issuer in API endpoints._ |
+| `url` | string - _Issuer URL._ |
+| `name` | string - _Name of the issuer._ |
+| `description` | string - _A short, human-friendly description of the issuer._ |
+| `email` | string - _Email address associated with the badge administrator of the issuer._ |
+| `imageUrl` | string - _Image for the issuer._ |
+| `programs` | array - _[Programs](programs.md) in the issuer._ |
 
 ## Endpoints
 
@@ -28,7 +28,7 @@ Retrieves all available issuers in the specified system.
 ### Expected request
 
 ```
-GET /systems/:systemSlug/issuers HTTP/1.1
+GET /systems/:systemSlug/issuers 
 ```
 
 ### Expected response
@@ -90,7 +90,7 @@ Retrieves a specific issuer using its slug.
 ### Expected request
 
 ```
-GET /systems/:systemSlug/issuers/:issuerSlug HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug 
 ```
 
 ### Expected response
@@ -161,7 +161,7 @@ Creates a new issuer.
 ### Expected request
 
 ```
-POST /systems/:systemSlug/issuers`
+POST /systems/:systemSlug/issuers
 ```
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
@@ -220,7 +220,7 @@ Content-Type: application/json
   * description
   * email
   * imageUrl
-  * programs `[ ]`
+  * [programs](programs.md) `[ ]`
 
 ### Potential errors
 
@@ -324,7 +324,7 @@ Content-Type: application/json
   * description
   * email
   * imageUrl
-  * programs `[ ]`
+  * [programs](programs.md) `[ ]`
 
 ### Potential errors
 
@@ -378,7 +378,7 @@ Deletes an existing issuer.
 ### Expected request
 
 ```
-DELETE /systems/:systemSlug/issuers/:issuerSlug HTTP/1.1
+DELETE /systems/:systemSlug/issuers/:issuerSlug 
 ```
 
 ### Expected response
