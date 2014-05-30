@@ -150,7 +150,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find issuer field: `slug`, value `<attempted-slug>`"
+    "message": "Could not find issuer field: `slug`, value <attempted-slug>"
   }
 ```
 
@@ -416,6 +416,6 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find issuer field: `slug`, value: `<attempted-slug>`"
+    "message": "Could not find issuer field: `slug`, value: <attempted-slug>"
   }
 ```
