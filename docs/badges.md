@@ -301,18 +301,18 @@ POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/
 |:-----------------------|-----------------|--------------------------|
 | **slug** | _required_ | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | _required_ | Name of the badge. Maximum 255 characters.
-| **strapline** | _optional_ | Short tagline style description of the badge. Maximum 140 characters.
+| **image** OR **imageUrl** | _required_ | Image for the program. Should be either multipart data or a URL.
+| **unique** | _required_ | Boolean indicator of badge uniqueness.
+| **criteriaUrl** | _required_ | Link to badge criteria.
 | **earnerDescription** | _required_ | Description of the badge for potential earners.
 | **consumerDescription** | _required_ | Description of the badge for consumers viewing it.
+| **strapline** | _optional_ | Short tagline style description of the badge. Maximum 140 characters.
 | **issuerUrl** | _optional_ | URL for badge issuer.
 | **rubricUrl** | _optional_ | Link to any rubric material associated with the badge.
 | **timeValue** | _optional_ | Badges can be associated with a time limit for earning.
 | **timeUnits** | _optional_ | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
 | **limit** | _optional_ | Badges can be awarded to a fixed maximum number of earners.
-| **unique** | _required_ | Boolean indicator of badge uniqueness.
-| **image** OR **imageUrl** | _required_ | Image for the program. Should be either multipart data or a URL.
 | **archived** | _optional_ | Boolean indicating archived status for badge.
-| **criteriaUrl** | _required_ | Link to badge criteria.
 | **criteria** | _optional_ | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
 | **type** | _required_ | Short string representing badge type. Maximum 255 characters.
 | **categories** | _optional_ | Array of category names for the badge.
@@ -644,6 +644,20 @@ Content-Type: application/json
       "imageUrl": "http://example.org/badge.png",
       "archived": false
     }
+  }
+```
+
+* **Badge not found**
+
+```
+  HTTP/1.1 404 Not Found
+  Content-Type: application/json
+```
+
+```json
+  {
+    "code": "ResourceNotFound",
+    "message": "Could not find badge field: `slug`, value: <attempted-slug>"
   }
 ```
 
