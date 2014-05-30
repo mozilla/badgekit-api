@@ -4,28 +4,28 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 
 | NAME | VALUE |
 |:---|:---|
-| `id` | __integer__ - _ID from database entry_ |
-| `slug` | __string__ - _Used to identify badge in API endpoints_ |
-| `name` | __string__ |
+| `id` | __integer__ - _ID from database entry._ |
+| `slug` | __string__ - _Used to identify badge in API endpoints._ |
+| `name` | __string__ - _Display name._ |
 | `strapline` | __string__ - _Short tagline description._ |
 | `earnerDescription` | __string__ - _Description for potential earners._ |
 | `consumerDescription` | __string__ - _Description for viewers of badge e.g. college admin or employer._ |
 | `issuerUrl` | __string__ |
 | `rubricUrl` | __string__ - _Link to supporting material._ |
-| `timeValue` | __integer__ |
+| `timeValue` | __integer__ - _Time estimate for earner to complete badge._ |
 | `timeUnits` | __enum__ - _Can be `minutes`, `hours`, `days` or `weeks`._ |
-| `limit` | __integer__ - _Optional limit for number of times badge can be earned._ |
-| `unique` | __boolean__ |
+| `limit` | __integer__ - _Limit for number of people who can earn the badge._ |
+| `unique` | __boolean__ - _True if the same earner can only earn the badge once._ |
 | `created` | __timestamp__ |
-| `imageUrl` | __string__ |
-| `type` | __string__ |
-| `archived` | __boolean__ |
+| `imageUrl` | __string__ - _Badge display image._ |
+| `type` | __string__ - _Badges can be organized by type and category._ |
+| `archived` | __boolean__ - _Archived badges can no longer be earned._ |
 | `system` | __integer__ - _System is represented by ID in database - system details are returned from API endpoints as nested JSON._ |
-| `criteriaUrl` | __string__ |
-| `criteria` | __array__ - _Includes `id`, `description`, `required` status and `note`._ |
-| `categories` | __array__ - _Each category is a string._ |
-| `tags` | __array__- _Each tag is a string._ |
-| [`milestones`](milestones.md) | __array__ - _A milestone badge is awarded when a set of other badges are earned._ |
+| `criteriaUrl` | __string__ - _Link to criteria material._ |
+| `criteria` | __array__ - _Each item includes `id`, `description`, `required` status and `note`._ |
+| `categories` | __array__ - _See above for related type field._ |
+| `tags` | __array__- _Tags can be used to aid search and discovery of badges._ |
+| [`milestones`](milestones.md) | __array__ - _A milestone badge is awarded when a set of other badges is earned._ |
 
 ## Endpoints
 
@@ -52,14 +52,14 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 
 ## Retrieve Badge List
 
-Retrieves all available badges, filtered by system, issuer or program.
+Retrieves badges, filtered by system, issuer or program.
 
 ### Expected request
 
 ```
-GET /systems/:systemSlug/badges HTTP/1.1
-GET /systems/:systemSlug/issuers/:issuerSlug/badges HTTP/1.1
-GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1.1
+GET /systems/:systemSlug/badges
+GET /systems/:systemSlug/issuers/:issuerSlug/badges
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
 ```
 
 #### Available request parameters
@@ -143,14 +143,14 @@ Content-Type: application/json
 	* imageUrl
 	* type
 	* archived
-	* system `[ ]`
+	* [system](systems.md) `[ ]`
 		* id
 		* slug
 		* url
 		* name
 		* email
 		* imageUrl
-		* issuers `[ ]`
+		* [issuers](issuers.md) `[ ]`
 	* criteriaUrl
 	* criteria `[ ]`
 		* id
@@ -159,7 +159,7 @@ Content-Type: application/json
 		* note
 	* categories `[ ]`
 	* tags `[ ]`
-	* milestones `[ ]`
+	* [milestones](milestones.md) `[ ]`
 
 
 ### Potential errors
@@ -173,9 +173,9 @@ Retrieves a specific badge using its slug.
 ### Expected request
 
 ```
-GET /systems/:systemSlug/badges/:badgeSlug HTTP/1.1
-GET /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug HTTP/1.1
-GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug HTTP/1.1
+GET /systems/:systemSlug/badges/:badgeSlug
+GET /systems/:systemSlug/issuers/:issuerSlug/badges/:badgeSlug
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badgeSlug
 ```
 
 ### Expected response
@@ -249,14 +249,14 @@ Content-Type: application/json
 	* imageUrl
 	* type
 	* archived
-	* system `[ ]`
+	* [system](systems.md) `[ ]`
 		* id
 		* slug
 		* url
 		* name
 		* email
 		* imageUrl
-		* issuers `[ ]`
+		* [issuers](issuers.md) `[ ]`
 	* criteriaUrl
 	* criteria `[ ]`
 		* id
@@ -265,7 +265,7 @@ Content-Type: application/json
 		* note
 	* categories `[ ]`
 	* tags `[ ]`
-	* milestones `[ ]`
+	* [milestones](milestones.md) `[ ]`
 
 ### Potential errors
 
@@ -283,7 +283,7 @@ Content-Type: application/json
   }
 ```
 
-## `Create New Badge`
+## Create New Badge
 
 Creates a new badge in a system, issuer or program (_or updates an existing badge_).
 
@@ -292,9 +292,9 @@ Creates a new badge in a system, issuer or program (_or updates an existing badg
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 ```
-POST /systems/:systemSlug/badges HTTP/1.1
-POST /systems/:systemSlug/issuers/:issuerSlug/badges HTTP/1.1
-POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/1.1
+POST /systems/:systemSlug/badges 
+POST /systems/:systemSlug/issuers/:issuerSlug/badges 
+POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges 
 ```
 
 | Parameters             | Required        | Description              |
@@ -302,7 +302,7 @@ POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges HTTP/
 | **slug** | _required_ | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | _required_ | Name of the badge. Maximum 255 characters.
 | **image** OR **imageUrl** | _required_ | Image for the program. Should be either multipart data or a URL.
-| **unique** | _required_ | Boolean indicator of badge uniqueness.
+| **unique** | _required_ | Boolean indicator of whether an earner can earn the badge only once.
 | **criteriaUrl** | _required_ | Link to badge criteria.
 | **earnerDescription** | _required_ | Description of the badge for potential earners.
 | **consumerDescription** | _required_ | Description of the badge for consumers viewing it.
@@ -392,14 +392,14 @@ Content-Type: application/json
 	* imageUrl
 	* type
 	* archived
-	* system `[ ]`
+	* [system](systems.md) `[ ]`
 		* id
 		* slug
 		* url
 		* name
 		* email
 		* imageUrl
-		* issuers `[ ]`
+		* [issuers](issuers.md) `[ ]`
 	* criteriaUrl
 	* criteria `[ ]`
 		* id
@@ -408,7 +408,7 @@ Content-Type: application/json
 		* note
 	* categories `[ ]`
 	* tags `[ ]`
-	* milestones `[ ]`
+	* [milestones](milestones.md) `[ ]`
 
 ### Potential errors
 
@@ -482,18 +482,18 @@ PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badge
 |:-----------------------|--------------------------|
 | **slug** | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | Name of the badge. Maximum 255 characters.
-| **strapline** | Short tagline style description of the badge. Maximum 140 characters.
+| **image** OR **imageUrl** | Image for the program. Should be either multipart data or a URL.
+| **unique** | Boolean indicator of whether an earner can earn the badge only once.
+| **criteriaUrl** | Link to badge criteria.
 | **earnerDescription** | Description of the badge for potential earners.
 | **consumerDescription** | Description of the badge for consumers viewing it.
+| **strapline** | Short tagline style description of the badge. Maximum 140 characters.
 | **issuerUrl** | URL for badge issuer.
 | **rubricUrl** | Link to any rubric material associated with the badge.
 | **timeValue** | Badges can be associated with a time limit for earning.
 | **timeUnits** | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
 | **limit** | Badges can be awarded to a fixed maximum number of earners.
-| **unique** | Boolean indicator of badge uniqueness.
-| **image** OR **imageUrl** | Image for the program. Should be either multipart data or a URL.
 | **archived** | Boolean indicating archived status for badge.
-| **criteriaUrl** | Link to badge criteria.
 | **criteria** | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
 | **type** | Short string representing badge type. Maximum 255 characters.
 | **categories** | Array of category names for the badge.
@@ -575,14 +575,14 @@ Content-Type: application/json
 	* imageUrl
 	* type
 	* archived
-	* system `[ ]`
+	* [system](systems.md) `[ ]`
 		* id
 		* slug
 		* url
 		* name
 		* email
 		* imageUrl
-		* issuers `[ ]`
+		* [issuers](issuers.md) `[ ]`
 	* criteriaUrl
 	* criteria `[ ]`
 		* id
@@ -591,7 +591,7 @@ Content-Type: application/json
 		* note
 	* categories `[ ]`
 	* tags `[ ]`
-	* milestones `[ ]`
+	* [milestones](milestones.md) `[ ]`
 
 ### Potential errors
 
