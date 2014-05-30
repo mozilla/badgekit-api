@@ -4,13 +4,14 @@ A system represents the top admin level within BadgeKit - an instance can contai
 
 | NAME | VALUE |
 |:---|:---|
-| `id` | integer - _id from database entry_ |
-| `slug` | string - _used to identify system in API endpoints_ |
-| `url` | string |
-| `name` | string |
-| `email` | string |
-| `imageUrl` | string |
-| `issuers` | array - _[issuers](issuers.md) in the system (may contain [programs](programs.md))_ |
+| `id` | integer - _ID from database entry._ |
+| `slug` | string - _Short, computer-friendly name for the system. Used to identify system in API endpoints._ |
+| `url` | string - _URL for the system._ |
+| `name` | string - _Name of the system._ |
+| `description` | string - _A short, human-friendly description of the system._ |
+| `email` | string - _Email address associated with the badge administrator of the system._ |
+| `imageUrl` | string - _Image for the system._ |
+| `issuers` | array - _[Issuers](issuers.md) in the system (may contain [programs](programs.md))._ |
 
 ## Endpoints
 
@@ -27,7 +28,7 @@ Retrieves all available systems in the BadgeKit API instance.
 ### Expected request
 
 ```
-GET /systems HTTP/1.1
+GET /systems 
 ```
 
 ### Expected response
@@ -100,7 +101,7 @@ Retrieves a specific system using its slug.
 ### Expected request
 
 ```
-GET /systems/:systemSlug HTTP/1.1
+GET /systems/:systemSlug 
 ```
 
 ### Expected response
@@ -228,7 +229,7 @@ Content-Type: application/json
     * url
     * email
     * imageUrl
-    * issuers `[ ]`
+    * [issuers](issuers.md) `[ ]`
 
 ### Potential errors
 
@@ -372,7 +373,7 @@ Deletes an existing system.
 ### Expected request
 
 ```
-DELETE /systems/:systemSlug HTTP/1.1
+DELETE /systems/:systemSlug 
 ```
 
 ### Expected response
@@ -412,7 +413,8 @@ Content-Type: application/json
     "message": "Could not find system with slug <attempted slug>"
   }
 ```
-
+<!--
 ## `GET /public/systems/<slug>`
 
 Retrieves a specific public system.
+-->
