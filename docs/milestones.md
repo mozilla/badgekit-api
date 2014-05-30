@@ -211,8 +211,8 @@ Content-Type: application/json
 
 ```json
 {
-  "code": "ResourceNotFound",
-  "message": "Could not find milestone field: `id`, value: `<attempted-id>`"
+  "code": "NotFoundError",
+  "message": "Could not find milestone with `id` <attempted-id>"
 }
 ```
 
@@ -454,6 +454,6 @@ Content-Type: application/json
 ```json
 {
   "code": "NotFoundError",
-  "message": "Could not find milestone with `id` `<attempted-id>`"
+  "message": "Could not find milestone with `id` <attempted-id>"
 }
 ```
