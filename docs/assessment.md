@@ -236,7 +236,7 @@ Content-Type: application/json
 ```json
 {
   "code": "ResourceNotFound",
-  "message": "Could not find application field: `slug`, value: `<attempted-slug>`"
+  "message": "Could not find application field: `slug`, value: <attempted-slug>"
 }
 ```
 
@@ -488,7 +488,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find application field: `slug`, value: `<attempted-slug>`"
+    "message": "Could not find application field: `slug`, value: <attempted-slug>"
   }
 ```
 
@@ -612,7 +612,7 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find review field: `slug`, value `<attempted-slug>`"
+    "message": "Could not find review field: `slug`, value <attempted-slug>"
   }
 ```
 
@@ -852,6 +852,6 @@ Content-Type: application/json
 ```json
   {
     "code": "ResourceNotFound",
-    "message": "Could not find review field: `slug`, value: `<attempted-slug>`"
+    "message": "Could not find review field: `slug`, value: <attempted-slug>"
   }
 ```
