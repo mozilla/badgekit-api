@@ -1,16 +1,16 @@
 # Programs
 
-Programs represent the last level of badging admin in BadgeKit. Each program belongs to one [issuer](issuers.md), optionally along with other programs. Badges can be associated with a program, which could be a program of events grouping activities on a theme or subject area.
+Programs represent the lowest level of badging admin in BadgeKit. Each program belongs to one [issuer](issuers.md), optionally along with other programs. Badges can be associated with a program, which could be a program of events grouping activities on a theme or subject area.
 
 | NAME | VALUE |
 |:---|:---|
-| `id` | integer - _id from database entry_ |
-| `slug` | string - _used to identify program in API endpoints_ |
-| `url` | string |
-| `name` | string |
-| `description` | string |
-| `email` | string |
-| `imageUrl` | string |
+| `id` | integer - _ID from database entry._ |
+| `slug` | string - _Short, computer-friendly name for the program. Used to identify program in API endpoints_ |
+| `url` | string - _URL for the program._ |
+| `name` | string - _Name of the program._ |
+| `description` | string - _A short, human-friendly description of the program._ |
+| `email` | string - _Email address associated with the badge administrator of the program._ |
+| `imageUrl` | string - _Image for the program._ |
 
 ## Endpoints
 
@@ -27,7 +27,7 @@ Retrieves all available programs in the specified system and issuer.
 ### Expected request
 
 ```
-GET /systems/:systemSlug/issuers/:issuerSlug/programs HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs 
 ```
 
 ### Expected response
@@ -75,7 +75,7 @@ Retrieves a specific program using its slug.
 ### Expected request
 
 ```
-GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug HTTP/1.1
+GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug 
 ```
 
 ### Expected response
@@ -133,7 +133,7 @@ Creates a new program.
 ### Expected request
 
 ```
-POST /systems/:systemSlug/issuers/:issuerSlug/programs HTTP/1.1
+POST /systems/:systemSlug/issuers/:issuerSlug/programs 
 ```
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
@@ -233,7 +233,7 @@ Updates an existing program.
 ### Expected request
 
 ```
-PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug HTTP/1.1
+PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug 
 ```
 
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
@@ -263,7 +263,7 @@ Content-Type: application/json
     "id": 1,
     "slug": "program-slug",
     "url": "http://programsite.com",
-    "name": Updated Program Name",
+    "name": "Updated Program Name",
     "description": "Updated program description.",
     "email": "admin@programsite.com",
     "imageUrl": "http://programsite.com/image.jpg"
@@ -323,7 +323,7 @@ Deletes an existing program.
 ### Expected request
 
 ```
-DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug HTTP/1.1
+DELETE /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug 
 ```
 
 ### Expected response
