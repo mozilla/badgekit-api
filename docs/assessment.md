@@ -1,6 +1,8 @@
 # Assessment
 
-Badges can be issued following assessment of earner applications. Issuers can allow earners to submit applications for badges, forwarding these applications to the API. Reviewers can then assess pending applications, making awarding decisions and submitting reviews. When a review is submitted, issuers can detect this at their [webhook](webhooks.md). Typically an issuer will respond to an approved review by offering the earner the badge, creating a [badge instance](issuing.md) and marking the application as processed using the updating endpoint below.
+Badges can be issued following assessment of earner applications. Issuers can allow earners to submit applications for badges, forwarding these applications to the API. Reviewers can then assess pending applications, making awarding decisions and submitting their reviews. When a review is submitted, issuers can detect this at their [webhook](webhooks.md). Typically an issuer will respond to an approved review by offering the earner the badge, creating a [badge instance](issuing.md) and marking the application as processed using the updating endpoint below.
+
+Assessment therefore involves two objects in BadgeKit API: applications and reviews.
 
 ## Applications
 
@@ -10,11 +12,11 @@ Badges can be issued following assessment of earner applications. Issuers can al
 | `slug` | __string__ |
 | `learner` | __email address__ - _earner email_ |
 | `created` | __timestamp__ |
-| `assignedTo` | __string__ _email login for assigned reviewer_ |
+| `assignedTo` | __string__ - _email login for assigned reviewer_ |
 | `assignedExpiration` | __timestamp__ |
 | `badge` | [badge](badges.md) - _badge applied for_ |
 | `processed` | __timestamp__ - _e.g. set when review is submitted or when badge instance is created_ |
-| `evidence` | __array__ - _each evidence item can include `url`, `mediaType` (which can be `image` or `link`) and `reflection` (which is a string)_ |
+| `evidence` | __array__ - _each evidence item can include: `url`, `mediaType` (which can be `image` or `link`) and `reflection` (which is a string)_ |
 
 ## Reviews
 
@@ -24,7 +26,7 @@ Badges can be issued following assessment of earner applications. Issuers can al
 | `slug` | __string__ |
 | `author` | __email address__ - _reviewer email_ |
 | `comment` | __string__ - _applicant feedback_ |
-| `reviewItems` | __array__ - _one for each criteria item for badge, each reviewItem can include `criterionId` for badge criteria, `satisfied` status and `comment`_ |
+| `reviewItems` | __array__ - _one for each criteria item in the badge; each reviewItem can include: `criterionId`, `satisfied` status and `comment`_ |
 | `approved` | __boolean__ - _indicates success of application_ |
 
 ## Endpoints
@@ -257,8 +259,8 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|--------------------------|
 | **learner** | required | The email address for the earner applying. |
-| **evidence** | optional | Array including evidence items - each item can include `reflection`, `mediaType` and/or `url`. |
-| **assignedTo** | optional | Reviewer application is assigned to. |
+| **evidence** | optional | Array including evidence items - each item can include `reflection`, `mediaType` and `url`. |
+| **assignedTo** | optional | Email of reviewer application is assigned to. |
 | **assignedExpiration** | optional | Expiry date. |
 
 ### Expected response
@@ -291,7 +293,8 @@ Content-Type: application/json
                 "url": "http://awebsite.com/page",
                 "mediaType": "link",
                 "reflection": "I did great stuff."
-            }
+            },
+            ...
         ]
     }
 }
@@ -354,8 +357,8 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 | Parameters             | Description              |
 |:-----------------------|--------------------------|
 | **learner** | The email address for the earner applying. |
-| **evidence** | Array including evidence items - each item can include `reflection`, `mediaType` and/or `url`. |
-| **assignedTo** | Reviewer application is assigned to. |
+| **evidence** | Array including evidence items - each item can include `reflection`, `mediaType` and `url`. |
+| **assignedTo** | Email of reviewer application is assigned to. |
 | **assignedExpiration** | Expiry date. |
 | **processed** | Timestamp indicating application has been processed. |
 
@@ -494,7 +497,7 @@ Content-Type: application/json
 
 ## Retrieve Application Reviews
 
-Retrieve reviews for applications.
+Retrieve reviews for specific applications.
 
 ### Expected request
 
@@ -522,7 +525,7 @@ Content-Type: application/json
             "reviewItems": [
               {
                 "criterionId": 1,
-                "satisfied": 0,
+                "satisfied": 1,
                 "comment": "perfect"
               },
             ...
@@ -551,7 +554,7 @@ Content-Type: application/json
 
 ## Retrieve a Specific Review
 
-Retrieve a specific application review for a badge.
+Retrieve a specific application review.
 
 ### Expected request
 
@@ -579,7 +582,7 @@ Content-Type: application/json
         "reviewItems": [
           {
             "criterionId": 1,
-            "satisfied": 0,
+            "satisfied": 1,
             "comment": "perfect"
           },
         ...
@@ -618,7 +621,7 @@ Content-Type: application/json
 
 ## Submit an Application Review
 
-Post a review for an application. 
+Post a review for a specific application. 
 
 ### Expected request
 
@@ -655,7 +658,7 @@ Content-Type: application/json
         "reviewItems": [
             {
                 "criterionId": 1,
-                "satisfied": 0,
+                "satisfied": 1,
                 "comment": "perfect"
             },
             ...
@@ -674,9 +677,9 @@ Content-Type: application/json
  * author
  * comment
  * reviewItems `[ ]`
-   * criterionId
-   * satisfied
-   * comment
+    * criterionId
+    * satisfied
+    * comment
 
 ### Potential errors
 
@@ -704,7 +707,7 @@ Content-Type: application/json
 
 ## Update a Review
 
-Update an existing application review for a badge.
+Update an existing application review.
 
 ### Expected request
 
@@ -742,7 +745,7 @@ Content-Type: application/json
         "reviewItems": [
             {
                 "criterionId": 1,
-                "satisfied": 0,
+                "satisfied": 1,
                 "comment": "perfect"
             },
             ...
@@ -760,9 +763,9 @@ Content-Type: application/json
  * author
  * comment
  * reviewItems `[ ]`
-   * criterionId
-   * satisfied
-   * comment
+    * criterionId
+    * satisfied
+    * comment
 
 ### Potential errors
 
@@ -790,7 +793,7 @@ Content-Type: application/json
 
 ## Delete a Review
 
-Delete an existing application review for a badge.
+Delete an existing application review.
 
 ### Expected request
 
@@ -818,7 +821,7 @@ Content-Type: application/json
         "reviewItems": [
             {
                 "criterionId": 1,
-                "satisfied": 0,
+                "satisfied": 1,
                 "comment": "perfect"
             },
             ...
@@ -836,9 +839,9 @@ Content-Type: application/json
  * author
  * comment
  * reviewItems `[ ]`
-   * criterionId
-   * satisfied
-   * comment
+    * criterionId
+    * satisfied
+    * comment
 
 ### Potential errors
 
