@@ -1,6 +1,6 @@
 # Milestones
 
-Milestones give issuers the ability to award badges in recognition that the earner has earner a set of other badges. A milestone badge therefore represents higher-level achievements, with the contributing badges representing more granular badges, culminating in the milestone. A milestone badge can be defined as available to earners of a specific set of other badges.
+Milestones give issuers the ability to award badges in recognition that the earner has earned a set of other badges. A milestone badge therefore represents a higher-level achievement, with the contributing badges representing more granular badges, culminating in the milestone. A milestone badge can be defined as available to earners of a specific set of other badges.
 
 | NAME | VALUE |
 |:---|:---|
@@ -82,7 +82,7 @@ Content-Type: application/json
  * id
  * action
  * numberRequired
- * primaryBadge
+ * primaryBadge ([badge](badges.md))
     * id
     * slug
     * strapline
@@ -175,7 +175,7 @@ Content-Type: application/json
  * id
  * action
  * numberRequired
- * primaryBadge
+ * primaryBadge ([badge](badges.md))
     * id
     * slug
     * strapline
@@ -220,12 +220,18 @@ Content-Type: application/json
 
 Create a new milestone.
 
+### Expected request
+
+```
+POST /systems/<slug>/milestones
+```
+
 Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
 
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|--------------------------|
 | **numberRequired** | required | Integer representing how many support badges are required to earn the milestone badge. |
-| **primaryBadgeId** | required | Id of primary badge which is the milestone badge. |
+| **primaryBadgeId** | required | Id of primary badge, which is the milestone badge itself. |
 | **action** | optional | Can be `issue` or `queue-application`. |
 | **supportBadges** | required | Array containing ids of support badges. |
 
@@ -284,7 +290,7 @@ Content-Type: application/json
  * id
  * action
  * numberRequired
- * primaryBadge
+ * primaryBadge ([badge](badges.md))
     * id
     * slug
     * ...
@@ -392,7 +398,7 @@ Content-Type: application/json
  * id
  * action
  * numberRequired
- * primaryBadge
+ * primaryBadge ([badge](badges.md))
     * id
     * slug
     * ...
@@ -422,6 +428,20 @@ Content-Type: application/json
       ...
     ]
   }
+```
+
+* **Milestone not found**
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+```
+
+```json
+{
+  "code": "NotFoundError",
+  "message": "Could not find milestone with `id` <attempted-id>"
+}
 ```
 
 ## `DELETE /systems/:slug/milestones/:milestoneId`
