@@ -9,6 +9,17 @@ var options = {
   database: process.env.DB_NAME,
 }
 
+function getDbConfig (prefix) {
+  prefix += '_';
+  return {
+    driver:     'mysql',
+    host:       process.env.DB_HOST,
+    user:       process.env.DB_USER,
+    password:   process.env.DB_PASSWORD,
+    database:   process.env.DB_NAME
+  };
+}
+
 var db = streamsql.connect(options);
 
 function handleDisconnect() {
@@ -39,3 +50,5 @@ function setErrorHandler() {
 setErrorHandler();  
 
 exports = module.exports = db;
+module.exports.getDb = db;
+module.exports.getDbConfig = getDbConfig;
