@@ -237,5 +237,6 @@ exports.down = function(db, callback) {
     db.runSql.bind(db,"DROP TABLE IF EXISTS `webhooks`"),
     db.runSql.bind(db,"DROP TABLE IF EXISTS `systems`"),
     db.runSql.bind(db,"DROP TABLE IF EXISTS `consumers`")], callback);
+
 };
 

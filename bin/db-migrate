@@ -3,8 +3,8 @@
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
-var util = require('util');
-var dotenv = require('dotenv');
+var util = require('util'); 
+var dotenv = require('dotenv'); 
 var optimist = require('optimist');
 var migrate = require('db-migrate');
 var log = require('db-migrate/lib/log');
@@ -70,8 +70,8 @@ function onComplete(err) {
 }
 
 function run() {
-  var action = argv._.shift();
-  dotenv.load()
+  var action = argv._.shift(); 
+  dotenv.load() 
   switch(action) {
     case 'create':
       executeCreate();
