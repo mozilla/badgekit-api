@@ -32,7 +32,7 @@ API calls should be signed with a JWT token generated using the secret for your 
 
 ## Installation
 
-To install the BadgeKit API: 
+To install the BadgeKit API:
 * clone the repo
 * set up a database
 * set your environment configs.
@@ -49,3 +49,9 @@ The BadgeKit API currently uses the following configuration details:
 * `DB_USER`: User who has full access to the `DB_NAME` table.
 * `DB_PASSWORD`: Password for the `DB_USER`.
 * `MASTER_SECRET`: The master secret used to sign global-access JWT tokens. This should not be shared widely – probably only with one front-end, e.g. `badgekit`.
+
+## Running all Badgekit apps on vagrant
+
+Please see the README.vagrant.md file for a detailed walk through to setup a fast local dev environment using [Vagrant](http://www.vagrantup.com/)
+
+This provides a mostly-prebuilt Ubuntu server, complete with MySQL and Node.JS at the correct versions.
