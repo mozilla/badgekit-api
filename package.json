@@ -10,7 +10,7 @@
     "test": "tap test/*.test.js",
     "lint": "jshint app/*"
   },
-  "dependencies": { 
+  "dependencies": {
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.1",
     "streamsql": "~0.8.0",
@@ -23,9 +23,8 @@
     "underscore": "~1.6.0",
     "newrelic": "~1.4.0",
     "async": "~0.2.10",
-    "db-migrate": "~0.6.3",  
-    "dotenv": "~0.2.8", 
-    "optimist": "~0.6.0"
+    "db-migrate": "~0.6.3",
+    "optimist": "~0.6.1"
   },
   "devDependencies": {
     "concat-stream": "~1.4.1",

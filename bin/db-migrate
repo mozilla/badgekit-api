@@ -3,13 +3,12 @@
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
-var util = require('util'); 
-var dotenv = require('dotenv'); 
+var util = require('util');
 var optimist = require('optimist');
 var migrate = require('db-migrate');
 var log = require('db-migrate/lib/log');
 var mysql = require('mysql');
-var migrations = require('../lib/migrations');
+var migrations = require('../app/lib/migrations');
 var db = require('../app/lib/db');
 
 process.on('uncaughtException', function(err) {
@@ -61,25 +60,26 @@ function executeCreate() {
   migrate.createMigration(argv.title, migrations.dir, function(err, migration) {
     assert.ifError(err);
     log.info(util.format('Created migration at %s', migration.path));
+    process.exit(0);
   });
 }
 
 function onComplete(err) {
   assert.ifError(err);
   log.info('Done');
+  process.exit(0)
 }
 
 function run() {
-  var action = argv._.shift(); 
-  dotenv.load() 
+  var action = argv._.shift();
   switch(action) {
     case 'create':
       executeCreate();
       break;
     case 'up':
     case 'down':
-      argv.config = db.getDbConfig('DATABASE');
-      if(verbose) {
+      argv.config = db.getDbConfig();
+      if(argv.verbose) {
         log.info("Using settings:", argv.config);
       }
       if(argv._.length > 0) {

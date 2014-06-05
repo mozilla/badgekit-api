@@ -1,7 +1,5 @@
 var path = require('path');
 var migrate = require('db-migrate');
-var mysql = require('mysql');
-//var config = require('../app/lib/config');
 
 module.exports = {
   dir: path.resolve(__dirname, '..', 'migrations'),
