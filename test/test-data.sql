@@ -249,3 +249,32 @@ INSERT INTO `reviewItems` SET
   `criterionId` = 1,
   `satisfied` = TRUE,
   `comment` = 'Nice work, yo.';
+
+INSERT INTO `milestones` SET
+  `id` = 1,
+  `systemId` = 1,
+  `primaryBadgeId` = 1,
+  `numberRequired` = 2,
+  `action` = 'issue';
+
+INSERT INTO `milestones` SET
+  `id` = 999,
+  `systemId` = 1,
+  `primaryBadgeId` = 4,
+  `numberRequired` = 1;
+
+INSERT INTO `milestoneBadges` SET
+  `milestoneId` = 1,
+  `badgeId` = 4;
+
+INSERT INTO `milestoneBadges` SET
+  `milestoneId` = 1,
+  `badgeId` = 5;
+
+INSERT INTO `milestoneBadges` SET
+  `milestoneId` = 999,
+  `badgeId` = 5;
+
+INSERT INTO `milestoneBadges` SET
+  `milestoneId` = 999,
+  `badgeId` = 1;

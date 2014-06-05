@@ -87,6 +87,9 @@ const Badges = db.table('badges', {
 });
 
 Badges.toResponse = function toResponse(row, request) {
+  // we have to late-load this so we don't have a circular dependencies
+  const Milestones = require('./milestone')
+
   return {
     id: row.id,
     slug: row.slug,
@@ -117,6 +120,9 @@ Badges.toResponse = function toResponse(row, request) {
     }),
     tags: (row.tags || []).map(function(tag) {
       return Tags.toResponse(tag);
+    }),
+    milestones: (row.milestones || []).map(function (milestone) {
+      return Milestones.toResponse(milestone)
     }),
   };
 }
@@ -225,7 +231,7 @@ function setTags(tags, callback) {
     tags = [tags];
 
   tags = tags.map(function (tag) { return tag.value || tag });
-  
+
   Tags.del({badgeId: badgeId}, function (err) {
     if (err)
       return callback(err);

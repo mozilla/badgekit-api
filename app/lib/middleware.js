@@ -6,6 +6,7 @@ module.exports = {
   findClaimCode: createFinder('claimCode'),
   findApplication: createFinder('application'),
   findReview: createFinder('review'),
+  findBadgeInstance: createFinder('badgeInstance'),
   verifyRequest: verifyRequest,
   attachResolvePath: attachResolvePath,
   attachErrorLogger: attachErrorLogger,
@@ -26,6 +27,7 @@ const models = {
   claimCode: require('../models/claim-codes'),
   application: require('../models/application'),
   review: require('../models/review'),
+  badgeInstance: require('../models/badge-instance'),
 }
 
 const http403 = restify.NotAuthorizedError
