@@ -67,6 +67,7 @@ function executeCreate() {
 function onComplete(err) {
   assert.ifError(err);
   log.info('Done');
+  process.exit(0)
 }
 
 function run() {
