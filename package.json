@@ -11,6 +11,7 @@
     "lint": "jshint app/*"
   },
   "dependencies": {
+    "client-session": "~0.6.0"
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.1",
     "streamsql": "~0.8.0",
