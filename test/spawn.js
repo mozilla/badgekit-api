@@ -6,33 +6,55 @@ const concat = require('concat-stream')
 const Promise = require('bluebird')
 const fs = require('fs')
 const db = require('../app/lib/db')
+const migrations = require('../app/lib/migrations')
 const path = require('path')
+const async = require('async')
 
 if (!/test$/.exec(process.env.NODE_ENV)) {
   console.error('Must be in test environment: expected, NODE_ENV=test, got NODE_ENV='+process.env.NODE_ENV)
   process.exit(1)
 }
 
+/**
+ * Here's the idea:
+ *  1. Run the `up` migration to make sure the database is
+ *     up-to-date. If it is, this is a no-op.
+ *  2. Get a list of the current tables (omitting the `migrations`
+ *     table) and create `TRUNCATE` statements for each of them.
+ *  3. Read the fixtures file and split it into statements.
+ *  4. Concat the list of fixture statements onto the list of truncate
+ *     statements.
+ *
+ *  This approach is *much* faster than doing an `up` and a `down` since
+ *  `loadDatabase` will be called at least once per test file.
+ */
 function loadDatabase(callback) {
-  const lines = Buffer.concat([
-    fs.readFileSync(path.join(__dirname, '..', 'schema.sql')),
-    fs.readFileSync(path.join(__dirname, 'test-data.sql')),
-  ]).toString('utf8')
-    .trim()
-    .split(';')
-    .map(function (s) {return s.trim()})
-    .filter(Boolean)
+  const options = { config: db.getDbConfig() }
 
-  ;(function next(i) {
-    const sql = lines[i]
-    if (!sql) return callback()
+  migrations.up(options, function (err) {
+    if (err) throw err;
 
-    db.query(sql, function (err) {
-      if (err) return callback(err)
-      return next(++i)
-    })
+    db.query('SHOW TABLES', function (err, tableData) {
 
-  })(0)
+      const truncateSql = ['SET `foreign_key_checks` = 0'];
+      tableData.forEach(function (obj) {
+        var table = obj[Object.keys(obj)[0]];
+        if (table == 'migrations') return;
+        truncateSql.push('TRUNCATE TABLE `' + table + '`');
+      })
+      truncateSql.push('SET `foreign_key_checks` = 1');
+
+      const fixturePath = path.join(__dirname, 'test-data.sql');
+      const fixtureSql = fs.readFileSync(fixturePath, 'utf8')
+        .trim()
+        .split(';')
+        .map(function (s) {return s.trim()})
+        .filter(Boolean);
+
+      const statements = truncateSql.concat(fixtureSql);
+      async.each(statements, db.query.bind(db), callback);
+    });
+  })
 }
 
 function hasBufferOrStream(obj) {
