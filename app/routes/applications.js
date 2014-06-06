@@ -47,7 +47,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
     var options = {
       relationships: true,
       relationshipsDepth: 2,
-      sort: ['badgeId', 'created'],
+      order: ['badgeId', 'applications.created'],
     };
 
     if (req.badge) query.badgeId = req.badge.id;
