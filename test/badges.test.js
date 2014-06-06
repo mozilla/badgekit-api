@@ -105,13 +105,13 @@ spawn(app).then(function (api) {
         tags: 'tag1'
       })
     }).then(function (res) {
-      t.same(res.statusCode, 201)
+      t.same(res.statusCode, 201, 'status code should be 201')
       badge = res.body.badge
-      t.same(res.body.status, 'created')
+      t.same(res.body.status, 'created', 'badge should be created')
       t.same(badge.name, form.name)
-      t.same(badge.system.slug, 'chicago')
-      t.same(badge.issuer.slug, 'chicago-library')
-      t.same(badge.criteriaUrl, 'http://example.org/criteria')
+      t.same(badge.system.slug, 'chicago', 'system slug should be chicago')
+      t.same(badge.issuer.slug, 'chicago-library', 'issuer slug should be chicago-library')
+      t.same(badge.criteriaUrl, 'http://example.org/criteria', 'criteria url should be correct')
       t.ok(badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
 
       return api.get(res.headers.location)

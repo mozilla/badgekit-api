@@ -105,7 +105,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         return res.send(400, errorHelper.validation(err));
       }
 
-      res.header('Location', path.join(req.url, row.slug))
+      res.header('Location', path.join(req.url, badge.slug))
       return res.send(201, {
         status: 'created',
         badge: badge.toResponse(),
