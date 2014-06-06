@@ -73,6 +73,7 @@ spawn(app).then(function (api) {
   test('get a single badge', function (t) {
     api.get('/systems/chicago/badges/chicago-badge').then(function (res) {
       t.same(res.body.badge.slug, 'chicago-badge')
+      t.ok(res.body.badge.milestones.length, 'has some milestones')
       return api.get('/systems/chicago/badges/badge-does-not-exist')
     }).then(function (res) {
       t.same(res.statusCode, 404)
@@ -98,7 +99,10 @@ spawn(app).then(function (api) {
         consumerDescription: 'Some description, o',
         unique: 0,
         image: stream('test-image.png'),
-        criteriaUrl: 'http://example.org/criteria'
+        criteriaUrl: 'http://example.org/criteria',
+        type: 'Badge Type',
+        categories: 'Category One',
+        tags: 'tag1'
       })
     }).then(function (res) {
       t.same(res.statusCode, 201)

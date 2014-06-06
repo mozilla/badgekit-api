@@ -7,15 +7,9 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
-const Criteria = db.table('criteria', {
-  fields: [
-    'id',
-    'description',
-    'badgeId',
-    'required',
-    'note'
-  ]
-});
+const Criteria = require('./criteria')
+const Category = require('./category')
+const Tags = require('./tag')
 
 const Badges = db.table('badges', {
   fields: [
@@ -37,7 +31,8 @@ const Badges = db.table('badges', {
     'imageId',
     'systemId',
     'issuerId',
-    'programId'
+    'programId',
+    'type'
   ],
   relationships: {
     image: {
@@ -68,17 +63,33 @@ const Badges = db.table('badges', {
       type: 'hasMany',
       local: 'id',
       foreign: { table: 'criteria', key: 'badgeId' }
+    },
+    categories: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'categories', key: 'badgeId' },
+    },
+    tags: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'tags', key: 'badgeId' }
     }
   },
   methods: {
     setCriteria: setCriteria,
+    setCategories: setCategories,
+    setTags: setTags,
+    del: del,
     toResponse: function () {
       return Badges.toResponse(this)
     },
   }
 });
 
-Badges.toResponse = function toResponse(row) {
+Badges.toResponse = function toResponse(row, request) {
+  // we have to late-load this so we don't have a circular dependencies
+  const Milestones = require('./milestone')
+
   return {
     id: row.id,
     slug: row.slug,
@@ -93,19 +104,26 @@ Badges.toResponse = function toResponse(row) {
     limit: row.limit,
     unique: row.unique,
     created: row.created,
-    imageUrl: row.image ? row.image.toUrl() : undefined,
+    imageUrl: row.image ? row.image.toUrl(request) : undefined,
+    type: row.type,
     archived: !!row.archived,
     system: maybeObject(row.system),
     issuer: maybeObject(row.issuer),
     program: maybeObject(row.program),
     criteriaUrl: row.criteriaUrl,
     criteria: (row.criteria || []).map(function(criterion) {
-      return {
-        description: criterion.description.toString(),
-        required: criterion.required,
-        note: criterion.note.toString()
-      }
-    })
+      return Criteria.toResponse(criterion);
+    }),
+    type: row.type,
+    categories: (row.categories || []).map(function(category) {
+      return Category.toResponse(category);
+    }),
+    tags: (row.tags || []).map(function(tag) {
+      return Tags.toResponse(tag);
+    }),
+    milestones: (row.milestones || []).map(function (milestone) {
+      return Milestones.toResponse(milestone)
+    }),
   };
 }
 function maybeObject(obj) {
@@ -128,12 +146,6 @@ Badges.validateRow = makeValidator({
   programId: optional('isInt'),
   issuerId: optional('isInt'),
   systemId: optional('isInt'),
-});
-
-Criteria.validateRow = makeValidator({
-  id: optional('isInt'),
-  description: required('len', 1),
-  required: required('isIn', ['0','1'])
 });
 
 function setCriteria(criteria, callback) {
@@ -180,5 +192,81 @@ function setCriteria(criteria, callback) {
     });
   });
 }
+
+function setCategories(categories, callback) {
+  const badgeId = this.id;
+  if (!Array.isArray(categories))
+    categories = [categories];
+
+  Category.del({badgeId: badgeId}, function (err) {
+    if (err)
+      return callback(err);
+
+    const stream = Category.createWriteStream();
+
+    stream.on('error', function (err) {
+      callback(err);
+      callback = function () {};
+    });
+
+    stream.on('close', function () {
+      callback(null);
+    });
+
+    categories.forEach(function (category, pos) {
+      // Filter out empty and duplicate values
+      if (!category || categories.indexOf(category) !== pos)
+        return;
+
+      stream.write({badgeId: badgeId, value: category});
+    });
+
+    stream.end();
+  });
+}
+
+function setTags(tags, callback) {
+  const badgeId = this.id;
+  if (!Array.isArray(tags))
+    tags = [tags];
+
+  tags = tags.map(function (tag) { return tag.value || tag });
+
+  Tags.del({badgeId: badgeId}, function (err) {
+    if (err)
+      return callback(err);
+
+    const stream = Tags.createWriteStream();
+
+    stream.on('error', function (err) {
+      callback(err);
+      callback = function () {};
+    });
+
+    stream.on('close', function () {
+      callback(null);
+    });
+
+    tags.forEach(function (tag, pos) {
+      // Filter out empty and duplicate values
+      if (!tag || tags.indexOf(tag) !== pos)
+        return;
+
+      stream.write({badgeId: badgeId, value: tag});
+    });
+
+    stream.end();
+  });
+}
+
+function del(callback) {
+  const badgeId = this.id;
+  Criteria.del({ badgeId: badgeId }, function(err) {
+    if (err)
+      callback(err);
+
+    Badges.del({ id: badgeId }, callback);
+  });
+};
 
 exports = module.exports = Badges;

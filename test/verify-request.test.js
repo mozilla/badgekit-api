@@ -12,6 +12,7 @@ const app = require('../')
 const spawn = require('./spawn')
 
 spawn(app).then(function (api) {
+
   test('GET request, missing auth', function (t) {
     const url = api.makeUrl('/systems/chicago')
     http.get(reqOpts(url), function (res) {
@@ -195,6 +196,17 @@ spawn(app).then(function (api) {
       res.setEncoding('utf8')
       res.pipe(concat(function (data) {
         t.same(data, '{"location":"http://example.org/test.png"}')
+        t.end()
+      }))
+    })
+  })
+
+  test('GET the healthcheck endpoint', function (t) {
+    http.get(api.makeUrl('/healthcheck'), function (res) {
+      t.same(res.statusCode, 200)
+      res.setEncoding('utf8')
+      res.pipe(concat(function (data) {
+        t.same(JSON.parse(data).app, 'BadgeKit API')
         t.end()
       }))
     })

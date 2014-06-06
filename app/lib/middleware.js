@@ -4,6 +4,9 @@ module.exports = {
   findProgram: createFinder('program'),
   findBadge: createFinder('badge'),
   findClaimCode: createFinder('claimCode'),
+  findApplication: createFinder('application'),
+  findReview: createFinder('review'),
+  findBadgeInstance: createFinder('badgeInstance'),
   verifyRequest: verifyRequest,
   attachResolvePath: attachResolvePath,
   attachErrorLogger: attachErrorLogger,
@@ -22,6 +25,9 @@ const models = {
   badge: require('../models/badge'),
   consumer: require('../models/consumer'),
   claimCode: require('../models/claim-codes'),
+  application: require('../models/application'),
+  review: require('../models/review'),
+  badgeInstance: require('../models/badge-instance'),
 }
 
 const http403 = restify.NotAuthorizedError
@@ -111,6 +117,10 @@ function verifyRequest() {
 
   return function (req, res, next) {
     if (req.url.indexOf('/public/') === 0)
+      return next()
+
+    if (req.url == '/' ||
+        req.url == '/healthcheck')
       return next()
 
     const token = getAuthToken(req)

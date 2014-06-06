@@ -11,6 +11,10 @@ var options = {
 
 var db = streamsql.connect(options);
 
+db.getDbConfig = function () {
+  return options;
+}
+
 function handleDisconnect() {
   db.connection = mysql.createConnection(options);
   db.connection.connect(function(err) {
@@ -20,7 +24,7 @@ function handleDisconnect() {
     }
     db.query = db.driver.getQueryFn(db.connection);
     db.queryStream = db.driver.getStreamFn(db.connection);
-  });   
+  });
 
   setErrorHandler();
 }
@@ -36,6 +40,6 @@ function setErrorHandler() {
   });
 }
 
-setErrorHandler();  
+setErrorHandler();
 
 exports = module.exports = db;

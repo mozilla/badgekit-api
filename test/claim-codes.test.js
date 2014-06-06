@@ -13,6 +13,16 @@ spawn(app).then(function (api) {
     }).catch(api.fail(t))
   })
 
+  test('Create an invalid claim code', function (t) {
+    const url = '/systems/chicago/badges/chicago-badge/codes'
+    const form = { multiuse: 1 }
+    api.post(url, form).then(function (res) {
+      t.same(res.statusCode, 400, 'statuscode 400')
+      t.same(res.body.code, 'ValidationError', 'should not validate')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
   test('List all claimcodes', function (t) {
     const url = '/systems/chicago/badges/chicago-badge/codes'
     api.get(url).then(function (res) {
@@ -41,7 +51,6 @@ spawn(app).then(function (api) {
     const url = '/systems/chicago/badges/chicago-badge/codes/random'
     api.post(url).then(function (res) {
       const code = res.body.claimCode
-      console.dir(code)
       t.same(res.statusCode, 201, 'should have been created')
       t.ok(code.code.length > 1, 'should have created a claim code')
       t.end()
@@ -57,6 +66,15 @@ spawn(app).then(function (api) {
     }).then(function (res) {
       t.same(res.statusCode, 404)
       t.same(res.body.code, 'ResourceNotFound')
+      t.end()
+    }).catch(api.fail(t))
+  })
+
+  test('Look up a badge via claim code', function (t) {
+    const url = '/systems/chicago/codes/single-use'
+    api.get(url).then(function (res) {
+      t.same(res.statusCode, 200, 'should get 200')
+      t.same(res.body.badge.slug, 'chicago-badge', 'should find chicago badge')
       t.end()
     }).catch(api.fail(t))
   })
