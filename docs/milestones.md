@@ -52,6 +52,7 @@ Content-Type: application/json
                 "rubricUrl": "http://issuersite.com/rubric",
                 "timeValue": 0,
                 "timeUnits": "minutes",
+                "evidenceType": "URL",
                 "limit": 0,
                 "unique": 0,
                 "created": "2014-05-29T21:24:32.000Z",
@@ -92,6 +93,7 @@ Content-Type: application/json
     * rubricUrl
     * timeValue
     * timeUnits
+    * evidenceType
     * limit
     * unique
     * created
@@ -146,6 +148,7 @@ Content-Type: application/json
               "rubricUrl": "http://issuersite.com/rubric",
               "timeValue": 0,
               "timeUnits": "minutes",
+              "evidenceType": "URL",
               "limit": 0,
               "unique": 0,
               "created": "2014-05-29T21:24:32.000Z",
@@ -185,6 +188,7 @@ Content-Type: application/json
     * rubricUrl
     * timeValue
     * timeUnits
+    * evidenceType
     * limit
     * unique
     * created
@@ -260,6 +264,7 @@ Content-Type: application/json
              "rubricUrl": "http://issuersite.com/rubric",
              "timeValue": 0,
              "timeUnits": "minutes",
+             "evidenceType": "URL",
              "limit": 0,
              "unique": 0,
              "created": "2014-05-29T21:24:32.000Z",
@@ -368,6 +373,7 @@ Content-Type: application/json
              "rubricUrl": "http://issuersite.com/rubric",
              "timeValue": 0,
              "timeUnits": "minutes",
+             "evidenceType": "URL",
              "limit": 0,
              "unique": 0,
              "created": "2014-05-29T21:24:32.000Z",

@@ -15,10 +15,11 @@ test('validating rows', function (t) {
     consumerDescription: '',
     timeValue: 'not an int',
     timeUnits: 'not one of the enums',
+    evidenceType: 'not one of the enums',
     unique: '2',
     criteriaUrl: 'what sort of wizardry is this'
   });
-  t.same(errors.length, 10);
+  t.same(errors.length, 11);
 
   errors = Badges.validateRow({
     id: 1,
@@ -29,6 +30,7 @@ test('validating rows', function (t) {
     consumerDescription: Array(255).join('l'),
     timeValue: '5',
     timeUnits: 'minutes',
+    evidenceType: 'URL',
     unique: '1',
     criteriaUrl: 'http://definitely-a-url.com/'
   });

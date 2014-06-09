@@ -297,6 +297,7 @@ function fromPostToRow (post) {
     criteriaUrl: post.criteriaUrl,
     timeValue: post.timeValue,
     timeUnits: post.timeUnits,
+    evidenceType: post.evidenceType,
     limit: post.limit,
     type: post.type,
     unique: post.unique

@@ -32,7 +32,8 @@ const Badges = db.table('badges', {
     'systemId',
     'issuerId',
     'programId',
-    'type'
+    'type',
+    'evidenceType'
   ],
   relationships: {
     image: {
@@ -115,6 +116,7 @@ Badges.toResponse = function toResponse(row, request) {
       return Criteria.toResponse(criterion);
     }),
     type: row.type,
+    evidenceType: row.evidenceType,
     categories: (row.categories || []).map(function(category) {
       return Category.toResponse(category);
     }),
@@ -142,6 +144,7 @@ Badges.validateRow = makeValidator({
   limit: optional('isInt'),
   unique: required('isIn', ['0','1','true','false']),
   criteriaUrl: required('isUrl'),
+  evidenceType: optional('isIn', ['URL','Text','Photo','Video','Sound']),
   imageId: optional('isInt'),
   programId: optional('isInt'),
   issuerId: optional('isInt'),

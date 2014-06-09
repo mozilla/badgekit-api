@@ -14,6 +14,7 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 | `rubricUrl` | __string__ - _Link to supporting material._ |
 | `timeValue` | __integer__ - _Time estimate for earner to complete badge._ |
 | `timeUnits` | __enum__ - _Can be `minutes`, `hours`, `days` or `weeks`._ |
+| `evidenceType` | __enum__ - _Can be `URL`, `Text`, `Photo`, `Video` or `Sound`._ |
 | `limit` | __integer__ - _Limit for number of people who can earn the badge._ |
 | `unique` | __boolean__ - _True if the same earner can only earn the badge once._ |
 | `created` | __timestamp__ |
@@ -90,6 +91,7 @@ Content-Type: application/json
       "rubricUrl": "http://issuersite.com/rubric",
       "timeValue": 0,
       "timeUnits": "minutes",
+      "evidenceType": "URL",
       "limit": 5,
       "unique": false,
       "created": "2014-05-21T19:22:09.000Z",
@@ -127,39 +129,40 @@ Content-Type: application/json
 #### Response structure
 
 * badges `[ ]`
-	* id
-	* slug
-	* name
-	* strapline
-	* earnerDescription
-	* consumerDescription
-	* issuerUrl
-	* rubricUrl
-	* timeValue
-	* timeUnits
-	* limit
-	* unique
-	* created
-	* imageUrl
-	* type
-	* archived
-	* [system](systems.md) `[ ]`
-		* id
-		* slug
-		* url
-		* name
-		* email
-		* imageUrl
-		* [issuers](issuers.md) `[ ]`
-	* criteriaUrl
-	* criteria `[ ]`
-		* id
-		* description
-		* required
-		* note
-	* categories `[ ]`
-	* tags `[ ]`
-	* [milestones](milestones.md) `[ ]`
+  * id
+  * slug
+  * name
+  * strapline
+  * earnerDescription
+  * consumerDescription
+  * issuerUrl
+  * rubricUrl
+  * timeValue
+  * timeUnits
+  * evidenceType
+  * limit
+  * unique
+  * created
+  * imageUrl
+  * type
+  * archived
+  * [system](systems.md) `[ ]`
+    * id
+    * slug
+    * url
+    * name
+    * email
+    * imageUrl
+    * [issuers](issuers.md) `[ ]`
+  * criteriaUrl
+  * criteria `[ ]`
+    * id
+    * description
+    * required
+    * note
+  * categories `[ ]`
+  * tags `[ ]`
+  * [milestones](milestones.md) `[ ]`
 
 
 ### Potential errors
@@ -198,6 +201,7 @@ Content-Type: application/json
     "rubricUrl": "http://issuersite.com/rubric",
     "timeValue": 10,
     "timeUnits": "minutes",
+    "evidenceType": "URL",
     "limit": 5,
     "unique": false,
     "created": "2014-05-21T19:22:09.000Z",
@@ -233,39 +237,40 @@ Content-Type: application/json
 #### Response structure
 
 * badge
-	* id
-	* slug
-	* name
-	* strapline
-	* earnerDescription
-	* consumerDescription
-	* issuerUrl
-	* rubricUrl
-	* timeValue
-	* timeUnits
-	* limit
-	* unique
-	* created
-	* imageUrl
-	* type
-	* archived
-	* [system](systems.md) `[ ]`
-		* id
-		* slug
-		* url
-		* name
-		* email
-		* imageUrl
-		* [issuers](issuers.md) `[ ]`
-	* criteriaUrl
-	* criteria `[ ]`
-		* id
-		* description
-		* required
-		* note
-	* categories `[ ]`
-	* tags `[ ]`
-	* [milestones](milestones.md) `[ ]`
+  * id
+  * slug
+  * name
+  * strapline
+  * earnerDescription
+  * consumerDescription
+  * issuerUrl
+  * rubricUrl
+  * timeValue
+  * timeUnits
+  * evidenceType
+  * limit
+  * unique
+  * created
+  * imageUrl
+  * type
+  * archived
+  * [system](systems.md) `[ ]`
+    * id
+    * slug
+    * url
+    * name
+    * email
+    * imageUrl
+    * [issuers](issuers.md) `[ ]`
+  * criteriaUrl
+  * criteria `[ ]`
+    * id
+    * description
+    * required
+    * note
+  * categories `[ ]`
+  * tags `[ ]`
+  * [milestones](milestones.md) `[ ]`
 
 ### Potential errors
 
@@ -311,6 +316,7 @@ POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
 | **rubricUrl** | _optional_ | Link to any rubric material associated with the badge.
 | **timeValue** | _optional_ | Badges can be associated with a time limit for earning.
 | **timeUnits** | _optional_ | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
+| **evidenceType** | _optional_ | Type of evidence accepted (can be `URL`, `Text`, `Photo`, `Video` or `Sound`) 
 | **limit** | _optional_ | Badges can be awarded to a fixed maximum number of earners.
 | **archived** | _optional_ | Boolean indicating archived status for badge.
 | **criteria** | _optional_ | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
@@ -340,6 +346,7 @@ Content-Type: application/json
     "rubricUrl": "http://issuersite.com/rubric",
     "timeValue": 10,
     "timeUnits": "minutes",
+    "evidenceType": "URL",
     "limit": 5,
     "unique": false,
     "created": "2014-05-21T19:22:09.000Z",
@@ -376,39 +383,40 @@ Content-Type: application/json
 
 * status
 * badge
-	* id
-	* slug
-	* name
-	* strapline
-	* earnerDescription
-	* consumerDescription
-	* issuerUrl
-	* rubricUrl
-	* timeValue
-	* timeUnits
-	* limit
-	* unique
-	* created
-	* imageUrl
-	* type
-	* archived
-	* [system](systems.md) `[ ]`
-		* id
-		* slug
-		* url
-		* name
-		* email
-		* imageUrl
-		* [issuers](issuers.md) `[ ]`
-	* criteriaUrl
-	* criteria `[ ]`
-		* id
-		* description
-		* required
-		* note
-	* categories `[ ]`
-	* tags `[ ]`
-	* [milestones](milestones.md) `[ ]`
+  * id
+  * slug
+  * name
+  * strapline
+  * earnerDescription
+  * consumerDescription
+  * issuerUrl
+  * rubricUrl
+  * timeValue
+  * timeUnits
+  * evidenceType
+  * limit
+  * unique
+  * created
+  * imageUrl
+  * type
+  * archived
+  * [system](systems.md) `[ ]`
+    * id
+    * slug
+    * url
+    * name
+    * email
+    * imageUrl
+    * [issuers](issuers.md) `[ ]`
+  * criteriaUrl
+  * criteria `[ ]`
+    * id
+    * description
+    * required
+    * note
+  * categories `[ ]`
+  * tags `[ ]`
+  * [milestones](milestones.md) `[ ]`
 
 ### Potential errors
 
@@ -456,6 +464,7 @@ Content-Type: application/json
       "criteriaUrl": "http://issuersite.com/criteria",
       "timeValue": 10,
       "timeUnits": "minutes",
+      "evidenceType": "URL",
       "limit": 5,
       "unique": false,
       "imageUrl": "http://issuersite.com/badge.png",
@@ -492,6 +501,7 @@ PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badge
 | **rubricUrl** | Link to any rubric material associated with the badge.
 | **timeValue** | Badges can be associated with a time limit for earning.
 | **timeUnits** | Time values can be expressed as `minutes`, `hours`, `days` or `weeks`.
+| **evidenceType** | Type of evidence accepted (can be `URL`, `Text`, `Photo`, `Video` or `Sound`) 
 | **limit** | Badges can be awarded to a fixed maximum number of earners.
 | **archived** | Boolean indicating archived status for badge.
 | **criteria** | Array of criteria items - each criteria should include `description` and `required` status plus optional `note` for badge reviewers.
@@ -523,6 +533,7 @@ Content-Type: application/json
     "rubricUrl": "http://issuersite.com/rubric",
     "timeValue": 10,
     "timeUnits": "minutes",
+    "evidenceType": "URL",
     "limit": 5,
     "unique": false,
     "created": "2014-05-21T19:22:09.000Z",
@@ -569,6 +580,7 @@ Content-Type: application/json
 	* rubricUrl
 	* timeValue
 	* timeUnits
+  * evidenceType
 	* limit
 	* unique
 	* created
@@ -639,6 +651,7 @@ Content-Type: application/json
       "criteriaUrl": "http://example.org/criteria",
       "timeValue": 10,
       "timeUnits": "minutes",
+      "evidenceType": "URL",
       "limit": 5,
       "unique": false,
       "imageUrl": "http://example.org/badge.png",
@@ -694,6 +707,7 @@ Content-Type: application/json
     "rubricUrl": "http://issuersite.com/rubric",
     "timeValue": 10,
     "timeUnits": "minutes",
+    "evidenceType": "URL",
     "limit": 5,
     "unique": false,
     "created": "2014-05-21T19:22:09.000Z",
