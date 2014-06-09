@@ -5,11 +5,11 @@ var async = require('async')
 exports.up = function(db, callback) {
   async.series([
     db.runSql.bind(db, "ALTER TABLE `badges` "
+                   + "ADD UNIQUE KEY `slug` (`slug`)"),
+    db.runSql.bind(db, "ALTER TABLE `badges` "
                    + "DROP KEY `slug_and_system`,"
                    + "DROP KEY `slug_and_issuer`,"
-                   + "DROP KEY `slug_and_program`"),
-    db.runSql.bind(db, "ALTER TABLE `badges` "
-                   + "ADD UNIQUE KEY `slug` (`slug`)")
+                   + "DROP KEY `slug_and_program`")
   ], callback)
 };
 
