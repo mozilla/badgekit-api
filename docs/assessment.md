@@ -12,8 +12,8 @@ Assessment therefore involves two objects in BadgeKit API: applications and revi
 | `slug` | __string__ |
 | `learner` | __email address__ - _earner email_ |
 | `created` | __timestamp__ |
-| `assignedTo` | __string__ - _email login for assigned reviewer_ |
-| `assignedExpiration` | __timestamp__ |
+| `assignedTo` | __string__ - _email address for assigned reviewer_ |
+| `assignedExpiration` | __timestamp__ - _expiry date for assigned reviewer to complete review, after which another reviewer can be assigned_ |
 | `badge` | [badge](badges.md) - _badge applied for_ |
 | `processed` | __timestamp__ - _e.g. set when review is submitted or when badge instance is created_ |
 | `evidence` | __array__ - _each evidence item can include: `url`, `mediaType` (which can be `image` or `link`) and `reflection` (which is a string)_ |
@@ -261,7 +261,7 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 | **learner** | required | The email address for the earner applying. |
 | **evidence** | optional | Array including evidence items - each item can include `reflection`, `mediaType` and `url`. |
 | **assignedTo** | optional | Email of reviewer application is assigned to. |
-| **assignedExpiration** | optional | Expiry date. |
+| **assignedExpiration** | optional | Expiry date for assigned reviewer to complete review. |
 
 ### Expected response
 
@@ -359,7 +359,7 @@ Requests can be sent as `application/json`, `application/x-www-form-urlencoded` 
 | **learner** | The email address for the earner applying. |
 | **evidence** | Array including evidence items - each item can include `reflection`, `mediaType` and `url`. |
 | **assignedTo** | Email of reviewer application is assigned to. |
-| **assignedExpiration** | Expiry date. |
+| **assignedExpiration** | Expiry date for assigned reviewer to complete review. |
 | **processed** | Timestamp indicating application has been processed. |
 
 You only have to pass in the fields you are updating. Any fields that are not represented will be left unchanged.
