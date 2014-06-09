@@ -87,6 +87,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     var options = {
       row: fromPostToRow(req.body),
       criteria: req.body.criteria || [],
+      alignments: req.body.alignments || [],
       categories: req.body.categories || [],
       tags: req.body.tags || [],
       image: imageHelper.getFromPost(req, {required: true})
@@ -244,6 +245,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     var options = {
       row: safeExtend(req.badge, req.body),
       criteria: req.body.criteria || [],
+      alignments: req.body.alignments || [],
       categories: req.body.categories || [],
       tags: req.body.tags || [],
       image: imageHelper.getFromPost(req)
@@ -273,6 +275,7 @@ function putBadge (options, callback) {
 
     async.parallel([
       row.setCriteria.bind(row, options.criteria),
+      row.setAlignments.bind(row, options.alignments),
       row.setCategories.bind(row, options.categories),
       row.setTags.bind(row, options.tags)
     ], function (err, data) {
