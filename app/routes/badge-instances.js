@@ -402,7 +402,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       return util.format('/public/systems/%s/issuers/%s/programs/%s',
                          system.slug, issuer.slug, program.slug)
     if (issuer && issuer.slug)
-      return util.format('/public/systems/%s/issuers',
+      return util.format('/public/systems/%s/issuers/%s',
                          system.slug, issuer.slug)
     if (badge.system && badge.system.slug)
       return util.format('/public/systems/%s', system.slug)
