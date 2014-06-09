@@ -1,6 +1,6 @@
 {
   "name": "badgekit-api",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "A badge issuing platform",
   "author": "Mozilla OpenBadges",
   "license": "MPLv2",
