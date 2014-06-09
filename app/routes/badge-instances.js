@@ -124,19 +124,21 @@ exports = module.exports = function applyBadgeRoutes (server) {
       badgeId: row.badgeId
     }
 
-    ClaimCodes.getOne(query).then(function (code) {
-      if (code.claimed && !code.multiuse) {
-        const response = {
-          code: 'CodeAlreadyUsed',
-          message: 'Claim code `'+code.code+'` has already been claimed'
+    ClaimCodes.getOne(query)
+      .then(function (code) {
+        if (code.claimed && !code.multiuse) {
+          const response = {
+            code: 'CodeAlreadyUsed',
+            message: 'Claim code `'+code.code+'` has already been claimed'
+          }
+          res.send(400, response)
+          return Promise.reject(response)
         }
-        res.send(400, response)
-        return Promise.reject(response)
-      }
-      code.claimed = true
-      code.email = row.email
-      return ClaimCodes.put(code)
-    }).then(saveBadgeInstance)
+        code.claimed = true
+        code.email = row.email
+        return ClaimCodes.put(code)
+      })
+      .then(saveBadgeInstance)
       .error(function (err) {
         if (err.code !== 'CodeAlreadyUsed')
           return errorHandler(err)
