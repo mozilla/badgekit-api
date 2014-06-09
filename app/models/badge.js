@@ -7,6 +7,7 @@ const makeValidator = validation.makeValidator;
 const optional = validation.optional;
 const required = validation.required;
 
+const Alignments = require('./alignment')
 const Criteria = require('./criteria')
 const Category = require('./category')
 const Tags = require('./tag')
@@ -64,6 +65,11 @@ const Badges = db.table('badges', {
       local: 'id',
       foreign: { table: 'criteria', key: 'badgeId' }
     },
+    alignments: {
+      type: 'hasMany',
+      local: 'id',
+      foreign: { table: 'alignments', key: 'badgeId' }
+    },
     categories: {
       type: 'hasMany',
       local: 'id',
@@ -77,6 +83,7 @@ const Badges = db.table('badges', {
   },
   methods: {
     setCriteria: setCriteria,
+    setAlignments: setAlignments,
     setCategories: setCategories,
     setTags: setTags,
     del: del,
@@ -113,6 +120,9 @@ Badges.toResponse = function toResponse(row, request) {
     criteriaUrl: row.criteriaUrl,
     criteria: (row.criteria || []).map(function(criterion) {
       return Criteria.toResponse(criterion);
+    }),
+    alignments: (row.alignments || []).map(function(alignment) {
+      return Alignments.toResponse(alignment);
     }),
     type: row.type,
     categories: (row.categories || []).map(function(category) {
@@ -185,6 +195,51 @@ function setCriteria(criteria, callback) {
     }
 
     Criteria.del(deleteQuery, function(err) {
+      if (err)
+        return callback(err);
+
+      Badges.getOne({ id: badgeId }, { relationships: true }, callback);
+    });
+  });
+}
+
+function setAlignments(alignments, callback) {
+  var alignmentIds = [];
+  const badgeId = this.id;
+  async.each(alignments, function(alignment, done) {
+    alignment.badgeId = badgeId;
+    Alignments.put(alignment, function(err, result) {
+      if (err)
+        return done(err);
+
+      const rowId = result.insertId || result.row.id;
+      alignmentIds.push(rowId);
+
+      return done();
+    });
+  },
+  function done(err) {
+    if (err)
+      return callback(err);
+
+    // Now that we have added all the new alignments, we want to delete any old alignments attached to this badge
+    const deleteQuery = {
+      badgeId: {
+        value: badgeId,
+        op: '='
+      }
+    };
+
+    if (alignmentIds.length) {
+      deleteQuery.id = alignmentIds.map(function(alignmentId) {
+        return {
+          op: '!=',
+          value: alignmentId
+        };
+      });
+    }
+
+    Alignments.del(deleteQuery, function(err) {
       if (err)
         return callback(err);
 
