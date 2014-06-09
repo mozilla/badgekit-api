@@ -39,7 +39,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-    middleware.findBadge({where: {programId: ['program', 'id']}}),  
+    middleware.findBadge({where: {programId: ['program', 'id']}}),
     showAllApplications,
   ]);
   function showAllApplications (req, res, next) {
@@ -145,7 +145,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
           application: application.toResponse()
         });
       });
-    });    
+    });
   }
 
   server.put('/systems/:systemSlug/badges/:badgeSlug/applications/:applicationSlug', [
@@ -262,5 +262,3 @@ function fromPostToRow (post) {
     assignedExpiration: post.assignedExpiration
   };
 }
-
-

@@ -1,3 +1,5 @@
+const path = require('path')
+const hash = require('../lib/hash')
 const async = require('async')
 const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
@@ -104,6 +106,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         return res.send(400, errorHelper.validation(err));
       }
 
+      res.header('Location', path.join(req.url, badge.slug))
       return res.send(201, {
         status: 'created',
         badge: badge.toResponse(),
@@ -287,7 +290,7 @@ function putBadge (options, callback) {
 
 function fromPostToRow (post) {
   return {
-    slug: post.slug,
+    slug: hash.md5('' + Date.now() + post.name),
     name: post.name,
     strapline: post.strapline,
     systemId: post.systemId,

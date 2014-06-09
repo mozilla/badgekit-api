@@ -164,6 +164,23 @@ INSERT INTO `badges` SET
   `type` = 'Not too shabby',
   `imageId` = 1;
 
+INSERT INTO `badges` SET
+  `systemId` = 1,
+  `issuerId` = 1,
+  `slug` = 'test-badge',
+  `name` = 'Test Badge',
+  `earnerDescription` = 'Test badge that will be deleted',
+  `consumerDescription` = 'seriously, it will be desetroyed',
+  `rubricUrl` = 'http://example.org/chicaogLibraryRubric',
+  `criteriaUrl` = 'http://example.org/chicagoLibraryCriteria',
+  `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
+  `timeValue` = 5,
+  `timeUnits` = 'hours',
+  `limit` = 2,
+  `unique` = 1,
+  `strapline` = 'test test test',
+  `imageId` = 1;
+
 INSERT INTO `claimCodes` SET
   `code` = 'multiple-use',
   `multiuse` = true,
