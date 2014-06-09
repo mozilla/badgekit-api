@@ -134,6 +134,8 @@ Content-Type: application/json
 }
 ```
 
+Applications are returned in order sorted by created date.
+
 #### Response structure
 
 * applications `[ ]`
