@@ -46,10 +46,10 @@ const findSystemBadgeInstance = [
   middleware.findSystem(),
   middleware.findBadge({where: {systemId: ['system', 'id']}}),
   middleware.findBadgeInstance({
-    field: 'email', 
-    param: 'instanceEmail', 
+    field: 'email',
+    param: 'instanceEmail',
     where: {badgeId: ['badge', 'id']},
-    relationships: true, 
+    relationships: true,
     relationshipsDepth: 2
   }),
 ]
@@ -59,10 +59,10 @@ const findIssuerBadgeInstance = [
   middleware.findIssuer({where: {systemId: ['system', 'id']}}),
   middleware.findBadge({where: {issuerId: ['issuer', 'id']}}),
   middleware.findBadgeInstance({
-    field: 'email', 
-    param: 'instanceEmail', 
+    field: 'email',
+    param: 'instanceEmail',
     where: {badgeId: ['badge', 'id']},
-    relationships: true, 
+    relationships: true,
     relationshipsDepth: 2
   }),
 ]
@@ -73,10 +73,10 @@ const findProgramBadgeInstance = [
   middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
   middleware.findBadge({where: {programId: ['program', 'id']}}),
   middleware.findBadgeInstance({
-    field: 'email', 
-    param: 'instanceEmail', 
+    field: 'email',
+    param: 'instanceEmail',
     where: {badgeId: ['badge', 'id']},
-    relationships: true, 
+    relationships: true,
     relationshipsDepth: 2
   }),
 ]
@@ -144,58 +144,88 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
     function saveBadgeInstance(err) {
       var hookData, system
-      BadgeInstances.put(row).then(function (result) {
-        const instance = result.row
-        var responseInstance = BadgeInstances.toResponse(instance, req);
+      BadgeInstances.put(row)
+        .then(function (result) {
+          const instance = result.row
+          var responseInstance = BadgeInstances.toResponse(instance, req);
 
-        res.header('Location', '/public/assertions/' + row.slug)
-        res.send(201, {
-          status: 'created',
-          instance: responseInstance,
-        })
-
-        // Webhook stuff shouldn't hold up the request, so we call
-        // `next()` before looking up any hooks we have to send off
-        next()
-
-        const system = req.system
-        const comment = req.body.comment || null;
-        hookData = {
-          action: 'award',
-          uid: instance.slug,
-          badge: req.badge.toResponse(),
-          email: instance.email,
-          assertionUrl: responseInstance.assertionUrl,
-          issuedOn: unixtimeFromDate(instance.issuedOn),
-          comment: comment
-        }
-        return Webhooks.getOne({systemId: system.id})
-      }).then(function (hook) {
-        if (!hook)
-          return log.info({code: 'WebhookNotFound', system: system}, 'Webhook not found for system')
-
-        hook.call(hookData, function (err, res, body) {
-          if (err)
-            return log.warn({code: 'WebhookRequestError', error: err})
-          if (res.statusCode != 200)
-            return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
-        })
-      }).error(function (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-          BadgeInstances.getOne({email: row.email, badgeId: req.badge.id}).then(function (instance) {
-            const otherAssertionUrl = req.resolvePath('/public/assertions/' + instance.slug);
-            return res.send(409, {code: 'ResourceConflict', message: 'User ' + row.email + ' has already been awarded badge ' + req.badge.slug, details: { assertionUrl: otherAssertionUrl }});
+          res.header('Location', '/public/assertions/' + row.slug)
+          res.send(201, {
+            status: 'created',
+            instance: responseInstance,
           })
-          .error(function (err) {
-            log.error(err, 'error fetching pre-existing badge instance');
+
+          // Webhook stuff shouldn't hold up the request, so we call
+          // `next()` before looking up any hooks we have to send off
+          next()
+
+          const system = req.system
+          const comment = req.body.comment || null;
+          hookData = {
+            action: 'award',
+            uid: instance.slug,
+            badge: req.badge.toResponse(),
+            email: instance.email,
+            assertionUrl: responseInstance.assertionUrl,
+            issuedOn: unixtimeFromDate(instance.issuedOn),
+            comment: comment
+          }
+          return Webhooks.getOne({systemId: system.id})
+        })
+
+        .then(function (hook) {
+          if (!hook) {
+            return log.info({
+              code: 'WebhookNotFound',
+              system: system
+            }, 'Webhook not found for system')
+          }
+
+          hook.call(hookData, function (err, res, body) {
+            if (err) {
+              return log.warn({
+                code: 'WebhookRequestError',
+                error: err
+              })
+            }
+            if (res.statusCode != 200) {
+              return log.warn({
+                code: 'WebhookBadResponse',
+                status: res.statusCode,
+                body: body
+              })
+            }
+          })
+        })
+        .error(function (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            const query = {
+              email: row.email,
+              badgeId: req.badge.id
+            }
+            BadgeInstances.getOne(query)
+              .then(function (instance) {
+                const otherAssertionUrl = req.resolvePath('/public/assertions/' + instance.slug);
+                const message = 'User ' + row.email + ' has already been awarded badge ' + req.badge.slug
+                return res.send(409, {
+                  code: 'ResourceConflict',
+                  message: message,
+                  details: {
+                    assertionUrl: otherAssertionUrl
+                  }
+                });
+              })
+
+              .error(function (err) {
+                log.error(err, 'error fetching pre-existing badge instance');
+                return next(err);
+              })
+          }
+          else {
+            log.error(err, 'error dealing with webhooks when awarding badge')
             return next(err);
-          })
-        }
-        else {
-          log.error(err, 'error dealing with webhooks when awarding badge')
-          return next(err);
-        }
-      })
+          }
+        })
     }
   }
 
@@ -229,9 +259,9 @@ exports = module.exports = function applyBadgeRoutes (server) {
 
 
   const deleteInstanceSuffix = '/badges/:badgeSlug/instances/:instanceEmail'
-  server.del(prefix.system + deleteInstanceSuffix, 
+  server.del(prefix.system + deleteInstanceSuffix,
              findSystemBadgeInstance, deleteBadgeInstance)
-  server.del(prefix.issuer + deleteInstanceSuffix, 
+  server.del(prefix.issuer + deleteInstanceSuffix,
              findIssuerBadgeInstance, deleteBadgeInstance)
   server.del(prefix.program + deleteInstanceSuffix,
              findProgramBadgeInstance, deleteBadgeInstance)
