@@ -10,19 +10,21 @@ __The BadgeKit Web app links to the API to create an admin user interface for cr
 
 The BadgeKit API provides a series of endpoints through which your sites can interact with data for badges, earner applications and issuer organization admin. Below are some examples of calls you can make to the API.
 
-Retrieve/ Update/ Add new:
-* badges
-* earner applications for badges
-* application reviews
-* _issuers within a system_
-* _programs within an issuer_
-* _badge/ application data for a particular issuers/ programs_.
+* Retrieve badges
+* Submit earner applications for badges
+* Submit application reviews
+* Issue badges
+* Generate claim codes for a badge
+* Update badge data
+* Manage badges within system, issuer and program admin levels
 
 __Using issuer and program admin levels is entirely optional - you can simply configure BadgeKit to group all of your badge and application data within a single system.__
 
+The repo [docs](docs) list all of the available endpoints provided by the API, together with examples of request and response data.
+
 When you make a request, the API returns JSON data. You can then present the returned data within your own site interface.
 
-In addition to the series of calls you can make to interact with data, the API also provides webhooks for badging events (such as a badge being issued or an earner application being reviewed). By configuring a URL to receive notification of these events, you can build your own custom responses, for example informing an earner that their badge application was successful.
+In addition to the series of calls you can make to interact with data, the API also provides [webhooks](docs/webhooks.md) for badging events (such as a badge being issued or an earner application being reviewed). By configuring a URL to receive notification of these events, you can build your own custom responses, for example informing an earner that their badge application was successful.
 
 To get started accessing the API in your own sites, see [Using BadgeKit API](https://github.com/mozilla/badgekit-api/wiki/Using-BadgeKit-API).
 
@@ -34,14 +36,14 @@ API calls should be signed with a JWT token generated using the secret for your 
 
 To install the BadgeKit API: 
 * clone the repo
-* set up a database
-* set your environment configs.
+* set your environment configs
+* set up your database
 
-You can use the `schema.sql` file in the root directory to create your database. You also need to add an entry in the `system` table, providing an initial slug and system name for a badge issuing system. See the [wiki](https://github.com/mozilla/badgekit-api/wiki) for more details and the [Self-Hosting guide](https://github.com/mozilla/openbadges-badgekit/wiki/BadgeKit-Self-Hosting-Guide) if you plan on building your own instance of the BadgeKit Web app as well as the API.
+You can use `bin/db-migrate up` from the root directory to create (or migrate) your database. You also need to add an entry in the `system` table, providing an initial slug and system name for a badge issuing system. See the [wiki](https://github.com/mozilla/badgekit-api/wiki) for more details and the [Self-Hosting guide](https://github.com/mozilla/openbadges-badgekit/wiki/BadgeKit-Self-Hosting-Guide), particularly if you plan on building your own instance of the BadgeKit Web app as well as the API.
 
 ## Environment Configuration
 
-The BadgeKit API currently uses the following configuration details:
+BadgeKit API currently uses the following configuration details:
 
 * `NODE_ENV`: Set to `production` for production environments. If you want to run the test suite, set this to `test`. **DO NOT SET THIS TO `test` ON PRODUCTION MACHINES, BAD THINGS WILL HAPPEN** - mainly authentication will be inactive and you run the risk of accidentally dropping your database.
 * `DB_HOST`: Defaults to `localhost`.
