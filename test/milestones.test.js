@@ -21,7 +21,6 @@ spawn(app).then(function (api) {
       })
   })
 
-
   test('Get all milestones', function (t) {
     api.get('/systems/chicago/milestones')
       .then(function (res) {
