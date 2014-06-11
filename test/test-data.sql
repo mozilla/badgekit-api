@@ -272,18 +272,23 @@ INSERT INTO `reviewItems` SET
   `satisfied` = TRUE,
   `comment` = 'Nice work, yo.';
 
+INSERT INTO `badgeInstances` SET
+  `slug` = 'whatevs',
+  `email` = 'brian+milestone-test@example.org',
+  `badgeId` = 5;
+
 INSERT INTO `milestones` SET
   `id` = 1,
   `systemId` = 1,
   `primaryBadgeId` = 1,
-  `numberRequired` = 2,
+  `numberRequired` = 1,
   `action` = 'issue';
 
 INSERT INTO `milestones` SET
   `id` = 999,
   `systemId` = 1,
   `primaryBadgeId` = 4,
-  `numberRequired` = 1;
+  `numberRequired` = 10;
 
 INSERT INTO `milestoneBadges` SET
   `milestoneId` = 1,
