@@ -2,10 +2,12 @@ const Promise = require('bluebird')
 const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
+const customError = require('../lib/custom-error')
 const Badges = require('../models/badge')
 const ClaimCodes = require('../models/claim-codes')
 const Webhooks = require('../models/webhook')
 const BadgeInstances = require('../models/badge-instance')
+const Milestones = require('../models/milestone')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 const log = require('../lib/logger')
@@ -104,8 +106,10 @@ exports = module.exports = function applyBadgeRoutes (server) {
               findProgramBadge, createNewInstance)
 
   function createNewInstance(req, res, next) {
+    const badge = req.badge;
+    const system = req.system
     const row = BadgeInstances.formatUserInput(req.body)
-    row.badgeId = req.badge.id
+    row.badgeId = badge.id
 
     const errs = BadgeInstances.validateRow(row)
     if (errs.length)
@@ -144,52 +148,62 @@ exports = module.exports = function applyBadgeRoutes (server) {
           return errorHandler(err)
       })
 
+    function instanceToHookData(instance, comment) {
+      return {
+        action: 'award',
+        uid: instance.slug,
+        badge: badge.toResponse(),
+        email: instance.email,
+        assertionUrl: instance.assertionUrl,
+        issuedOn: unixtimeFromDate(instance.issuedOn),
+        comment: comment
+      }
+    }
+
     function saveBadgeInstance(err) {
-      var hookData, system
+      const MissingWebhookError = customError('MissingWebhookError');
+
+      var hookData = [];
+      var instance;
       BadgeInstances.put(row)
         .then(function (result) {
-          const instance = result.row
-          var responseInstance = BadgeInstances.toResponse(instance, req);
+          instance = BadgeInstances.toResponse(result.row, req);
 
           res.header('Location', '/public/assertions/' + row.slug)
           res.send(201, {
             status: 'created',
-            instance: responseInstance,
+            instance: instance,
           })
 
           // Webhook stuff shouldn't hold up the request, so we call
           // `next()` before looking up any hooks we have to send off
           next()
 
-          const system = req.system
           const comment = req.body.comment || null;
-          hookData = {
-            action: 'award',
-            uid: instance.slug,
-            badge: req.badge.toResponse(),
-            email: instance.email,
-            assertionUrl: responseInstance.assertionUrl,
-            issuedOn: unixtimeFromDate(instance.issuedOn),
-            comment: comment
-          }
-          return Webhooks.getOne({systemId: system.id})
+          hookData.push(instanceToHookData(instance))
+
+          return Milestones.findAndAward(instance.email, badge);
+        })
+
+        .then(function (instances) {
+          instances.forEach(function (instance) {
+            instance = BadgeInstances.toResponse(instance, req);
+            hookData.push(instanceToHookData(instance))
+          })
+          return Webhooks.getOne({systemId: system.id});
         })
 
         .then(function (hook) {
-          if (!hook) {
-            return log.info({
-              code: 'WebhookNotFound',
-              system: system
-            }, 'Webhook not found for system')
-          }
+          if (!hook)
+            throw new MissingWebhookError();
 
-          hook.call(hookData, function (err, res, body) {
-            if (err) {
-              return log.warn({
-                code: 'WebhookRequestError',
-                error: err
-              })
-            }
+          return Promise.all(hookData.map(hook.call.bind(hook)))
+        })
+
+        .then(function (results) {
+          results.forEach(function (result) {
+            const res = result.res;
+            const body = result.body;
             if (res.statusCode != 200) {
               return log.warn({
                 code: 'WebhookBadResponse',
@@ -198,6 +212,12 @@ exports = module.exports = function applyBadgeRoutes (server) {
               })
             }
           })
+        })
+        .catch(MissingWebhookError, function () {
+          return log.info({
+            code: 'WebhookNotFound',
+            system: system
+          }, 'Webhook not found for system')
         })
         .error(function (err) {
           if (err.code === 'ER_DUP_ENTRY') {

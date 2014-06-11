@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
 const _ = require('lodash')
 const db = require('../lib/db');
+const customError = require('../lib/custom-error')
 const validation = require('../lib/validation');
 const makeValidator = validation.makeValidator;
 const optional = validation.optional;
@@ -42,8 +43,8 @@ const Milestones = db.table('milestones', {
 
 
 Milestones.findEligible = function findEligible(user, recentBadge) {
-  const NoMilestonesError = createErrorObject('NoMilestonesError');
-  const NoUnearnedError = createErrorObject('NoUnearnedError');
+  const NoMilestonesError = customError('NoMilestonesError');
+  const NoUnearnedError = customError('NoUnearnedError');
   const MilestoneBadges = require('./milestone-badge');
   const BadgeInstances = require('./badge-instance');
 
@@ -57,7 +58,7 @@ Milestones.findEligible = function findEligible(user, recentBadge) {
     MilestoneBadges.get(query, options)
       .then(function (relatedMilestoneBadges) {
         if (!relatedMilestoneBadges.length)
-          throw NoMilestonesError('No related milestones');
+          throw new NoMilestonesError('No related milestones');
 
         relatedMilestones = _.pluck(relatedMilestoneBadges, 'milestone');
 
@@ -70,7 +71,7 @@ Milestones.findEligible = function findEligible(user, recentBadge) {
         });
 
         if (!unearnedMilestones.length)
-          throw NoUnearnedError('No unearned milestones');
+          throw new NoUnearnedError('No unearned milestones');
 
         const unearnedMilestoneIds = _.pluck(unearnedMilestones, 'id');
         const query = { id: unearnedMilestoneIds };
@@ -145,15 +146,6 @@ Milestones.validateRow = makeValidator({
       throw new TypeError('Value must be one of the following: ' + valid.join(', '))
   })
 });
-
-function createErrorObject(name) {
-  function CustomError() {
-    this.name = name;
-    Error.apply(this, this.arguments)
-  }
-  CustomError.prototype = Object.create(Error.prototype);
-  return CustomError;
-}
 
 function prop(name) {
   return function (o) {
