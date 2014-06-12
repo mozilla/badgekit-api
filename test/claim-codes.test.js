@@ -24,9 +24,12 @@ spawn(app).then(function (api) {
   })
 
   test('List all claimcodes', function (t) {
-    const url = '/systems/chicago/badges/chicago-badge/codes'
+    const url = '/systems/chicago/badges/chicago-badge/codes?page=1&count=5'
     api.get(url).then(function (res) {
       t.same(res.body.claimCodes.length, 4, 'should have right amount of codes')
+      t.same(res.body._pageData.page, 1, 'page data should indicate page 1')
+      t.same(res.body._pageData.count, 5, 'page data should indicate a count of 5')
+      t.same(res.body._pageData.total, 4, 'page data should indicate a total of 4')
       t.same(res.body.badge.slug, 'chicago-badge', 'should get badge back as well')
       t.end()
     }).catch(api.fail(t))

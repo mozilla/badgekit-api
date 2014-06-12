@@ -40,12 +40,25 @@ exports = module.exports = function applyReviewRoutes (server) {
     var query = { applicationId : req.application.id };
     var options = {relationships: true};
 
-    Reviews.get(query, options, function foundRows (error, rows) {
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    Reviews.get(query, options, function foundRows (error, result) {
       if (error)
         return dbErrorHandler(error, null, res, next);
+      
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
 
       var responseData = {reviews: rows.map(Reviews.toResponse)};
-      sendPaginated(req, res, responseData, 'reviews');
+      sendPaginated(req, res, responseData, total);
       return next();
     });
   }

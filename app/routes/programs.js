@@ -18,12 +18,26 @@ exports = module.exports = function applyProgramRoutes (server) {
   function showAllPrograms(req, res, next) {
     const options = {relationships: true}
     const query = {issuerId: req.issuer.id}
-    Programs.get(query, options, function foundRows(error, rows) {
+    
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    Programs.get(query, options, function foundRows(error, result) {
       if (error)
         return dbErrorHandler(error, null, res, next)
 
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+
       var responseData = {programs: rows.map(Programs.toResponse)};
-      sendPaginated(req, res, responseData, 'programs');
+      sendPaginated(req, res, responseData, total);
       return next();
     });
   }

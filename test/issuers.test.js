@@ -7,8 +7,11 @@ const spawn = require('./spawn')
 spawn(app).then(function (api) {
 
   test('get issuer list', function (t) {
-    api.get('/systems/chicago/issuers').then(function (res) {
+    api.get('/systems/chicago/issuers?page=1&count=5').then(function (res) {
       t.ok(res.body.issuers, 'should have issuers')
+      t.same(res.body._pageData.page, 1, 'page data should indicate page 1')
+      t.same(res.body._pageData.count, 5, 'page data should indicate a count of 5')
+      t.same(res.body._pageData.total, 1, 'page data should indicate a total of 1')
       t.same(res.body.issuers[0].slug, 'chicago-library')
       return api.get('/systems/bogus/issuers')
     }).then(function(res){

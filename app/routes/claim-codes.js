@@ -108,15 +108,28 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
     const query = {badgeId: req.badge.id}
     const options = {relationships: false}
 
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
     ClaimCodes
       .get(query, options)
-      .then(function (claimCodes) {
+      .then(function (result) {
+        var total = 0;
+        var rows = result;
+        if (req.pageData) {
+          total = result.total;
+          rows = result.rows;
+        }
+
         var responseData = {
-          claimCodes: claimCodes.map(ClaimCodes.toResponse),
+          claimCodes: rows.map(ClaimCodes.toResponse),
           badge: req.badge.toResponse(),
         };
 
-        sendPaginated(req, res, responseData, 'claimCodes');
+        sendPaginated(req, res, responseData, total);
       })
       .error(req.error('Error getting claim code list'))
   }

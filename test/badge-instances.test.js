@@ -63,10 +63,13 @@ spawn(app).then(function (api) {
       t.same(issuerOrg.url, 'http://cityofchicago.org')
       t.same(issuerOrg.description, 'The City of Chicago')
       t.same(issuerOrg.email, 'mayor-emanuel@cityofchicago.org')
-      return api.get('/systems/chicago/instances/' + email)
+      return api.get('/systems/chicago/instances/' + email + '?page=1&count=1')
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be found')
       t.ok(res.body.instances && res.body.instances.length === 1, 'should find one instance')
+      t.same(res.body._pageData.total, 1)
+      t.same(res.body._pageData.page, 1)
+      t.same(res.body._pageData.count, 1)
       const instance = res.body.instances[0]
       t.same(instance.email, email, 'should be correct email')
       t.same(instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')

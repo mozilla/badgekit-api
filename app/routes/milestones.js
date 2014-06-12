@@ -15,10 +15,24 @@ exports = module.exports = function applyBadgeRoutes(server) {
   function showAllMilestones(req, res, next) {
     const query = { systemId: req.system.id };
     const options = { relationships: true };
+    
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
     Milestones.get(query, options)
-      .then(function (milestones) {
-        var responseData = { milestones: milestones.map(Milestones.toResponse) };
-        return sendPaginated(req, res, responseData, 'milestones');
+      .then(function (result) {
+        var total = 0;
+        var rows = result;
+        if (req.pageData) {
+          total = result.total;
+          rows = result.rows;
+        }
+
+        var responseData = { milestones: rows.map(Milestones.toResponse) };
+        return sendPaginated(req, res, responseData, total);
       })
       .catch(handleError(req, next));
   }
