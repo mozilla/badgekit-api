@@ -7,6 +7,7 @@ const Milestones = require('../models/milestone');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
+const sendPaginated = require('../lib/send-paginated');
 
 const putBadgeHelper = imageHelper.putModel(Badges)
 const dbErrorHandler = errorHelper.makeDbHandler('badge')
@@ -65,7 +66,10 @@ exports = module.exports = function applyBadgeRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({badges: rows.map(Badges.toResponse)});
+      var responseData = { badges: rows.map(Badges.toResponse) };
+
+      sendPaginated(req, res, responseData, 'badges');
+       
       return next();
     });
   }

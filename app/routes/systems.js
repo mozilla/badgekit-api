@@ -4,6 +4,7 @@ const Systems = require('../models/system');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
+const sendPaginated = require('../lib/send-paginated');
 
 const putSystem = imageHelper.putModel(Systems)
 const dbErrorHandler = errorHelper.makeDbHandler('system')
@@ -17,7 +18,8 @@ exports = module.exports = function applySystemRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next)
 
-      return res.send({systems: rows.map(Systems.toResponse)});
+      var responseData = {systems: rows.map(Systems.toResponse)};
+      return sendPaginated(req, res, responseData, 'systems');
     });
   }
 

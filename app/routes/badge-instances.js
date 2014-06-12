@@ -3,6 +3,7 @@ const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
 const customError = require('../lib/custom-error')
+const sendPaginated = require('../lib/send-paginated')
 const Badges = require('../models/badge')
 const ClaimCodes = require('../models/claim-codes')
 const Webhooks = require('../models/webhook')
@@ -260,7 +261,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
              findProgramBadge, getBadgeInstances)
   function getBadgeInstances(req, res, next) {
     BadgeInstances.get({ badgeId: req.badge.id}, {relationships: true, relationshipsDepth: 2}).then(function (rows) {
-      return res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+      var responseData = {instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })}
+      return sendPaginated(req, res, responseData, 'instances');
     })
     .error(function (err) {
       log.error(err, 'error fetching badge instances');
@@ -367,7 +369,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
         return Promise.resolve([]);
       }
     }).then(function (rows) {
-      res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+      var responseData = {instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })}
+      return sendPaginated(req, res, responseData, 'instances');
     }).error(function (err) {
       if (!err.restCode)
         log.error(err, 'unknown error in getUserInstances route')

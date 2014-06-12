@@ -4,6 +4,7 @@ const Programs = require('../models/program');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
+const sendPaginated = require('../lib/send-paginated');
 
 const putProgram = imageHelper.putModel(Programs)
 const dbErrorHandler = errorHelper.makeDbHandler('program')
@@ -21,7 +22,8 @@ exports = module.exports = function applyProgramRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next)
 
-      res.send({programs: rows.map(Programs.toResponse)});
+      var responseData = {programs: rows.map(Programs.toResponse)};
+      sendPaginated(req, res, responseData, 'programs');
       return next();
     });
   }

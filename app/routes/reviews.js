@@ -9,6 +9,7 @@ const middleware = require('../lib/middleware')
 const hash = require('../lib/hash').hash
 const request = require('request')
 const log = require('../lib/logger')
+const sendPaginated = require('../lib/send-paginated');
 const _ = require('underscore');
 
 const dbErrorHandler = errorHelper.makeDbHandler('application')
@@ -43,7 +44,8 @@ exports = module.exports = function applyReviewRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({reviews: rows.map(Reviews.toResponse)});
+      var responseData = {reviews: rows.map(Reviews.toResponse)};
+      sendPaginated(req, res, responseData, 'reviews');
       return next();
     });
   }

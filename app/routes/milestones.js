@@ -5,6 +5,7 @@ const Milestones = require('../models/milestone');
 const MilestoneBadges = require('../models/milestone-badge')
 const middleware = require('../lib/middleware');
 const errorHelper = require('../lib/error-helper')
+const sendPaginated = require('../lib/send-paginated');
 
 exports = module.exports = function applyBadgeRoutes(server) {
   server.get('/systems/:systemSlug/milestones', [
@@ -16,9 +17,8 @@ exports = module.exports = function applyBadgeRoutes(server) {
     const options = { relationships: true };
     Milestones.get(query, options)
       .then(function (milestones) {
-        return res.send(200, {
-          milestones: milestones.map(Milestones.toResponse)
-        });
+        var responseData = { milestones: milestones.map(Milestones.toResponse) };
+        return sendPaginated(req, res, responseData, 'milestones');
       })
       .catch(handleError(req, next));
   }

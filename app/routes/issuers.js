@@ -4,6 +4,7 @@ const Issuers = require('../models/issuer');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
+const sendPaginated = require('../lib/send-paginated');
 
 const putIssuer = imageHelper.putModel(Issuers)
 const dbErrorHandler = errorHelper.makeDbHandler('issuer')
@@ -19,7 +20,8 @@ exports = module.exports = function applyIssuerRoutes (server) {
     Issuers.get(query, options, function foundRows(error, rows) {
       if (error)
         return dbErrorHandler(error, null, res, next)
-      return res.send({issuers: rows.map(Issuers.toResponse)});
+      var responseData = {issuers: rows.map(Issuers.toResponse)}
+      return sendPaginated(req, res, responseData, 'issuers')
     });
   }
 

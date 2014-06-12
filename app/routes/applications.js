@@ -5,6 +5,7 @@ const Badges = require('../models/badge');
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 const hash = require('../lib/hash').hash
+const sendPaginated = require('../lib/send-paginated');
 
 const dbErrorHandler = errorHelper.makeDbHandler('application')
 
@@ -59,9 +60,8 @@ exports = module.exports = function applyApplicationRoutes (server) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({applications: rows.map(function (application) {
-        return Applications.toResponse(application, req);
-      })});
+      var responseData = {applications: rows.map(function (application) { return Applications.toResponse(application, req); })}
+      sendPaginated(req, res, responseData, 'applications');
 
       return next();
     });
