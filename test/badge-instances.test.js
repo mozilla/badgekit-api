@@ -82,10 +82,9 @@ spawn(app).then(function (api) {
       t.ok(res.body.instance, 'should return deleted instance')
       t.same(res.body.instance.email, email, 'should be correct email')
       t.same(res.body.instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
-      return api.get('/systems/chicago/badges/chicago-badge/instances/')
+      return api.get('/systems/chicago/badges/chicago-badge/instances/' + email)
     }).then(function(res) {
-      t.same(res.statusCode, 200, 'should be found')
-      t.ok(res.body.instances && res.body.instances.length === 0, 'should find no instances')
+      t.same(res.statusCode, 404, 'should not be found')
       t.end()
     }).catch(api.fail(t))
   })
