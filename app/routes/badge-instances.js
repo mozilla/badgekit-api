@@ -237,7 +237,29 @@ exports = module.exports = function applyBadgeRoutes (server) {
              findProgramBadgeInstance, deleteBadgeInstance)
   function deleteBadgeInstance(req, res, next) {
     BadgeInstances.del({id: req.badgeInstance.id}).then(function () {
-      return res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
+      res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
+
+      // Webhook stuff shouldn't hold up the request, so we call
+      // `next()` before looking up any hooks we have to send off
+      next()
+
+      hookData = {
+        action: 'revoke',
+        uid: req.badgeInstance.slug,
+        badge: req.badge.toResponse(),
+        email: req.badgeInstance.email
+      }
+      return Webhooks.getOne({systemId: req.system.id})
+    }).then(function (hook) {
+      if (!hook)
+        return log.info({code: 'WebhookNotFound', system: req.system}, 'Webhook not found for system')
+
+      hook.call(hookData, function (err, res, body) {
+        if (err)
+          return log.warn({code: 'WebhookRequestError', error: err})
+        if (res.statusCode != 200)
+          return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
+      })
     })
     .error(function (err) {
       log.error(err, 'error deleting badge instance');

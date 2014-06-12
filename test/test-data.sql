@@ -179,6 +179,7 @@ INSERT INTO `badges` SET
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'test test test',
+  `type` = 'Not too shabby',
   `imageId` = 1;
 
 INSERT INTO `claimCodes` SET
