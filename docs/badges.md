@@ -69,6 +69,8 @@ GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
   * `true` will return only archived badges
   * `false` (default) will return only unarchived badges
   * `any` will return badges regardless of archived status
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
 
 ### Expected response
 
