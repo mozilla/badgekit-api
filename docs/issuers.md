@@ -31,6 +31,11 @@ Retrieves all available issuers in the specified system.
 GET /systems/:systemSlug/issuers 
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
 ### Expected response
 
 ```
