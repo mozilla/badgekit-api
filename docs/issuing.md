@@ -48,6 +48,11 @@ GET /systems/:slug/issuers/:slug/badges/:slug/instances
 GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
 ### Expected response
 
 ```
