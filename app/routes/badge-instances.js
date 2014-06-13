@@ -3,6 +3,7 @@ const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
 const customError = require('../lib/custom-error')
+const sendPaginated = require('../lib/send-paginated')
 const Badges = require('../models/badge')
 const ClaimCodes = require('../models/claim-codes')
 const Webhooks = require('../models/webhook')
@@ -259,8 +260,23 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.get(prefix.program + getInstancesSuffix,
              findProgramBadge, getBadgeInstances)
   function getBadgeInstances(req, res, next) {
-    BadgeInstances.get({ badgeId: req.badge.id}, {relationships: true, relationshipsDepth: 2}).then(function (rows) {
-      return res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+    var options = {relationships: true, relationshipsDepth: 2};
+
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    BadgeInstances.get({ badgeId: req.badge.id}, options).then(function (result) {
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+      var responseData = {instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })}
+      return sendPaginated(req, res, responseData, total);
     })
     .error(function (err) {
       log.error(err, 'error fetching badge instances');
@@ -361,13 +377,28 @@ exports = module.exports = function applyBadgeRoutes (server) {
     BadgeInstances.get([query, queryParams]).then(function (rows) {
       var instanceIds = rows.map(function(row) { return row.id; });
       if (instanceIds.length) {
-        return BadgeInstances.get( { id: instanceIds }, { relationships: true, relationshipsDepth: 2 });
+        var options = { relationships: true, relationshipsDepth: 2 };
+        if (req.pageData) {
+          options.limit = req.pageData.count;
+          options.page = req.pageData.page;
+          options.includeTotal = true;
+        }
+
+        return BadgeInstances.get( { id: instanceIds }, options);
       }
       else {
         return Promise.resolve([]);
       }
-    }).then(function (rows) {
-      res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+    }).then(function (result) {
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+
+      var responseData = {instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })}
+      return sendPaginated(req, res, responseData, total);
     }).error(function (err) {
       if (!err.restCode)
         log.error(err, 'unknown error in getUserInstances route')

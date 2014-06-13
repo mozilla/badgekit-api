@@ -12,7 +12,7 @@ spawn(app).then(function (api) {
       return body.badges.map(prop('slug')).sort()
     }
 
-    t.plan(22)
+    t.plan(33)
 
     api.get('/systems/chicago/badges').then(function (res) {
       const slugs = getSlugs(res.body)
@@ -21,6 +21,28 @@ spawn(app).then(function (api) {
       t.same(slugs.length, 4)
       t.same(slugs.indexOf('archived-badge'), -1, 'should not have archived badge')
       t.same(slugs.indexOf('pittsburgh-badge'), -1, 'should not find pittsburgh badge')
+    }).catch(api.fail(t))
+
+    var pageOneBadgeSlugs
+
+    api.get('/systems/chicago/badges?page=1&count=2').then(function (res) {
+      const slugs = pageOneBadgeSlugs = getSlugs(res.body)
+      t.same(res.statusCode, 200, 'should have HTTP 200')
+      t.same(slugs.length, 2)
+      t.same(res.body.pageData.page, 1, 'page data should indicate page 1')
+      t.same(res.body.pageData.count, 2, 'page data should indicate a count of 2')
+      t.same(res.body.pageData.total, 4, 'page data should indicate a total of 4')
+    }).catch(api.fail(t))
+
+    api.get('/systems/chicago/badges?page=2&count=2').then(function (res) {
+      const slugs = getSlugs(res.body)
+      t.same(res.statusCode, 200, 'should have HTTP 200')
+      t.same(slugs.length, 2)
+      t.same(res.body.pageData.page, 2, 'page data should indicate page 2')
+      t.same(res.body.pageData.count, 2, 'page data should indicate a count of 2')
+      t.same(res.body.pageData.total, 4, 'page data should indicate a total of 4')
+      const sharedSlugs = slugs.filter(function(slug) { return (pageOneBadgeSlugs.indexOf(slug) != -1 ) });
+      t.same(sharedSlugs.length, 0, 'should not have any slugs in common with first page')
     }).catch(api.fail(t))
 
     api.get('/systems/chicago/issuers/chicago-library/badges').then(function (res) {

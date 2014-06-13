@@ -22,10 +22,13 @@ spawn(app).then(function (api) {
   })
 
   test('Get all milestones', function (t) {
-    api.get('/systems/chicago/milestones')
+    api.get('/systems/chicago/milestones?page=1&count=5')
       .then(function (res) {
         t.same(res.statusCode, 200, '200 OK')
         t.ok(res.body.milestones.length >= 1, 'at least one milestone')
+        t.same(res.body.pageData.page, 1, 'page data should indicate page 1')
+        t.same(res.body.pageData.count, 5, 'page data should indicate a count of 5')
+        t.same(res.body.pageData.total, 2, 'page data should indicate a total of 2')
         t.end()
       })
       .catch(api.fail(t))
