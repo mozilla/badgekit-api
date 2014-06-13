@@ -7,6 +7,10 @@ module.exports = {
   findApplication: createFinder('application'),
   findReview: createFinder('review'),
   findBadgeInstance: createFinder('badgeInstance'),
+  findMilestone: createFinder('milestone', {
+    field: 'id',
+    param: 'milestoneId',
+  }),
   verifyRequest: verifyRequest,
   attachResolvePath: attachResolvePath,
   attachErrorLogger: attachErrorLogger,
@@ -29,21 +33,23 @@ const models = {
   application: require('../models/application'),
   review: require('../models/review'),
   badgeInstance: require('../models/badge-instance'),
+  milestone: require('../models/milestone'),
 }
 
 const http403 = restify.NotAuthorizedError
 const http404 = restify.ResourceNotFoundError
 const http500 = restify.InternalError
 
-function createFinder(modelName) {
+function createFinder(modelName, gOpts) {
   return function findModel(opts) {
     opts = opts || {}
+    gOpts = gOpts || {}
     const optional = typeof opts.optional !== 'undefined'
       ? opts.optional
       : false
-    const field = opts.field || 'slug'
-    const param = opts.param || modelName + 'Slug'
-    const key = opts.key || modelName
+    const field = opts.field || gOpts.field ||  'slug'
+    const param = opts.param || gOpts.param || modelName + 'Slug'
+    const key = opts.key || gOpts.key || modelName
     const where = opts.where || {}
     const relationships = typeof opts.relationships !== 'undefined'
       ? opts.relationships

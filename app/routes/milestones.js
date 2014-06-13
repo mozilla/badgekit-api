@@ -82,39 +82,30 @@ exports = module.exports = function applyBadgeRoutes(server) {
 
   server.get('/systems/:systemSlug/milestones/:milestoneId', [
     middleware.findSystem(),
+    middleware.findMilestone({
+      where: { systemId: ['system', 'id' ]},
+      relationships: true,
+    }),
     showMilestone,
   ]);
   function showMilestone(req, res, next) {
-    const query = {
-      id: req.params.milestoneId,
-      systemId: req.system.id
-    };
-    const options = { relationships: true };
-    Milestones.getOne(query, options)
-      .then(function (milestone) {
-        return res.send(200, {
-          milestone: milestone.toResponse()
-        });
-      })
-      .catch(handleError(req, next));
+    return res.send(200, {
+      milestone: req.milestone.toResponse()
+    });
   }
 
   server.put('/systems/:systemSlug/milestones/:milestoneId', [
     middleware.findSystem(),
+    middleware.findMilestone({
+      where: { systemId: ['system', 'id' ]},
+    }),
     updateMilestone,
   ]);
   function updateMilestone(req, res, next) {
     const milestoneId = req.params.milestoneId;
     const postData = req.body;
-    const query = {
-      id: milestoneId,
-      systemId: req.system.id
-    };
-    Milestones.getOne(query)
-      .then(function (milestone) {
-        const update = safeExtend(milestone, postData);
-        return Milestones.put(update);
-      })
+    const update = safeExtend(req.milestone, postData);
+    Milestones.put(update)
       .then(function (result) {
         return MilestoneBadges.del({
           milestoneId: milestoneId,
@@ -129,6 +120,7 @@ exports = module.exports = function applyBadgeRoutes(server) {
         });
       })
       .then(function (results) {
+        const query = { id: milestoneId, systemId: req.system.id };
         return Milestones.getOne(query, {relationships: true});
       })
       .then(function (milestone) {
@@ -140,9 +132,93 @@ exports = module.exports = function applyBadgeRoutes(server) {
       .catch(handleError(req, next));
   }
 
+  server.post('/systems/:systemSlug/milestones/:milestoneId/add-badge', [
+    middleware.findSystem(),
+    middleware.findMilestone({
+      where: { systemId: ['system', 'id' ]},
+      relationships: true,
+    }),
+    addBadgeToMilestone,
+  ]);
+  function addBadgeToMilestone(req, res, next) {
+    const milestoneId = req.params.milestoneId;
+    const badgeId = parseInt(req.body.badgeId, 10);
+    const milestone = req.milestone;
+    const supportBadgeIds =
+      milestone.supportBadges.map(function (badge) {
+        return badge.id
+      });
+
+    if (supportBadgeIds.indexOf(badgeId) !== -1) {
+      return res.send(200, {
+        status: 'updated',
+        milestone: milestone.toResponse()
+      });
+    }
+    const rowData = {
+      milestoneId: milestoneId,
+      badgeId: badgeId
+    }
+    MilestoneBadges.put(rowData)
+      .then(function () {
+        const query = { id: milestoneId, systemId: req.system.id };
+        return Milestones.getOne(query, {relationships: true});
+      })
+      .then(function (milestone) {
+        return res.send(200, {
+          status: 'updated',
+          milestone: milestone.toResponse()
+        });
+      })
+      .catch(handleError(req, next));
+  }
+
+  server.post('/systems/:systemSlug/milestones/:milestoneId/remove-badge', [
+    middleware.findSystem(),
+    middleware.findMilestone({
+      where: { systemId: ['system', 'id' ]},
+      relationships: true,
+    }),
+    removeBadgeFromMilestone,
+  ]);
+  function removeBadgeFromMilestone(req, res, next) {
+    const milestoneId = req.params.milestoneId;
+    const badgeId = parseInt(req.body.badgeId, 10);
+    const milestone = req.milestone;
+    const supportBadgeIds =
+      milestone.supportBadges.map(function (badge) {
+        return badge.id
+      });
+
+    if (supportBadgeIds.indexOf(badgeId) === -1) {
+      return res.send(200, {
+        status: 'updated',
+        milestone: milestone.toResponse()
+      });
+    }
+    const query = {
+      milestoneId: milestoneId,
+      badgeId: badgeId
+    };
+    MilestoneBadges.del(query, { limit: 1 })
+      .then(function () {
+        const query = { id: milestoneId, systemId: req.system.id };
+        return Milestones.getOne(query, {relationships: true});
+      })
+      .then(function (milestone) {
+        return res.send(200, {
+          status: 'updated',
+          milestone: milestone.toResponse()
+        });
+      })
+      .catch(handleError(req, next));
+  }
 
   server.del('/systems/:systemSlug/milestones/:milestoneId', [
     middleware.findSystem(),
+    middleware.findMilestone({
+      where: { systemId: ['system', 'id' ]},
+    }),
     deleteMilestone,
   ]);
   function deleteMilestone(req, res, next) {
