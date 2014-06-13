@@ -90,6 +90,11 @@ GET /systems/:slug/issuers/:slug/badges/:slug/applications
 GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
 ### Expected response
 
 ```
@@ -508,6 +513,11 @@ GET /systems/:slug/badges/:slug/applications/:slug/reviews
 GET /systems/:slug/issuers/:slug/badges/:slug/applications/:slug/reviews
 GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/reviews
 ```
+
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
 
 ### Expected response
 
