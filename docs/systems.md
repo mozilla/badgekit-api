@@ -31,6 +31,11 @@ Retrieves all available systems in the BadgeKit API instance.
 GET /systems 
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
 ### Expected response
 
 ```
