@@ -10,9 +10,9 @@ spawn(app).then(function (api) {
     api.get('/systems?page=1&count=5').then(function (res) {
       t.ok(res.body.systems, 'should have systems')
       t.same(res.body.systems[0].slug, 'chicago')
-      t.same(res.body._pageData.page, 1, 'page data should indicate page 1')
-      t.same(res.body._pageData.count, 5, 'page data should indicate a count of 5')
-      t.same(res.body._pageData.total, 2, 'page data should indicate a total of 2')
+      t.same(res.body.pageData.page, 1, 'page data should indicate page 1')
+      t.same(res.body.pageData.count, 5, 'page data should indicate a count of 5')
+      t.same(res.body.pageData.total, 2, 'page data should indicate a total of 2')
       t.end()
     }).catch(api.fail(t))
   })

@@ -19,9 +19,9 @@ spawn(app).then(function (api) {
       active = res.body.applications
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 2)
-      t.same(res.body._pageData.total, 2)
-      t.same(res.body._pageData.page, 1)
-      t.same(res.body._pageData.count, 2)
+      t.same(res.body.pageData.total, 2)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 2)
       t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
     }).catch(api.fail(t))
 

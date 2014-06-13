@@ -67,9 +67,9 @@ spawn(app).then(function (api) {
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be found')
       t.ok(res.body.instances && res.body.instances.length === 1, 'should find one instance')
-      t.same(res.body._pageData.total, 1)
-      t.same(res.body._pageData.page, 1)
-      t.same(res.body._pageData.count, 1)
+      t.same(res.body.pageData.total, 1)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 1)
       const instance = res.body.instances[0]
       t.same(instance.email, email, 'should be correct email')
       t.same(instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')

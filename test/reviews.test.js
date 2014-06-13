@@ -19,9 +19,9 @@ spawn(app).then(function (api) {
       active = res.body.reviews
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 1)
-      t.same(res.body._pageData.total, 1)
-      t.same(res.body._pageData.page, 1)
-      t.same(res.body._pageData.count, 1)
+      t.same(res.body.pageData.total, 1)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 1)
       t.same(slugs.indexOf('review-archived'), -1, 'should not have archived badge review)')
     }).catch(api.fail(t))
 

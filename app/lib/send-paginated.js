@@ -1,6 +1,6 @@
 module.exports = function sendPaginated(req, res, responseData, total) {
   if (req.pageData) {
-    responseData._pageData = {
+    responseData.pageData = {
       page: req.pageData.page,
       count: req.pageData.count,
       total: total

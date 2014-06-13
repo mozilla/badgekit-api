@@ -26,9 +26,9 @@ spawn(app).then(function (api) {
       .then(function (res) {
         t.same(res.statusCode, 200, '200 OK')
         t.ok(res.body.milestones.length >= 1, 'at least one milestone')
-        t.same(res.body._pageData.page, 1, 'page data should indicate page 1')
-        t.same(res.body._pageData.count, 5, 'page data should indicate a count of 5')
-        t.same(res.body._pageData.total, 2, 'page data should indicate a total of 2')
+        t.same(res.body.pageData.page, 1, 'page data should indicate page 1')
+        t.same(res.body.pageData.count, 5, 'page data should indicate a count of 5')
+        t.same(res.body.pageData.total, 2, 'page data should indicate a total of 2')
         t.end()
       })
       .catch(api.fail(t))
