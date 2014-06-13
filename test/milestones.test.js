@@ -1,9 +1,26 @@
 const test = require('tap').test
 const app = require('../')
 const spawn = require('./spawn')
+const Milestones = require('../app/models/milestone')
 const MilestoneBadges = require('../app/models/milestone-badge')
 
 spawn(app).then(function (api) {
+  test('DB: Find & award related eligible milestones', function (t) {
+    const email = 'brian+milestone-test@example.org';
+    const badge = { id: 5 };
+    Milestones.findEligible(email, badge)
+      .then(function (milestones) {
+        t.same(milestones.length, 1, 'has one eligible milestone');
+        t.same(milestones[0].id, 1, 'has the right milestone');
+        return Milestones.findAndAward(email, badge)
+      })
+      .then(function (results) {
+        t.same(results.length, 1, 'has one instance');
+        t.same(results[0].email, email, 'awarded to right email');
+        t.end()
+      })
+  })
+
   test('Get all milestones', function (t) {
     api.get('/systems/chicago/milestones')
       .then(function (res) {

@@ -77,6 +77,7 @@ INSERT INTO `badges` SET
   `issuerUrl` = 'http://example.org/chicagoIssuer',
   `timeValue` = 10,
   `timeUnits` = 'minutes',
+  `evidenceType` = 'URL',
   `limit` = 5,
   `unique` = 1,
   `strapline` = 'A badge for Chicago',
@@ -95,6 +96,7 @@ INSERT INTO `badges` SET
   `issuerUrl` = 'http://example.org/pittsburghIssuer',
   `timeValue` = 9,
   `timeUnits` = 'hours',
+  `evidenceType` = 'Video',
   `limit` = null,
   `unique` = 0,
   `strapline` = 'A badge for Pittsburgh',
@@ -113,6 +115,7 @@ INSERT INTO `badges` SET
   `issuerUrl` = 'http://example.org/archivedIssuer',
   `timeValue` = 5,
   `timeUnits` = 'hours',
+  `evidenceType` = 'Video',
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'An archived badge',
@@ -134,6 +137,7 @@ INSERT INTO `badges` SET
   `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
   `timeValue` = 5,
   `timeUnits` = 'hours',
+  `evidenceType` = 'Video',
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'A badge for doing Scratch in Chicago',
@@ -153,9 +157,28 @@ INSERT INTO `badges` SET
   `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
   `timeValue` = 5,
   `timeUnits` = 'hours',
+  `evidenceType` = 'Video',
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'A badge for doing Library in Chicago',
+  `type` = 'Not too shabby',
+  `imageId` = 1;
+
+INSERT INTO `badges` SET
+  `systemId` = 1,
+  `issuerId` = 1,
+  `slug` = 'test-badge',
+  `name` = 'Test Badge',
+  `earnerDescription` = 'Test badge that will be deleted',
+  `consumerDescription` = 'seriously, it will be desetroyed',
+  `rubricUrl` = 'http://example.org/chicaogLibraryRubric',
+  `criteriaUrl` = 'http://example.org/chicagoLibraryCriteria',
+  `issuerUrl` = 'http://example.org/chicagoIssuerUrl',
+  `timeValue` = 5,
+  `timeUnits` = 'hours',
+  `limit` = 2,
+  `unique` = 1,
+  `strapline` = 'test test test',
   `type` = 'Not too shabby',
   `imageId` = 1;
 
@@ -250,18 +273,23 @@ INSERT INTO `reviewItems` SET
   `satisfied` = TRUE,
   `comment` = 'Nice work, yo.';
 
+INSERT INTO `badgeInstances` SET
+  `slug` = 'whatevs',
+  `email` = 'brian+milestone-test@example.org',
+  `badgeId` = 5;
+
 INSERT INTO `milestones` SET
   `id` = 1,
   `systemId` = 1,
   `primaryBadgeId` = 1,
-  `numberRequired` = 2,
+  `numberRequired` = 1,
   `action` = 'issue';
 
 INSERT INTO `milestones` SET
   `id` = 999,
   `systemId` = 1,
   `primaryBadgeId` = 4,
-  `numberRequired` = 1;
+  `numberRequired` = 10;
 
 INSERT INTO `milestoneBadges` SET
   `milestoneId` = 1,

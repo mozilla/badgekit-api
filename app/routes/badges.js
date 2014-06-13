@@ -1,3 +1,5 @@
+const path = require('path')
+const hash = require('../lib/hash')
 const async = require('async')
 const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
@@ -87,6 +89,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     var options = {
       row: fromPostToRow(req.body),
       criteria: req.body.criteria || [],
+      alignments: req.body.alignments || [],
       categories: req.body.categories || [],
       tags: req.body.tags || [],
       image: imageHelper.getFromPost(req, {required: true})
@@ -103,6 +106,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         return res.send(400, errorHelper.validation(err));
       }
 
+      res.header('Location', path.join(req.url, badge.slug))
       return res.send(201, {
         status: 'created',
         badge: badge.toResponse(),
@@ -244,6 +248,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     var options = {
       row: safeExtend(req.badge, req.body),
       criteria: req.body.criteria || [],
+      alignments: req.body.alignments || [],
       categories: req.body.categories || [],
       tags: req.body.tags || [],
       image: imageHelper.getFromPost(req)
@@ -273,6 +278,7 @@ function putBadge (options, callback) {
 
     async.parallel([
       row.setCriteria.bind(row, options.criteria),
+      row.setAlignments.bind(row, options.alignments),
       row.setCategories.bind(row, options.categories),
       row.setTags.bind(row, options.tags)
     ], function (err, data) {
@@ -284,7 +290,7 @@ function putBadge (options, callback) {
 
 function fromPostToRow (post) {
   return {
-    slug: post.slug,
+    slug: hash.md5('' + Date.now() + post.name),
     name: post.name,
     strapline: post.strapline,
     systemId: post.systemId,
@@ -297,6 +303,7 @@ function fromPostToRow (post) {
     criteriaUrl: post.criteriaUrl,
     timeValue: post.timeValue,
     timeUnits: post.timeUnits,
+    evidenceType: post.evidenceType,
     limit: post.limit,
     type: post.type,
     unique: post.unique

@@ -18,7 +18,7 @@ spawn(app).then(function (api) {
       const slugs = getSlugs(res.body)
       active = res.body.badges
       t.same(res.statusCode, 200, 'should have HTTP 200')
-      t.same(slugs.length, 3)
+      t.same(slugs.length, 4)
       t.same(slugs.indexOf('archived-badge'), -1, 'should not have archived badge')
       t.same(slugs.indexOf('pittsburgh-badge'), -1, 'should not find pittsburgh badge')
     }).catch(api.fail(t))
@@ -26,7 +26,7 @@ spawn(app).then(function (api) {
     api.get('/systems/chicago/issuers/chicago-library/badges').then(function (res) {
       const slugs = getSlugs(res.body)
       t.same(res.statusCode, 200, 'should have HTTP 200')
-      t.same(slugs.length, 2)
+      t.same(slugs.length, 3)
       t.same(slugs.indexOf('chicago-badge'), -1, 'should not find system level badge')
     }).catch(api.fail(t))
 
@@ -83,18 +83,16 @@ spawn(app).then(function (api) {
   })
 
   test('add new badge', function (t) {
-    var form;
+    var form, badge;
 
     api.post('/systems/chicago/issuers/chicago-library/badges', {whatever: 'lol'}).then(function (res) {
-      const expect = ['consumerDescription', 'criteriaUrl', 'earnerDescription', 'image', 'name', 'slug', 'unique']
+      const expect = ['consumerDescription', 'criteriaUrl', 'earnerDescription', 'image', 'name', 'unique']
       const found = res.body.details.map(prop('field')).sort()
-
       t.same(res.statusCode, 400, 'should have 400')
       t.same(res.body.code, 'ValidationError', 'should have ValidationError code')
       t.same(found, expect, 'should have right errored fields')
 
       return api.post('/systems/chicago/issuers/chicago-library/badges', form = {
-        slug: 'test-badge',
         name: 'Test Badge',
         strapline: 'A badge for testing',
         earnerDescription: 'Some description, eh',
@@ -107,18 +105,18 @@ spawn(app).then(function (api) {
         tags: 'tag1'
       })
     }).then(function (res) {
-      t.same(res.statusCode, 201)
-      t.same(res.body.status, 'created')
-      t.same(res.body.badge.name, form.name)
-      t.same(res.body.badge.system.slug, 'chicago')
-      t.same(res.body.badge.issuer.slug, 'chicago-library')
-      t.same(res.body.badge.criteriaUrl, 'http://example.org/criteria')
-      t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
+      t.same(res.statusCode, 201, 'status code should be 201')
+      badge = res.body.badge
+      t.same(res.body.status, 'created', 'badge should be created')
+      t.same(badge.name, form.name)
+      t.same(badge.system.slug, 'chicago', 'system slug should be chicago')
+      t.same(badge.issuer.slug, 'chicago-library', 'issuer slug should be chicago-library')
+      t.same(badge.criteriaUrl, 'http://example.org/criteria', 'criteria url should be correct')
+      t.ok(badge.imageUrl.match(/\/images\/.+/), 'should have right image url')
 
-      form.image = stream('test-image.png')
-      return api.post('/systems/chicago/issuers/chicago-library/badges', form)
-    }).then(function(res){
-      t.same(res.statusCode, 409)
+      return api.get(res.headers.location)
+    }).then(function (res) {
+      t.same(res.body.badge, badge, 'should have the same data')
       t.end()
     }).catch(api.fail(t))
   })
@@ -137,7 +135,7 @@ spawn(app).then(function (api) {
       t.same(res.body.status, 'updated')
       t.same(res.body.badge.name, form.name)
       t.same(res.body.badge.earnerDescription, form.earnerDescription)
-      t.ok(res.body.badge.imageUrl.match(/\/images\/.+/), 'should have an image url')
+      t.ok(res.body.badge.imageUrl, 'should have an image url')
       t.end()
     }).catch(api.fail(t))
   })
