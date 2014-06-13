@@ -10,6 +10,7 @@ module.exports = {
   verifyRequest: verifyRequest,
   attachResolvePath: attachResolvePath,
   attachErrorLogger: attachErrorLogger,
+  attachPageData: attachPageData,
 }
 
 const jws = require('jws')
@@ -103,6 +104,19 @@ function attachErrorLogger() {
         next(error)
       }
     }
+    return next()
+  }
+}
+
+function attachPageData() {
+  return function (req, res, next) {
+    const page = parseInt(req.query.page, 10)
+    const count = parseInt(req.query.count, 10)
+
+    if (page > 0 && count > 0) {
+      req.pageData = { page: page, count: count }
+    }
+
     return next()
   }
 }

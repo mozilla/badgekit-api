@@ -12,13 +12,16 @@ spawn(app).then(function (api) {
       return body.reviews.map(prop('slug')).sort()
     }
 
-    t.plan(9);
+    t.plan(12);
 
-    api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-scratch/reviews').then(function (res) {
+    api.get('/systems/chicago/badges/chicago-scratch-badge/applications/app-scratch/reviews?page=1&count=1').then(function (res) {
       const slugs = getSlugs(res.body)
       active = res.body.reviews
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 1)
+      t.same(res.body.pageData.total, 1)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 1)
       t.same(slugs.indexOf('review-archived'), -1, 'should not have archived badge review)')
     }).catch(api.fail(t))
 

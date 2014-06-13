@@ -1,14 +1,34 @@
 const test = require('tap').test
 const app = require('../')
 const spawn = require('./spawn')
+const Milestones = require('../app/models/milestone')
 const MilestoneBadges = require('../app/models/milestone-badge')
 
 spawn(app).then(function (api) {
+  test('DB: Find & award related eligible milestones', function (t) {
+    const email = 'brian+milestone-test@example.org';
+    const badge = { id: 5 };
+    Milestones.findEligible(email, badge)
+      .then(function (milestones) {
+        t.same(milestones.length, 1, 'has one eligible milestone');
+        t.same(milestones[0].id, 1, 'has the right milestone');
+        return Milestones.findAndAward(email, badge)
+      })
+      .then(function (results) {
+        t.same(results.length, 1, 'has one instance');
+        t.same(results[0].email, email, 'awarded to right email');
+        t.end()
+      })
+  })
+
   test('Get all milestones', function (t) {
-    api.get('/systems/chicago/milestones')
+    api.get('/systems/chicago/milestones?page=1&count=5')
       .then(function (res) {
         t.same(res.statusCode, 200, '200 OK')
         t.ok(res.body.milestones.length >= 1, 'at least one milestone')
+        t.same(res.body.pageData.page, 1, 'page data should indicate page 1')
+        t.same(res.body.pageData.count, 5, 'page data should indicate a count of 5')
+        t.same(res.body.pageData.total, 2, 'page data should indicate a total of 2')
         t.end()
       })
       .catch(api.fail(t))

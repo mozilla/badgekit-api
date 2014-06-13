@@ -13,7 +13,7 @@
   "dependencies": {
     "mysql": "~2.0.0-alpha9",
     "restify": "~2.6.1",
-    "streamsql": "~0.8.0",
+    "streamsql": "~0.8.3",
     "validator": "~2.0.0",
     "xtend": "~2.1.1",
     "bluebird": "~1.0.8",
@@ -24,7 +24,8 @@
     "newrelic": "~1.4.0",
     "async": "~0.2.10",
     "db-migrate": "~0.6.3",
-    "optimist": "~0.6.1"
+    "optimist": "~0.6.1",
+    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "concat-stream": "~1.4.1",

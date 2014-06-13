@@ -12,13 +12,16 @@ spawn(app).then(function (api) {
       return body.applications.map(prop('slug')).sort()
     }
 
-    t.plan(23);
+    t.plan(26);
 
-    api.get('/systems/chicago/applications').then(function (res) {
+    api.get('/systems/chicago/applications?page=1&count=2').then(function (res) {
       const slugs = getSlugs(res.body)
       active = res.body.applications
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 2)
+      t.same(res.body.pageData.total, 2)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 2)
       t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
     }).catch(api.fail(t))
 

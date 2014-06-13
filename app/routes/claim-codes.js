@@ -2,6 +2,7 @@ const Badges = require('../models/badge')
 const ClaimCodes = require('../models/claim-codes')
 const middleware = require('../lib/middleware')
 const errorHelper = require('../lib/error-helper')
+const sendPaginated = require('../lib/send-paginated');
 
 // #TODO: factor this out, see ./badge-instances.js
 
@@ -107,13 +108,28 @@ exports = module.exports = function applyClaimCodesRoutes (server) {
     const query = {badgeId: req.badge.id}
     const options = {relationships: false}
 
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
     ClaimCodes
       .get(query, options)
-      .then(function (claimCodes) {
-        res.send(200, {
-          claimCodes: claimCodes.map(ClaimCodes.toResponse),
+      .then(function (result) {
+        var total = 0;
+        var rows = result;
+        if (req.pageData) {
+          total = result.total;
+          rows = result.rows;
+        }
+
+        var responseData = {
+          claimCodes: rows.map(ClaimCodes.toResponse),
           badge: req.badge.toResponse(),
-        })
+        };
+
+        sendPaginated(req, res, responseData, total);
       })
       .error(req.error('Error getting claim code list'))
   }

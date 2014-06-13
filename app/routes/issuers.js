@@ -4,6 +4,7 @@ const Issuers = require('../models/issuer');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
+const sendPaginated = require('../lib/send-paginated');
 
 const putIssuer = imageHelper.putModel(Issuers)
 const dbErrorHandler = errorHelper.makeDbHandler('issuer')
@@ -16,10 +17,26 @@ exports = module.exports = function applyIssuerRoutes (server) {
   function showAllIssuers(req, res, next) {
     const options = {relationships: true}
     const query = {systemId: req.system.id}
-    Issuers.get(query, options, function foundRows(error, rows) {
+    
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    Issuers.get(query, options, function foundRows(error, result) {
       if (error)
         return dbErrorHandler(error, null, res, next)
-      return res.send({issuers: rows.map(Issuers.toResponse)});
+
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+
+      var responseData = {issuers: rows.map(Issuers.toResponse)}
+      return sendPaginated(req, res, responseData, total)
     });
   }
 

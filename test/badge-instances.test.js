@@ -63,10 +63,13 @@ spawn(app).then(function (api) {
       t.same(issuerOrg.url, 'http://cityofchicago.org')
       t.same(issuerOrg.description, 'The City of Chicago')
       t.same(issuerOrg.email, 'mayor-emanuel@cityofchicago.org')
-      return api.get('/systems/chicago/instances/' + email)
+      return api.get('/systems/chicago/instances/' + email + '?page=1&count=1')
     }).then(function(res) {
       t.same(res.statusCode, 200, 'should be found')
       t.ok(res.body.instances && res.body.instances.length === 1, 'should find one instance')
+      t.same(res.body.pageData.total, 1)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 1)
       const instance = res.body.instances[0]
       t.same(instance.email, email, 'should be correct email')
       t.same(instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
@@ -82,10 +85,9 @@ spawn(app).then(function (api) {
       t.ok(res.body.instance, 'should return deleted instance')
       t.same(res.body.instance.email, email, 'should be correct email')
       t.same(res.body.instance.badge.slug, 'chicago-badge', 'should be instance of chicago-badge')
-      return api.get('/systems/chicago/badges/chicago-badge/instances/')
+      return api.get('/systems/chicago/badges/chicago-badge/instances/' + email)
     }).then(function(res) {
-      t.same(res.statusCode, 200, 'should be found')
-      t.ok(res.body.instances && res.body.instances.length === 0, 'should find no instances')
+      t.same(res.statusCode, 404, 'should not be found')
       t.end()
     }).catch(api.fail(t))
   })
@@ -145,11 +147,10 @@ spawn(app).then(function (api) {
       systemId: 1,
       secret: secret
     }).then(function(server){
-      server.on('request', function (req, res) {
+      server.once('request', function (req, res) {
         req.setEncoding('utf8')
         req.pipe(concat(function (body) {
           res.end('lollerskates')
-          server.close()
 
           const match = /^JWT token="(.+?)"$/.exec(req.headers.authorization)
           t.ok(match, 'should have a proper auth header')
@@ -171,7 +172,37 @@ spawn(app).then(function (api) {
           t.same(hookData.email, email, 'should be correct email')
           t.ok(hookData.issuedOn >= now, 'should have good issuedOn')
           t.ok(/^\/public\/assertions\/[0-9a-f]+$/.test(assertionUrl), 'properly formed assertion url')
-          t.end()
+          
+          server.once('request', function (req, res) {
+            req.setEncoding('utf8')
+            req.pipe(concat(function (body) {
+              res.end('lollerskates')
+              server.close()
+
+              const match = /^JWT token="(.+?)"$/.exec(req.headers.authorization)
+              t.ok(match, 'should have a proper auth header')
+
+              const tokenString = match[1]
+              t.ok(jws.verify(tokenString, secret), 'token should be verifiable')
+
+              const token = jws.decode(tokenString)
+              t.ok(token, 'token should be decodable')
+
+              const hash = sha256(body)
+              const auth = token.payload
+              t.same(auth.body.hash, hash, 'should get expected body hash')
+
+              const hookData = JSON.parse(body)
+              t.same(hookData.action, 'revoke', 'should be correct action')
+              t.same(hookData.email, email, 'should be correct email')
+
+              t.end()
+            }))
+          })
+
+          api.del('/systems/chicago/badges/chicago-badge/instances/' + email).then(function(res){
+            t.same(res.statusCode, 200, 'should be deleted')
+          }).catch(api.fail(t))
         }))
       })
 

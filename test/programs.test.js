@@ -7,10 +7,13 @@ const spawn = require('./spawn')
 spawn(app).then(function (api) {
 
   test('get program list', function (t) {
-    api.get('/systems/chicago/issuers/chicago-library/programs').then(function (res) {
+    api.get('/systems/chicago/issuers/chicago-library/programs?page=1&count=5').then(function (res) {
       t.ok(res.body.programs, 'should have programs')
       t.same(res.body.programs[0].id, 1)
       t.same(res.body.programs[0].slug, 'mit-scratch')
+      t.same(res.body.pageData.page, 1, 'page data should indicate page 1')
+      t.same(res.body.pageData.count, 5, 'page data should indicate a count of 5')
+      t.same(res.body.pageData.total, 1, 'page data should indicate a total of 1')
       t.end()
     }).catch(api.fail(t))
   })
