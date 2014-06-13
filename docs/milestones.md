@@ -2,6 +2,8 @@
 
 Milestones give issuers the ability to award badges in recognition that the earner has earned a set of other badges. A milestone badge therefore represents a higher-level achievement, with the contributing badges representing more granular badges, culminating in the milestone. A milestone badge can be defined as available to earners of a specific set of other badges.
 
+__When an earner is awarded a set of badges that makes them eligible to earn a milestone badge, the API will automatically issue the milestone badge to the earner by creating a new badge instance.__
+
 | NAME | VALUE |
 |:---|:---|
 | `id` | __integer__ - _id from database_ |
