@@ -30,6 +30,11 @@ Retrieves all available programs in the specified system and issuer.
 GET /systems/:systemSlug/issuers/:issuerSlug/programs 
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
 ### Expected response
 
 ```
