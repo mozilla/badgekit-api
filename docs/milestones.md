@@ -27,6 +27,11 @@ Retrieve milestones within a system.
 GET /systems/<slug>/milestones
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
 ### Expected response
 
 ```
