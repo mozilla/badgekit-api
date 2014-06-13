@@ -51,6 +51,30 @@ exports = module.exports = function applyApplicationRoutes (server) {
       order: ['badgeId', 'applications.created'],
     };
 
+    switch ('' + req.query.processed) {
+      case 'true':
+      case '1':
+        query.processed = { value: null, op: 'IS NOT' };
+        break;
+
+      case 'false':
+      case '0':
+        query.processed = null;
+        break;
+
+      case 'any':
+      case '':
+      case 'undefined':
+        break;
+
+      default:
+        return res.send(400, {
+          code: 'InvalidParameter',
+          parameter: 'processed',
+          message: 'Invalid `processed` parameter. Expecting one of \'true\', \'false\' or \'any\'.',
+        });
+    }
+
     if (req.badge) query.badgeId = req.badge.id;
     if (req.system) query.systemId = req.system.id;
     if (req.issuer) query.issuerId = req.issuer.id;
