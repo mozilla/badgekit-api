@@ -18,6 +18,8 @@ __When an earner is awarded a set of badges that makes them eligible to earn a m
 * [`POST /systems/:slug/milestones`](#post-systemsslugmilestones)
 * [`PUT /systems/:slug/milestones/:milestoneId`](#put-systemsslugmilestonesmilestoneid)
 * [`DELETE /systems/:slug/milestones/:milestoneId`](#delete-systemsslugmilestonesmilestoneid)
+* [`POST /systems/:slug/milestones/:milestoneId/add-badge`](#post-systemsslugmilestonesmilestoneidaddbadge)
+* [`POST /systems/:slug/milestones/:milestoneId/remove-badge`](#post-systemsslugmilestonesmilestoneidremovebadge)
 
 ## `GET /systems/:slug/milestones`
 
@@ -476,6 +478,284 @@ DELETE /systems/<slug>/milestones/<id>
 ```
 
 ### Potential errors
+
+* **Milestone not found**
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+```
+
+```json
+{
+  "code": "NotFoundError",
+  "message": "Could not find milestone with `id` <attempted-id>"
+}
+```
+
+## `POST /systems/:slug/milestones/:milestoneId/add-badge`
+
+Add a badge to a milestone.
+
+### Expected request
+
+```
+POST /systems/<slug>/milestones/<id>/add-badge
+```
+
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
+| Parameters             | Description              |
+|:-----------------------|--------------------------|
+| **badgeId** | ID of badge being added to the milestone |
+
+### Expected response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+    "status": "updated",
+    "milestone": {
+        "id": 1,
+        "action": "issue",
+        "numberRequired": 3,
+        "primaryBadge": {
+            "id": 4,
+            "slug": "milestone-slug",
+            "name": "Big Milestone Badge",
+            "strapline": "Recognises milestone stuff.",
+            "earnerDescription": "You achieved a milestone.",
+            "consumerDescription": "Earner achieved a milestone.",
+            "issuerUrl": "http://issuersite.com",
+            "rubricUrl": "http://issuersite.com",
+            "timeValue": 0,
+            "timeUnits": "minutes",
+            "limit": 0,
+            "unique": 0,
+            "created": "2014-06-13T18:49:33.000Z",
+            "type": "",
+            "archived": false,
+            "criteriaUrl": "http://issuersite.com/badge/big-milestone-badge/criteria",
+            "criteria": [ ],
+            "alignments": [ ],
+            "evidenceType": null,
+            "categories": [ ],
+            "tags": [ ],
+            "milestones": [ ]
+        },
+        "supportBadges": [
+            {
+                "id": 1,
+                "slug": "badge-slug",
+                "name": "New Badge",
+                "strapline": "This badge shows excellence.",
+                "earnerDescription": "You are excellent if you earn this badge.",
+                "consumerDescription": "Earners of this badge are excellent.",
+                "issuerUrl": "http://issuersite.com",
+                "rubricUrl": "http://issuersite.com/rubric",
+                "timeValue": 0,
+                "timeUnits": "minutes",
+                "limit": 0,
+                "unique": 0,
+                "created": "2014-06-11T15:36:49.000Z",
+                "type": "",
+                "archived": false,
+                "criteriaUrl": "http://issuersite.com/badge/new-badge/criteria",
+                "criteria": [ ],
+                "alignments": [ ],
+                "evidenceType": null,
+                "categories": [ ],
+                "tags": [ ],
+                "milestones": [ ]
+            },
+            ...
+
+        ]
+    }
+}
+```
+
+#### Response structure
+
+* status
+* milestone
+ * id
+ * action
+ * numberRequired
+ * primaryBadge ([badge](badges.md))
+    * id
+    * slug
+    * ...
+ * supportBadges `[ ]`
+    * id
+    * slug
+    * ...
+
+#### Potential Errors
+
+* **Invalid data**
+
+```
+  HTTP/1.1 400 Bad Request
+  Content-Type: application/json
+```
+
+```json
+  {
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
+      {
+        "field": "id",
+        "value": "..."
+      },
+      ...
+    ]
+  }
+```
+
+* **Milestone not found**
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+```
+
+```json
+{
+  "code": "NotFoundError",
+  "message": "Could not find milestone with `id` <attempted-id>"
+}
+```
+
+## `POST /systems/:slug/milestones/:milestoneId/remove-badge`
+
+Remove a badge from a milestone.
+
+### Expected request
+
+```
+POST /systems/<slug>/milestones/<id>/remove-badge
+```
+
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
+| Parameters             | Description              |
+|:-----------------------|--------------------------|
+| **badgeId** | ID of badge being removed from the milestone |
+
+### Expected response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+    "status": "updated",
+    "milestone": {
+        "id": 1,
+        "action": "issue",
+        "numberRequired": 3,
+        "primaryBadge": {
+            "id": 4,
+            "slug": "milestone-slug",
+            "name": "Big Milestone Badge",
+            "strapline": "Recognises milestone stuff.",
+            "earnerDescription": "You achieved a milestone.",
+            "consumerDescription": "Earner achieved a milestone.",
+            "issuerUrl": "http://issuersite.com",
+            "rubricUrl": "http://issuersite.com",
+            "timeValue": 0,
+            "timeUnits": "minutes",
+            "limit": 0,
+            "unique": 0,
+            "created": "2014-06-13T18:49:33.000Z",
+            "type": "",
+            "archived": false,
+            "criteriaUrl": "http://issuersite.com/badge/big-milestone-badge/criteria",
+            "criteria": [ ],
+            "alignments": [ ],
+            "evidenceType": null,
+            "categories": [ ],
+            "tags": [ ],
+            "milestones": [ ]
+        },
+        "supportBadges": [
+            {
+                "id": 1,
+                "slug": "badge-slug",
+                "name": "New Badge",
+                "strapline": "This badge shows excellence.",
+                "earnerDescription": "You are excellent if you earn this badge.",
+                "consumerDescription": "Earners of this badge are excellent.",
+                "issuerUrl": "http://issuersite.com",
+                "rubricUrl": "http://issuersite.com/rubric",
+                "timeValue": 0,
+                "timeUnits": "minutes",
+                "limit": 0,
+                "unique": 0,
+                "created": "2014-06-11T15:36:49.000Z",
+                "type": "",
+                "archived": false,
+                "criteriaUrl": "http://issuersite.com/badge/new-badge/criteria",
+                "criteria": [ ],
+                "alignments": [ ],
+                "evidenceType": null,
+                "categories": [ ],
+                "tags": [ ],
+                "milestones": [ ]
+            },
+            ...
+
+        ]
+    }
+}
+```
+
+#### Response structure
+
+* status
+* milestone
+ * id
+ * action
+ * numberRequired
+ * primaryBadge ([badge](badges.md))
+    * id
+    * slug
+    * ...
+ * supportBadges `[ ]`
+    * id
+    * slug
+    * ...
+
+#### Potential Errors
+
+* **Invalid data**
+
+```
+  HTTP/1.1 400 Bad Request
+  Content-Type: application/json
+```
+
+```json
+  {
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
+      {
+        "field": "id",
+        "value": "..."
+      },
+      ...
+    ]
+  }
+```
 
 * **Milestone not found**
 
