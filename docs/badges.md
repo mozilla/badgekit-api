@@ -127,7 +127,7 @@ Content-Type: application/json
     },
     ...
   ],
-  pageData": {
+  "pageData": {
     "page": 1,
     "count": 2,
     "total": 4
