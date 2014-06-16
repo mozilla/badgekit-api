@@ -95,6 +95,8 @@ GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications
 * **`page`:** - page of results to return
 * **`count`:** - count of results to return per page
 
+e.g. `/systems/<slug>/applications?count=2&page=1`
+
 ### Expected response
 
 ```
@@ -135,11 +137,18 @@ Content-Type: application/json
             ]
         },
         ...
-    ]
+    ],
+    pageData": {
+        "page": 1,
+        "count": 2,
+        "total": 4
+    }
 }
 ```
 
 Applications are returned in order sorted by created date.
+
+__`pageData` is returned when pagination parameters are used.__
 
 #### Response structure
 
@@ -519,6 +528,8 @@ GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications/:slug/
 * **`page`:** - page of results to return
 * **`count`:** - count of results to return per page
 
+e.g. `/systems/<slug>/badges/<slug>/applications/<slug>/reviews?count=2&page=1`
+
 ### Expected response
 
 ```
@@ -544,9 +555,16 @@ Content-Type: application/json
             ]
         },
         ...
-    ]
+    ],
+    pageData": {
+        "page": 1,
+        "count": 2,
+        "total": 4
+    }
 }
 ```
+
+_`pageData` is returned when pagination parameters are used._
 
 #### Response structure
 
