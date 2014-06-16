@@ -59,6 +59,8 @@ GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/codes
 * **`page`:** - page of results to return
 * **`count`:** - count of results to return per page
 
+e.g. `/systems/<slug>/badges/<slug>/codes?count=2&page=1`
+
 ### Expected response
 
 ```
@@ -80,9 +82,16 @@ Content-Type: application/json
   ],
   "badge": {
     ...
+  },
+  "pageData": {
+    "page": 1,
+    "count": 2,
+    "total": 4
   }
 }
 ```
+
+_`pageData` is returned when pagination parameters are used._
 
 #### Response structure
 
