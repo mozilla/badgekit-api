@@ -35,6 +35,8 @@ GET /systems/:systemSlug/issuers/:issuerSlug/programs
 * **`page`:** - page of results to return
 * **`count`:** - count of results to return per page
 
+e.g. `/systems/<slug>/issuers/<slug>/programs?count=2&page=1`
+
 ### Expected response
 
 ```
@@ -55,9 +57,17 @@ Content-Type: application/json
   	  "imageUrl": "http://programsite.com/image.jpg"
   	},
   	...
-  ]
+  ],
+  "pageData": {
+    "page": 1,
+    "count": 2,
+    "total": 4
+  }
 }
 ```
+
+_`pageData` is returned when pagination parameters are used._
+
 #### Response structure
 
 * programs `[ ]`
