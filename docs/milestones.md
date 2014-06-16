@@ -18,8 +18,8 @@ __When an earner is awarded a set of badges that makes them eligible to earn a m
 * [`POST /systems/:slug/milestones`](#post-systemsslugmilestones)
 * [`PUT /systems/:slug/milestones/:milestoneId`](#put-systemsslugmilestonesmilestoneid)
 * [`DELETE /systems/:slug/milestones/:milestoneId`](#delete-systemsslugmilestonesmilestoneid)
-* [`POST /systems/:slug/milestones/:milestoneId/add-badge`](#post-systemsslugmilestonesmilestoneidaddbadge)
-* [`POST /systems/:slug/milestones/:milestoneId/remove-badge`](#post-systemsslugmilestonesmilestoneidremovebadge)
+* [`POST /systems/:slug/milestones/:milestoneId/add-badge`](#post-systemsslugmilestonesmilestoneidadd-badge)
+* [`POST /systems/:slug/milestones/:milestoneId/remove-badge`](#post-systemsslugmilestonesmilestoneidremove-badge)
 
 ## `GET /systems/:slug/milestones`
 
