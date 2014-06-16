@@ -110,7 +110,7 @@ Content-Type: application/json
           "email": "admin@systemsite.com",
           "imageUrl": "http://systemsite.com/image.jpg",
           "issuers": [ ]
-      }
+      },
       "criteriaUrl": "http://issuersite.com/criteria",
       "criteria": [
           {
