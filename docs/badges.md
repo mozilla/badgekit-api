@@ -5,7 +5,7 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 | NAME | VALUE |
 |:---|:---|
 | `id` | __integer__ - _ID from database entry._ |
-| `slug` | __string__ - _Used to identify badge in API endpoints._ |
+| `slug` | __string__ - _Used to identify badge in API endpoints (auto-generated)._ |
 | `name` | __string__ - _Display name._ |
 | `strapline` | __string__ - _Short tagline description._ |
 | `earnerDescription` | __string__ - _Description for potential earners._ |
