@@ -27,7 +27,6 @@ Assessment therefore involves two objects in BadgeKit API: applications and revi
 | `author` | __email address__ - _reviewer email_ |
 | `comment` | __string__ - _applicant feedback_ |
 | `reviewItems` | __array__ - _one for each criteria item in the badge; each reviewItem can include: `criterionId`, `satisfied` status and `comment`_ |
-| `approved` | __boolean__ - _indicates success of application_ |
 
 ## Endpoints
 
