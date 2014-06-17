@@ -315,7 +315,6 @@ POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
 
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|--------------------------|
-| **slug** | _required_ | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | _required_ | Name of the badge. Maximum 255 characters.
 | **image** OR **imageUrl** | _required_ | Image for the program. Should be either multipart data or a URL.
 | **unique** | _required_ | Boolean indicator of whether an earner can earn the badge only once.
@@ -453,37 +452,6 @@ Content-Type: application/json
   }
 ```
 
-* **Duplicate entry**
-
-```
-  HTTP/1.1 409 Conflict
-  Content-Type: application/json
-```
-
-```json
-  {
-    "code": "ResourceConflict",
-    "error": "badge with that `slug` already exists",
-    "details": {
-      "name": "Badge Name",
-      "slug": "badge-slug",
-      "strapline": "Badge strapline.",
-      "earnerDescription": "Badge description for earners.",
-      "consumerDescription": "Badge description for consumers.",
-      "issuerUrl": "http://issuersite.com",
-      "rubricUrl": "http://issuersite.com/rubric",
-      "criteriaUrl": "http://issuersite.com/criteria",
-      "timeValue": 10,
-      "timeUnits": "minutes",
-      "evidenceType": "URL",
-      "limit": 5,
-      "unique": false,
-      "imageUrl": "http://issuersite.com/badge.png",
-      "archived": false
-    }
-  }
-```
-
 ## Update a Badge
 
 Updates an existing badge.
@@ -500,7 +468,6 @@ PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badge
 
 | Parameters             | Description              |
 |:-----------------------|--------------------------|
-| **slug** | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | Name of the badge. Maximum 255 characters.
 | **image** OR **imageUrl** | Image for the program. Should be either multipart data or a URL.
 | **unique** | Boolean indicator of whether an earner can earn the badge only once.
@@ -637,37 +604,6 @@ Content-Type: application/json
       },
       ...
     ]
-  }
-```
-
-* **Duplicate entry**
-
-```
-  HTTP/1.1 409 Conflict
-  Content-Type: application/json
-```
-
-```json
-  {
-    "code": "ResourceConflict",
-    "error": "badge with that `slug` already exists",
-    "details": {
-      "name": "Badge Name",
-      "slug": "badge-slug",
-      "strapline": "Badge Strapline",
-      "earnerDescription": "Badge Description",
-      "consumerDescription": "Badge Description for Consumers",
-      "issuerUrl": "http://example.org/issuer",
-      "rubricUrl": "http://example.org/rubric",
-      "criteriaUrl": "http://example.org/criteria",
-      "timeValue": 10,
-      "timeUnits": "minutes",
-      "evidenceType": "URL",
-      "limit": 5,
-      "unique": false,
-      "imageUrl": "http://example.org/badge.png",
-      "archived": false
-    }
   }
 ```
 
