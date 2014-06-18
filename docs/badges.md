@@ -22,6 +22,8 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 | `type` | __string__ - _Badges can be organized by type and category._ |
 | `archived` | __boolean__ - _Archived badges can no longer be earned._ |
 | `system` | __integer__ - _System is represented by ID in database - system details are returned from API endpoints as nested JSON._ |
+| `issuer` | __integer__ - _Isuser is represented by ID in database - issuer details are returned from API endpoints as nested JSON._ |
+| `program` | __integer__ - _Program is represented by ID in database - program details are returned from API endpoints as nested JSON._ |
 | `criteriaUrl` | __string__ - _Link to criteria material._ |
 | `criteria` | __array__ - _Each item includes `id`, `description`, `required` status and `note`._ |
 | `categories` | __array__ - _See above for related type field._ |
@@ -111,6 +113,25 @@ Content-Type: application/json
           "imageUrl": "http://systemsite.com/image.jpg",
           "issuers": [ ]
       },
+      "issuer": {
+          "id": 1,
+          "slug": "issuer-slug",
+          "url": "http://issuersite.com",
+          "name": "Issuer Name",
+          "description": "Issuer description.",
+          "email": "admin@issuersite.com",
+          "imageUrl": "http://issuersite.com/image.jpg",
+          "programs": [ ]
+      },
+      "program": {
+          "id": 1,
+          "slug": "program-slug",
+          "url": "http://programsite.com",
+          "name": "Program Name",
+          "description": "Program description.",
+          "email": "admin@programsite.com",
+          "imageUrl": "http://programsite.com/image.jpg"
+      },
       "criteriaUrl": "http://issuersite.com/criteria",
       "criteria": [
           {
@@ -157,14 +178,31 @@ _`pageData` is returned when pagination parameters are used._
   * imageUrl
   * type
   * archived
-  * [system](systems.md) `[ ]`
+  * [system](systems.md)
     * id
     * slug
     * url
     * name
     * email
     * imageUrl
-    * [issuers](issuers.md) `[ ]`
+    * issuers `[ ]`
+  * [issuer](issuers.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
+    * programs `[ ]`
+  * [program](programs.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
   * criteriaUrl
   * criteria `[ ]`
     * id
@@ -228,6 +266,25 @@ Content-Type: application/json
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [ ]
     },
+    "issuer": {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [ ]
+    },
+    "program": {
+      "id": 1,
+      "slug": "program-slug",
+      "url": "http://programsite.com",
+      "name": "Program Name",
+      "description": "Program description.",
+      "email": "admin@programsite.com",
+      "imageUrl": "http://programsite.com/image.jpg"
+    },
     "criteriaUrl": "http://issuersite.com/criteria",
     "criteria": [
       {
@@ -265,14 +322,31 @@ Content-Type: application/json
   * imageUrl
   * type
   * archived
-  * [system](systems.md) `[ ]`
+  * [system](systems.md)
     * id
     * slug
     * url
     * name
     * email
     * imageUrl
-    * [issuers](issuers.md) `[ ]`
+    * issuers `[ ]`
+  * [issuer](issuers.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
+    * programs `[ ]`
+  * [program](programs.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
   * criteriaUrl
   * criteria `[ ]`
     * id
@@ -372,6 +446,25 @@ Content-Type: application/json
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [ ]
     },
+    "issuer": {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [ ]
+    },
+    "program": {
+      "id": 1,
+      "slug": "program-slug",
+      "url": "http://programsite.com",
+      "name": "Program Name",
+      "description": "Program description.",
+      "email": "admin@programsite.com",
+      "imageUrl": "http://programsite.com/image.jpg"
+    },
     "criteriaUrl": "http://issuersite.com/criteria",
     "criteria": [
       {
@@ -410,14 +503,31 @@ Content-Type: application/json
   * imageUrl
   * type
   * archived
-  * [system](systems.md) `[ ]`
+  * [system](systems.md)
     * id
     * slug
     * url
     * name
     * email
     * imageUrl
-    * [issuers](issuers.md) `[ ]`
+    * issuers `[ ]`
+  * [issuer](issuers.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
+    * programs `[ ]`
+  * [program](programs.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
   * criteriaUrl
   * criteria `[ ]`
     * id
@@ -527,6 +637,25 @@ Content-Type: application/json
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [ ]
     },
+    "issuer": {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [ ]
+    },
+    "program": {
+      "id": 1,
+      "slug": "program-slug",
+      "url": "http://programsite.com",
+      "name": "Program Name",
+      "description": "Program description.",
+      "email": "admin@programsite.com",
+      "imageUrl": "http://programsite.com/image.jpg"
+    },
     "criteriaUrl": "http://issuersite.com/criteria",
     "criteria": [
       {
@@ -558,21 +687,38 @@ Content-Type: application/json
 	* rubricUrl
 	* timeValue
 	* timeUnits
-  * evidenceType
+	* evidenceType
 	* limit
 	* unique
 	* created
 	* imageUrl
 	* type
 	* archived
-	* [system](systems.md) `[ ]`
+	* [system](systems.md)
 		* id
 		* slug
 		* url
 		* name
 		* email
 		* imageUrl
-		* [issuers](issuers.md) `[ ]`
+		* issuers `[ ]`
+	* [issuer](issuers.md)
+		* id
+		* slug
+		* url
+		* name
+		* description
+		* email
+		* imageUrl
+		* programs `[ ]`
+	* [program](programs.md)
+		* id
+		* slug
+		* url
+		* name
+		* description
+		* email
+		* imageUrl
 	* criteriaUrl
 	* criteria `[ ]`
 		* id
