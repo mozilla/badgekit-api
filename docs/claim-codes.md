@@ -209,6 +209,12 @@ Content-Type: application/json
       "system": {
         ...
       },
+      "issuer": {
+        ...
+      },
+      "program": {
+        ...
+      },
       "criteriaUrl": "http://issuersite.com/criteria",
       "criteria": [ ],
       "categories": [ ],
