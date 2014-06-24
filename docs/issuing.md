@@ -131,7 +131,7 @@ Content-Type: application/json
 
 ```json
 {
-  "instances": [
+  "instance":
     {
       "slug": "instance-slug",
       "email": "earneremail@adomain.com",
@@ -144,15 +144,13 @@ Content-Type: application/json
         "slug": "badge-slug",
         ...
       }
-    },
-    ...
-  ]
+    }
 }
 ```
 
 #### Response structure
 
-* instances `[ ]`
+* instance
  * slug
  * email
  * expires
