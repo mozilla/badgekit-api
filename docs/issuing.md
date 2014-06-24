@@ -71,7 +71,7 @@ Content-Type: application/json
       "expires": "2014-10-29T10:16:01.000Z",
       "issuedOn": "2014-05-29T10:16:01.000Z",
       "claimCode": "claim-code",
-      "assertionURl": "http://issuersite.com/public/assertions/instance-slug",
+      "assertionUrl": "http://issuersite.com/public/assertions/instance-slug",
       "badge": {
         "id": 1,
         "slug": "badge-slug",
@@ -138,7 +138,7 @@ Content-Type: application/json
       "expires": "2014-10-29T10:16:01.000Z",
       "issuedOn": "2014-05-29T10:16:01.000Z",
       "claimCode": "claim-code",
-      "assertionURl": "http://issuersite.com/public/assertions/instance-slug",
+      "assertionUrl": "http://issuersite.com/public/assertions/instance-slug",
       "badge": {
         "id": 1,
         "slug": "badge-slug",
