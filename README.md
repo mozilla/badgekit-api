@@ -39,7 +39,7 @@ To install the BadgeKit API:
 * set your environment configs
 * set up your database
 
-You can use `bin/db-migrate up` from the root directory to create (or migrate) your database. You also need to add an entry in the `system` table, providing an initial slug and system name for a badge issuing system. See the [wiki](https://github.com/mozilla/badgekit-api/wiki) for more details and the [Self-Hosting guide](https://github.com/mozilla/openbadges-badgekit/wiki/BadgeKit-Self-Hosting-Guide), particularly if you plan on building your own instance of the BadgeKit Web app as well as the API.
+You can use `bin/db-migrate up` from the root directory to create (or migrate) your database. You also need to add an entry in the `systems` table, providing an initial slug, system name and URL (optionally also description, email and image) for a badge issuing system. See the [wiki](https://github.com/mozilla/badgekit-api/wiki) for more details and the [Self-Hosting guide](https://github.com/mozilla/openbadges-badgekit/wiki/BadgeKit-Self-Hosting-Guide), particularly if you plan on building your own instance of the BadgeKit Web app as well as the API.
 
 ## Environment Configuration
 
