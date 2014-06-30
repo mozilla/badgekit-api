@@ -157,6 +157,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         email: instance.email,
         assertionUrl: instance.assertionUrl,
         issuedOn: unixtimeFromDate(instance.issuedOn),
+        evidenceUrl: instance.evidenceUrl,
         comment: comment
       }
     }
@@ -181,7 +182,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           next()
 
           const comment = req.body.comment || null;
-          hookData.push(instanceToHookData(instance))
+          hookData.push(instanceToHookData(instance, comment))
 
           return Milestones.findAndAward(instance.email, badge);
         })
@@ -448,6 +449,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         type: 'hosted',
       },
       issuedOn: unixtimeFromDate(instance.issuedOn),
+      evidence: instance.evidenceUrl, 
       expires: unixtimeFromDate(instance.expires),
     }
   }

@@ -15,6 +15,7 @@ const BadgeInstances = db.table('badgeInstances', {
     'issuedOn',
     'expires',
     'claimCode',
+    'evidenceUrl',
     'badgeId',
   ],
   relationships: {
@@ -34,6 +35,7 @@ BadgeInstances.formatUserInput = function formatUserInput(obj) {
     issuedOn: obj.issuedOn || dateFromUnixtime(Date.now()),
     expires: obj.expires ? dateFromUnixtime(obj.expires) : null,
     claimCode: obj.claimCode,
+    evidenceUrl: obj.evidenceUrl,
   }
 }
 
@@ -47,6 +49,7 @@ BadgeInstances.toResponse = function toResponse(row, req) {
     expires: row.expires,
     issuedOn: row.issuedOn,
     claimCode: row.claimCode,
+    evidenceUrl: row.evidenceUrl,
     assertionUrl: assertionUrl,
     badge: row.badge ? row.badge.toResponse(req) : null
   }
@@ -56,6 +59,7 @@ BadgeInstances.validateRow = makeValidator({
   id: optional('isInt'),
   email: required('isEmail'),
   claimCode: optional('len', 0, 255),
+  evidenceUrl: optional('isUrl'),
   badgeId: required('isInt'),
 })
 
