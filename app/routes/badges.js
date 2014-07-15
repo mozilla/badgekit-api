@@ -14,6 +14,9 @@ const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
 
+  server.get('/public/badges', [
+    showAllBadges
+  ]);
   server.get('/systems/:systemSlug/badges', [
     middleware.findSystem(),
     showAllBadges,
@@ -71,7 +74,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
     Badges.get(query, options, function foundRows (error, result) {
       if (error)
         return dbErrorHandler(error, null, res, next);
-      
+
       var total = 0;
       var rows = result;
       if (req.pageData) {
@@ -82,7 +85,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       var responseData = { badges: rows.map(Badges.toResponse) };
 
       sendPaginated(req, res, responseData, total);
-       
+
       return next();
     });
   }
