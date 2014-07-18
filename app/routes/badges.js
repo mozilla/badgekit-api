@@ -3,6 +3,7 @@ const hash = require('../lib/hash')
 const async = require('async')
 const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
+const makeBadgeClassUrl = require('./utils').makeBadgeClassUrl
 const Milestones = require('../models/milestone');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
@@ -13,8 +14,18 @@ const putBadgeHelper = imageHelper.putModel(Badges)
 const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
+  // allows routes to override the display of the returned badges
+  var responseFormatter = Badges.toResponse
+  var badgeListName = 'badges'
 
   server.get('/public/badges', [
+    function(req, res, next) {
+      badgeListName = "badgelist"
+      responseFormatter = function(row, request) {
+        return { location: req.resolvePath(makeBadgeClassUrl(row)) }
+      }
+      next()
+    },
     showAllBadges
   ]);
   server.get('/systems/:systemSlug/badges', [
@@ -82,7 +93,8 @@ exports = module.exports = function applyBadgeRoutes (server) {
         rows = result.rows;
       }
 
-      var responseData = { badges: rows.map(Badges.toResponse) };
+      var responseData = {}
+      responseData[badgeListName] = rows.map(responseFormatter)
 
       sendPaginated(req, res, responseData, total);
 
