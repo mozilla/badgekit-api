@@ -181,7 +181,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           next()
 
           const comment = req.body.comment || null;
-          hookData.push(instanceToHookData(instance))
+          hookData.push(instanceToHookData(instance, comment))
 
           return Milestones.findAndAward(instance.email, badge);
         })
