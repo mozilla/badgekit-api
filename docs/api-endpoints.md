@@ -38,6 +38,7 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug
+    * **GET** /public/badges
   * [Claim Codes](claim-codes.md)
     * **GET** /systems/:slug/codes/:code
     * **GET** /systems/:slug/issuers/:slug/codes/:code
