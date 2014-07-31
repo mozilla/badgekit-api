@@ -838,6 +838,8 @@ Content-Type: application/json
 
 Retrieves list of public badge classes - API returns URL for each badge class.
 
+__The authorization header is not required for this endpoint.__
+
 ### Expected request
 
 ```
