@@ -52,6 +52,8 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
  * `DELETE /systems/<slug>/badges/<slug>`
  * `DELETE /systems/<slug>/issuers/<slug>/badges/<slug>`
  * `DELETE /systems/<slug>/issuers/<slug>/programs/<slug>/badges/<slug>`
+* [Retrieve Public Badge Class List](#retrieve-public-badge-class-list)
+ * `GET /public/badges`
 
 ## Retrieve Badge List
 
@@ -831,3 +833,43 @@ Content-Type: application/json
     "message": "Could not find badge field: `slug`, value: <attempted-slug>"
   }
 ```
+
+## Retrieve Public Badge Class List
+
+Retrieves list of public badge classes - API returns URL for each badge class.
+
+### Expected request
+
+```
+GET /public/badges
+```
+
+### Expected response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+ "badgelist": [
+ {
+  "location": "http://issuersite.com/public/systems/system-slug/badges/badge-slug"
+ },
+ {
+  "location": "http://issuersite.com/public/systems/system-slug/issuers/issuer-slug/programs/program-slug/badges/badge-slug"
+ },
+ ...
+ ]
+}
+```
+
+#### Response structure
+
+* badgelist `[ ]`
+  * location
+
+### Potential errors
+
+*None*
