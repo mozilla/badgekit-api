@@ -45,7 +45,7 @@ You can use `bin/db-migrate up` from the root directory to create (or migrate) y
 
 BadgeKit API currently uses the following configuration details:
 
-* `NODE_ENV`: Set to `production` for production environments. If you want to run the test suite, set this to `test`. **DO NOT SET THIS TO `test` ON PRODUCTION MACHINES, BAD THINGS WILL HAPPEN** - mainly authentication will be inactive and you run the risk of accidentally dropping your database.
+* `NODE_ENV`: Set to `production` for production environments. If you want to run the test suite or to try out the API endpoints without JWT authorization, set this to `test`. **DO NOT SET THIS TO `test` ON PRODUCTION MACHINES, BAD THINGS WILL HAPPEN** - _authentication will be inactive and you run the risk of accidentally dropping your database_.
 * `DB_HOST`: Defaults to `localhost`.
 * `DB_NAME`: Name of the database to store BadgeKit data.
 * `DB_USER`: User who has full access to the `DB_NAME` table.
