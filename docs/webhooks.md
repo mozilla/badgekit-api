@@ -8,7 +8,7 @@ BadgeKit will send data to your webhook URL when these events occur:
 
 * [An application review is submitted](#new-application-review-submitted)
 * [A badge is awarded/issued (a badge instance is created)](#new-badge-instance-created)
-* [A badge is revoked (a badge instance is deleted)](#new-badge-instance-deleted)
+* [A badge is revoked (a badge instance is deleted)](#badge-instance-deleted)
 
 ## Authentication
 

@@ -5,7 +5,7 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 | NAME | VALUE |
 |:---|:---|
 | `id` | __integer__ - _ID from database entry._ |
-| `slug` | __string__ - _Used to identify badge in API endpoints._ |
+| `slug` | __string__ - _Used to identify badge in API endpoints (auto-generated)._ |
 | `name` | __string__ - _Display name._ |
 | `strapline` | __string__ - _Short tagline description._ |
 | `earnerDescription` | __string__ - _Description for potential earners._ |
@@ -22,6 +22,8 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
 | `type` | __string__ - _Badges can be organized by type and category._ |
 | `archived` | __boolean__ - _Archived badges can no longer be earned._ |
 | `system` | __integer__ - _System is represented by ID in database - system details are returned from API endpoints as nested JSON._ |
+| `issuer` | __integer__ - _Isuser is represented by ID in database - issuer details are returned from API endpoints as nested JSON._ |
+| `program` | __integer__ - _Program is represented by ID in database - program details are returned from API endpoints as nested JSON._ |
 | `criteriaUrl` | __string__ - _Link to criteria material._ |
 | `criteria` | __array__ - _Each item includes `id`, `description`, `required` status and `note`._ |
 | `categories` | __array__ - _See above for related type field._ |
@@ -50,6 +52,8 @@ A badge represents the generic data for an earnable badge (not an awarded badge,
  * `DELETE /systems/<slug>/badges/<slug>`
  * `DELETE /systems/<slug>/issuers/<slug>/badges/<slug>`
  * `DELETE /systems/<slug>/issuers/<slug>/programs/<slug>/badges/<slug>`
+* [Retrieve Public Badge Class List](#retrieve-public-badge-class-list)
+ * `GET /public/badges`
 
 ## Retrieve Badge List
 
@@ -69,6 +73,10 @@ GET /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
   * `true` will return only archived badges
   * `false` (default) will return only unarchived badges
   * `any` will return badges regardless of archived status
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
+e.g. `/systems/<slug>/badges?archived=false&count=2&page=1`
 
 ### Expected response
 
@@ -106,7 +114,26 @@ Content-Type: application/json
           "email": "admin@systemsite.com",
           "imageUrl": "http://systemsite.com/image.jpg",
           "issuers": [ ]
-      }
+      },
+      "issuer": {
+          "id": 1,
+          "slug": "issuer-slug",
+          "url": "http://issuersite.com",
+          "name": "Issuer Name",
+          "description": "Issuer description.",
+          "email": "admin@issuersite.com",
+          "imageUrl": "http://issuersite.com/image.jpg",
+          "programs": [ ]
+      },
+      "program": {
+          "id": 1,
+          "slug": "program-slug",
+          "url": "http://programsite.com",
+          "name": "Program Name",
+          "description": "Program description.",
+          "email": "admin@programsite.com",
+          "imageUrl": "http://programsite.com/image.jpg"
+      },
       "criteriaUrl": "http://issuersite.com/criteria",
       "criteria": [
           {
@@ -122,9 +149,16 @@ Content-Type: application/json
       "milestones": [ ]
     },
     ...
-  ]
+  ],
+  "pageData": {
+    "page": 1,
+    "count": 2,
+    "total": 4
+  }
 }
 ```
+
+_`pageData` is returned when pagination parameters are used._
 
 #### Response structure
 
@@ -146,14 +180,31 @@ Content-Type: application/json
   * imageUrl
   * type
   * archived
-  * [system](systems.md) `[ ]`
+  * [system](systems.md)
     * id
     * slug
     * url
     * name
     * email
     * imageUrl
-    * [issuers](issuers.md) `[ ]`
+    * issuers `[ ]`
+  * [issuer](issuers.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
+    * programs `[ ]`
+  * [program](programs.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
   * criteriaUrl
   * criteria `[ ]`
     * id
@@ -217,6 +268,25 @@ Content-Type: application/json
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [ ]
     },
+    "issuer": {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [ ]
+    },
+    "program": {
+      "id": 1,
+      "slug": "program-slug",
+      "url": "http://programsite.com",
+      "name": "Program Name",
+      "description": "Program description.",
+      "email": "admin@programsite.com",
+      "imageUrl": "http://programsite.com/image.jpg"
+    },
     "criteriaUrl": "http://issuersite.com/criteria",
     "criteria": [
       {
@@ -254,14 +324,31 @@ Content-Type: application/json
   * imageUrl
   * type
   * archived
-  * [system](systems.md) `[ ]`
+  * [system](systems.md)
     * id
     * slug
     * url
     * name
     * email
     * imageUrl
-    * [issuers](issuers.md) `[ ]`
+    * issuers `[ ]`
+  * [issuer](issuers.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
+    * programs `[ ]`
+  * [program](programs.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
   * criteriaUrl
   * criteria `[ ]`
     * id
@@ -304,7 +391,6 @@ POST /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges
 
 | Parameters             | Required        | Description              |
 |:-----------------------|-----------------|--------------------------|
-| **slug** | _required_ | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | _required_ | Name of the badge. Maximum 255 characters.
 | **image** OR **imageUrl** | _required_ | Image for the program. Should be either multipart data or a URL.
 | **unique** | _required_ | Boolean indicator of whether an earner can earn the badge only once.
@@ -362,6 +448,25 @@ Content-Type: application/json
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [ ]
     },
+    "issuer": {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [ ]
+    },
+    "program": {
+      "id": 1,
+      "slug": "program-slug",
+      "url": "http://programsite.com",
+      "name": "Program Name",
+      "description": "Program description.",
+      "email": "admin@programsite.com",
+      "imageUrl": "http://programsite.com/image.jpg"
+    },
     "criteriaUrl": "http://issuersite.com/criteria",
     "criteria": [
       {
@@ -400,14 +505,31 @@ Content-Type: application/json
   * imageUrl
   * type
   * archived
-  * [system](systems.md) `[ ]`
+  * [system](systems.md)
     * id
     * slug
     * url
     * name
     * email
     * imageUrl
-    * [issuers](issuers.md) `[ ]`
+    * issuers `[ ]`
+  * [issuer](issuers.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
+    * programs `[ ]`
+  * [program](programs.md)
+    * id
+    * slug
+    * url
+    * name
+    * description
+    * email
+    * imageUrl
   * criteriaUrl
   * criteria `[ ]`
     * id
@@ -442,37 +564,6 @@ Content-Type: application/json
   }
 ```
 
-* **Duplicate entry**
-
-```
-  HTTP/1.1 409 Conflict
-  Content-Type: application/json
-```
-
-```json
-  {
-    "code": "ResourceConflict",
-    "error": "badge with that `slug` already exists",
-    "details": {
-      "name": "Badge Name",
-      "slug": "badge-slug",
-      "strapline": "Badge strapline.",
-      "earnerDescription": "Badge description for earners.",
-      "consumerDescription": "Badge description for consumers.",
-      "issuerUrl": "http://issuersite.com",
-      "rubricUrl": "http://issuersite.com/rubric",
-      "criteriaUrl": "http://issuersite.com/criteria",
-      "timeValue": 10,
-      "timeUnits": "minutes",
-      "evidenceType": "URL",
-      "limit": 5,
-      "unique": false,
-      "imageUrl": "http://issuersite.com/badge.png",
-      "archived": false
-    }
-  }
-```
-
 ## Update a Badge
 
 Updates an existing badge.
@@ -489,7 +580,6 @@ PUT /systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges/:badge
 
 | Parameters             | Description              |
 |:-----------------------|--------------------------|
-| **slug** | Short, computer-friendly name for the badge. Good slugs are lowercase and use dashes instead of spaces, e.g. `reading-badge`. Maximum of 50 characters and each badge must have a unique slug.
 | **name** | Name of the badge. Maximum 255 characters.
 | **image** OR **imageUrl** | Image for the program. Should be either multipart data or a URL.
 | **unique** | Boolean indicator of whether an earner can earn the badge only once.
@@ -549,6 +639,25 @@ Content-Type: application/json
       "imageUrl": "http://systemsite.com/image.jpg",
       "issuers": [ ]
     },
+    "issuer": {
+      "id": 1,
+      "slug": "issuer-slug",
+      "url": "http://issuersite.com",
+      "name": "Issuer Name",
+      "description": "Issuer description.",
+      "email": "admin@issuersite.com",
+      "imageUrl": "http://issuersite.com/image.jpg",
+      "programs": [ ]
+    },
+    "program": {
+      "id": 1,
+      "slug": "program-slug",
+      "url": "http://programsite.com",
+      "name": "Program Name",
+      "description": "Program description.",
+      "email": "admin@programsite.com",
+      "imageUrl": "http://programsite.com/image.jpg"
+    },
     "criteriaUrl": "http://issuersite.com/criteria",
     "criteria": [
       {
@@ -580,21 +689,38 @@ Content-Type: application/json
 	* rubricUrl
 	* timeValue
 	* timeUnits
-  * evidenceType
+	* evidenceType
 	* limit
 	* unique
 	* created
 	* imageUrl
 	* type
 	* archived
-	* [system](systems.md) `[ ]`
+	* [system](systems.md)
 		* id
 		* slug
 		* url
 		* name
 		* email
 		* imageUrl
-		* [issuers](issuers.md) `[ ]`
+		* issuers `[ ]`
+	* [issuer](issuers.md)
+		* id
+		* slug
+		* url
+		* name
+		* description
+		* email
+		* imageUrl
+		* programs `[ ]`
+	* [program](programs.md)
+		* id
+		* slug
+		* url
+		* name
+		* description
+		* email
+		* imageUrl
 	* criteriaUrl
 	* criteria `[ ]`
 		* id
@@ -626,37 +752,6 @@ Content-Type: application/json
       },
       ...
     ]
-  }
-```
-
-* **Duplicate entry**
-
-```
-  HTTP/1.1 409 Conflict
-  Content-Type: application/json
-```
-
-```json
-  {
-    "code": "ResourceConflict",
-    "error": "badge with that `slug` already exists",
-    "details": {
-      "name": "Badge Name",
-      "slug": "badge-slug",
-      "strapline": "Badge Strapline",
-      "earnerDescription": "Badge Description",
-      "consumerDescription": "Badge Description for Consumers",
-      "issuerUrl": "http://example.org/issuer",
-      "rubricUrl": "http://example.org/rubric",
-      "criteriaUrl": "http://example.org/criteria",
-      "timeValue": 10,
-      "timeUnits": "minutes",
-      "evidenceType": "URL",
-      "limit": 5,
-      "unique": false,
-      "imageUrl": "http://example.org/badge.png",
-      "archived": false
-    }
   }
 ```
 
@@ -738,3 +833,45 @@ Content-Type: application/json
     "message": "Could not find badge field: `slug`, value: <attempted-slug>"
   }
 ```
+
+## Retrieve Public Badge Class List
+
+Retrieves list of public badge classes - API returns URL for each badge class.
+
+__The authorization header is not required for this endpoint.__
+
+### Expected request
+
+```
+GET /public/badges
+```
+
+### Expected response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+ "badgelist": [
+ {
+  "location": "http://issuersite.com/public/systems/system-slug/badges/badge-slug"
+ },
+ {
+  "location": "http://issuersite.com/public/systems/system-slug/issuers/issuer-slug/programs/program-slug/badges/badge-slug"
+ },
+ ...
+ ]
+}
+```
+
+#### Response structure
+
+* badgelist `[ ]`
+  * location
+
+### Potential errors
+
+*None*
