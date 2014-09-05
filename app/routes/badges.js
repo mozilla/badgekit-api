@@ -93,7 +93,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       }
 
       var responseData = {}
-      badgeListName = req.badgeListName || 'badges'
+      var badgeListName = req.badgeListName || 'badges'
       responseData[badgeListName] = rows.map(responseFormatter)
 
       sendPaginated(req, res, responseData, total);
