@@ -16,11 +16,10 @@ const dbErrorHandler = errorHelper.makeDbHandler('badge')
 exports = module.exports = function applyBadgeRoutes (server) {
   // allows routes to override the display of the returned badges
   var responseFormatter = Badges.toResponse
-  var badgeListName = 'badges'
 
   server.get('/public/badges', [
     function(req, res, next) {
-      badgeListName = "badgelist"
+      req.badgeListName = "badgelist"
       responseFormatter = function(row, request) {
         return { location: req.resolvePath(makeBadgeClassUrl(row)) }
       }
@@ -94,6 +93,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       }
 
       var responseData = {}
+      badgeListName = req.badgeListName || 'badges'
       responseData[badgeListName] = rows.map(responseFormatter)
 
       sendPaginated(req, res, responseData, total);
