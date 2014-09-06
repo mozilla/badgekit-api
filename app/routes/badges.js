@@ -14,92 +14,92 @@ const putBadgeHelper = imageHelper.putModel(Badges)
 const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
-  // allows routes to override the display of the returned badges
-  var responseFormatter = Badges.toResponse
-
   server.get('/public/badges', [
-    function(req, res, next) {
-      req.badgeListName = "badgelist"
-      responseFormatter = function(row, request) {
-        return { location: req.resolvePath(makeBadgeClassUrl(row)) }
-      }
-      next()
-    },
-    showAllBadges
+    showAllBadges('badgelist', function(row, req) { return { location: req.resolvePath(makeBadgeClassUrl(row)) } })
   ]);
+
   server.get('/systems/:systemSlug/badges', [
     middleware.findSystem(),
-    showAllBadges,
+    showAllBadges(),
   ]);
   server.get('/systems/:systemSlug/issuers/:issuerSlug/badges', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
-    showAllBadges,
+    showAllBadges(),
   ]);
   server.get('/systems/:systemSlug/issuers/:issuerSlug/programs/:programSlug/badges', [
     middleware.findSystem(),
     middleware.findIssuer({where: {systemId: ['system', 'id']}}),
     middleware.findProgram({where: {issuerId: ['issuer', 'id']}}),
-    showAllBadges,
+    showAllBadges(),
   ]);
-  function showAllBadges (req, res, next) {
-    var query;
-    var options = {relationships: true};
-
-    switch ('' + req.query.archived) {
-      case 'true':
-      case '1':
-        query = {archived: true};
-        break;
-
-      case 'false':
-      case '0':
-      case 'undefined':
-        query = {archived: false};
-        break;
-
-      case 'any':
-      case '':
-        query = {};
-        break;
-
-      default:
-        return res.send(400, {
-          code: 'InvalidParameter',
-          parameter: 'archived',
-          message: 'Invalid `archived` parameter. Expecting one of \'true\', \'false\' or \'any\'.',
-        });
+  
+  function showAllBadges(badgeListName, responseFormatter) {
+    if (typeof badgeListName == 'undefined') {
+      badgeListName = 'badges';
+    }
+    if (typeof responseFormatter == 'undefined') {
+      responseFormatter = Badges.toResponse;
     }
 
-    if (req.system) query.systemId = req.system.id
-    if (req.issuer) query.issuerId = req.issuer.id
-    if (req.program) query.programId = req.program.id
+    return function (req, res, next) {
+      var query;
+      var options = {relationships: true};
 
-    if (req.pageData) {
-      options.limit = req.pageData.count;
-      options.page = req.pageData.page;
-      options.includeTotal = true;
-    }
+      switch ('' + req.query.archived) {
+        case 'true':
+        case '1':
+          query = {archived: true};
+          break;
 
-    Badges.get(query, options, function foundRows (error, result) {
-      if (error)
-        return dbErrorHandler(error, null, res, next);
+        case 'false':
+        case '0':
+        case 'undefined':
+          query = {archived: false};
+          break;
 
-      var total = 0;
-      var rows = result;
-      if (req.pageData) {
-        total = result.total;
-        rows = result.rows;
+        case 'any':
+        case '':
+          query = {};
+          break;
+
+        default:
+          return res.send(400, {
+            code: 'InvalidParameter',
+            parameter: 'archived',
+            message: 'Invalid `archived` parameter. Expecting one of \'true\', \'false\' or \'any\'.',
+          });
       }
 
-      var responseData = {}
-      var badgeListName = req.badgeListName || 'badges'
-      responseData[badgeListName] = rows.map(responseFormatter)
+      if (req.system) query.systemId = req.system.id
+      if (req.issuer) query.issuerId = req.issuer.id
+      if (req.program) query.programId = req.program.id
 
-      sendPaginated(req, res, responseData, total);
+      if (req.pageData) {
+        options.limit = req.pageData.count;
+        options.page = req.pageData.page;
+        options.includeTotal = true;
+      }
 
-      return next();
-    });
+      Badges.get(query, options, function foundRows (error, result) {
+        if (error)
+          return dbErrorHandler(error, null, res, next);
+
+        var total = 0;
+        var rows = result;
+        if (req.pageData) {
+          total = result.total;
+          rows = result.rows;
+        }
+
+        var responseData = {}
+        responseData[badgeListName] = rows.map(function(row) { return responseFormatter(row, req) })
+
+        sendPaginated(req, res, responseData, total);
+
+        return next();
+      });
+    };
   }
 
   server.post('/systems/:systemSlug/badges', [
