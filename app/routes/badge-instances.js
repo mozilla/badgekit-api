@@ -13,6 +13,8 @@ const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 const log = require('../lib/logger')
 const makeBadgeClassUrl = require('./utils').makeBadgeClassUrl
+const extend = require('xtend')
+const async = require('async')
 
 const findSystemBadge = [
   middleware.findSystem(),
@@ -96,6 +98,18 @@ const publicPrefix = {
   program: '/public/' + prefix.program,
 }
 
+function instanceToHookData(badge, instance, comment) {
+  return {
+    action: 'award',
+    uid: instance.slug,
+    badge: badge.toResponse(),
+    email: instance.email,
+    assertionUrl: instance.assertionUrl,
+    issuedOn: unixtimeFromDate(instance.issuedOn),
+    comment: comment
+  }
+}
+
 exports = module.exports = function applyBadgeRoutes (server) {
   const createNewInstanceSuffix = '/badges/:badgeSlug/instances'
   server.post(prefix.system + createNewInstanceSuffix,
@@ -150,18 +164,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
           return errorHandler(err)
       })
 
-    function instanceToHookData(instance, comment) {
-      return {
-        action: 'award',
-        uid: instance.slug,
-        badge: badge.toResponse(),
-        email: instance.email,
-        assertionUrl: instance.assertionUrl,
-        issuedOn: unixtimeFromDate(instance.issuedOn),
-        comment: comment
-      }
-    }
-
     function saveBadgeInstance(err) {
       const MissingWebhookError = customError('MissingWebhookError');
 
@@ -182,7 +184,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           next()
 
           const comment = req.body.comment || null;
-          hookData.push(instanceToHookData(instance, comment))
+          hookData.push(instanceToHookData(badge, instance, comment))
 
           return Milestones.findAndAward(instance.email, badge);
         })
@@ -190,7 +192,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         .then(function (instances) {
           instances.forEach(function (instance) {
             instance = BadgeInstances.toResponse(instance, req);
-            hookData.push(instanceToHookData(instance))
+            hookData.push(instanceToHookData(badge, instance))
           })
           return Webhooks.getOne({systemId: system.id});
         })
@@ -251,6 +253,120 @@ exports = module.exports = function applyBadgeRoutes (server) {
           }
         })
     }
+  }
+
+  const createNewInstancesSuffix = '/badges/:badgeSlug/instances/bulk'
+  server.post(prefix.system + createNewInstancesSuffix,
+              findSystemBadge, createNewInstances)
+
+  server.post(prefix.issuer + createNewInstancesSuffix,
+              findIssuerBadge, createNewInstances)
+
+  server.post(prefix.program + createNewInstancesSuffix,
+              findProgramBadge, createNewInstances)
+
+  function createNewInstances(req, res, next) {
+    const badge = req.badge;
+    const system = req.system;
+
+    var emails = req.body.emails;
+    if (!(emails instanceof Array))
+      return res.send(400, new Error('Invalid value for "emails".  Expected array.'));
+
+    var rows = [];
+    emails.forEach(function (email) {
+      var row = BadgeInstances.formatUserInput(extend(req.body, {email: email} ));
+      row.badgeId = badge.id;
+      if (row.claimCode)
+        delete row.claimCode;
+
+      rows.push(row);
+    });
+
+    var errs = [];
+    rows.forEach(function (row) {
+      errs = errs.concat(BadgeInstances.validateRow(row));
+    });
+
+    if (errs.length)
+      return res.send(400, errorHelper.validation(errs));
+
+    var instances = [];
+          
+    return Webhooks.getOne({systemId: system.id}, function(err, hook) {
+      if (!hook) {
+        log.info({
+            code: 'WebhookNotFound',
+            system: system
+          }, 'Webhook not found for system');
+      }
+
+      async.each(rows, saveBadgeInstance, function (err) {
+        if (err)
+          return next(err);
+
+        return res.send(201, { status: 'created', instances: instances  });
+      });
+
+      function saveBadgeInstance(row, callback) {
+        const MissingWebhookError = customError('MissingWebhookError');
+        var hookData = [];
+        var instance;
+        BadgeInstances.put(row, function(err, result) {
+          if (err) {
+            if (err.code === 'ER_DUP_ENTRY')
+              return callback();
+            else {
+              return callback(err);
+            }
+          }
+
+          instance = BadgeInstances.toResponse(result.row, req);
+
+          instances.push(instance);
+
+          callback();
+
+          const comment = req.body.comment || null;
+          hookData.push(instanceToHookData(badge, instance, comment))
+
+          Milestones.findAndAward(instance.email, badge)
+            .then(function (instances) {
+              instances.forEach(function (instance) {
+                instance = BadgeInstances.toResponse(instance, req);
+                hookData.push(instanceToHookData(badge, instance))
+              })
+
+              if (!hook)
+                throw new MissingWebhookError();
+              return Promise.all(hookData.map(hook.call.bind(hook)))
+            })
+
+            .then(function (results) {
+              results.forEach(function (result) {
+                const res = result.res;
+                const body = result.body;
+                if (res.statusCode != 200) {
+                  return log.warn({
+                    code: 'WebhookBadResponse',
+                    status: res.statusCode,
+                    body: body
+                  })
+                }
+              })
+            })
+            .catch(MissingWebhookError, function () {
+              return;
+            })
+            .error(function (err) {
+              if (err.code !== 'ER_DUP_ENTRY') {
+                log.error(err, 'error dealing with webhooks when awarding badge')
+                return;
+              }
+            })
+        });
+      }
+    })
   }
 
   const getInstancesSuffix = '/badges/:badgeSlug/instances'
