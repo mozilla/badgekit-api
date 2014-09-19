@@ -79,6 +79,7 @@ exports = module.exports = function applyApplicationRoutes (server) {
     if (req.system) query.systemId = req.system.id;
     if (req.issuer) query.issuerId = req.issuer.id;
     if (req.program) query.programId = req.program.id;
+    if (req.query.email) query.learner = req.query.email;
 
     if (req.pageData) {
       options.limit = req.pageData.count;
