@@ -158,6 +158,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         email: instance.email,
         assertionUrl: instance.assertionUrl,
         issuedOn: unixtimeFromDate(instance.issuedOn),
+        evidenceUrl: instance.evidenceUrl,
         comment: comment
       }
     }
@@ -449,6 +450,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
         type: 'hosted',
       },
       issuedOn: unixtimeFromDate(instance.issuedOn),
+      evidence: instance.evidenceUrl, 
       expires: unixtimeFromDate(instance.expires),
     }
   }
