@@ -91,10 +91,11 @@ GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/applications
 
 #### Available request parameters
 
+* **`processed`** - boolean indicating whether to return processed or unprocessed applications
 * **`page`:** - page of results to return
 * **`count`:** - count of results to return per page
 
-e.g. `/systems/<slug>/applications?count=2&page=1`
+e.g. `/systems/<slug>/applications?processed=true&count=2&page=1`
 
 ### Expected response
 
