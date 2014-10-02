@@ -2,7 +2,7 @@
 
 ## Overview
 
-Authorization is done by generating a JWT token for each request and putting it in the HTTP `Authorization` header with the auth-scheme `JWT`, under the auth-param `token`. Example (line breaks are for display purposes only):
+Authorization is carried out by generating a JWT token for each request and putting it in the HTTP `Authorization` header with the auth-scheme `JWT`, under the auth-param `token`. Example (_line breaks are for display purposes only_):
 
 ```
 Authorization: JWT token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiO\
@@ -33,7 +33,9 @@ Use the `HS256` (HMAC-SHA256) algorithm. Example header:
 
 ### Secret
 
-Ask one of us for the secret.
+If you're running your own self-hosted instance of BadgeKit, the secret should be whatever you set as `MASTER_SECRET` in your environment configuration.
+
+If you're using the Mozilla hosted version of BadgeKit - get in touch with the team for the secret.
 
 ### Example in JavaScript
 ```js
@@ -60,7 +62,7 @@ var token = jws.sign({
 ## Purpose of Each Claim
 
 * **key**: To look up the secret used to sign the token.
-* **exp**: General protection against replay attacks: a short lived token has limited opportunity for re-use.
-* **method**: Protection from replay attacks against the same URL with a different method, e.g., converting a POST request into a DELETE request.
-* **path**: Protection from replay attacks with the same method but against a new URL, e.g, using the same token for a POST to `/systems/chicago` as the token for a POST to `/systems/new-york`.
+* **exp**: General protection against replay attacks - a short lived token has limited opportunity for re-use.
+* **method**: Protection from replay attacks against the same URL with a different method, e.g. converting a `POST` request into a `DELETE` request.
+* **path**: Protection from replay attacks with the same method but against a new URL, e.g using the same token for a `POST` to `/systems/chicago` as the token for a `POST` to `/systems/new-york`.
 * **body**: Protection from data tampering; ensures the data that the client intended to send is the data received.
