@@ -1,3 +1,6 @@
+var habitat = require("habitat");
+habitat.load();
+
 // New Relic Server monitoring support
 if ( process.env.NEW_RELIC_ENABLED ) {
   require( "newrelic" );
