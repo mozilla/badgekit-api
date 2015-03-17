@@ -322,7 +322,7 @@ function putBadge (options, callback) {
 
 function fromPostToRow (post) {
   return {
-    slug: hash.md5('' + Date.now() + post.name),
+    slug: post.slug || hash.md5('' + Date.now() + post.name),
     name: post.name,
     strapline: post.strapline,
     systemId: post.systemId,
