@@ -18,4 +18,5 @@ node_modules
 
 *.local
 
-config.*
+config.env
+config.json

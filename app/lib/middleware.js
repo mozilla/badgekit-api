@@ -23,6 +23,8 @@ const restify = require('restify')
 const url = require('url')
 const log = require('../lib/logger')
 const hash = require('../lib/hash').hash
+const config = require('../lib/config');
+
 const models = {
   system: require('../models/system'),
   issuer: require('../models/issuer'),
@@ -128,7 +130,7 @@ function attachPageData() {
 }
 
 function verifyRequest() {
-  if (process.env.NODE_ENV == 'test') {
+  if ( process.env.NODE_ENV == 'test') {
     log.warn('In test environment, bypassing request verification')
     return function (req, res, next) {
       return next()
@@ -198,7 +200,7 @@ function verifyRequest() {
       return next(new http403('Missing JWT claim: key'))
 
     if (auth.key === 'master') {
-      const masterSecret = process.env.MASTER_SECRET
+      const masterSecret = config( 'MASTER_SECRET')
       if (!jws.verify(token, masterSecret))
         return next(new http403('Invalid token signature'))
       return success()
