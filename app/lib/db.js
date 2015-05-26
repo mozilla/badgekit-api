@@ -1,12 +1,13 @@
 var streamsql = require('streamsql');
 var mysql = require('mysql');
+const config = require('./config');
 
 var options = {
   driver: 'mysql',
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: config( 'DB_HOST'),
+  user: config( 'DB_USER'),
+  password: config( 'DB_PASSWORD'),
+  database: config( 'DB_NAME'),
 }
 
 var db = streamsql.connect(options);

@@ -6,6 +6,7 @@ if ( process.env.NEW_RELIC_ENABLED ) {
   require( "newrelic" );
 }
 
+const config = require('./lib/config');
 const restify = require('restify');
 const applyRoutes = require('./routes');
 const logger = require('./lib/logger')
@@ -32,7 +33,7 @@ applyRoutes(server);
 module.exports = server;
 
 if (!module.parent) {
-  server.listen(process.env.PORT || 8080, function () {
+  server.listen( config( 'PORT', 8080), function () {
     console.log('%s listening at %s', server.name, server.url);
   });
 }
