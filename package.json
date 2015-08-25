@@ -3,7 +3,7 @@
   "version": "0.2.22",
   "description": "A badge issuing platform",
   "author": "Mozilla OpenBadges",
-  "license": "MPLv2",
+  "license": "MPL-2.0",
   "main": "app/index.js",
   "scripts": {
     "start": "node app",
