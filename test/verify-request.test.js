@@ -48,9 +48,42 @@ spawn(app).then(function (api) {
     })
   })
 
-  test('POST request, master key', function (t) {
+  test('POST request, master key, hash string', function (t) {
     const url = api.makeUrl('/systems')
-    const body = '{"slug": "test-system", "name": "Test System", "url":"http://example.org"}'
+    const body = '{"slug": "test-system", "name": "Test System ∞", "url":"http://example.org"}'
+    const token = jws.sign({
+      secret: secret,
+      header: {typ: "JWT", alg: "HS256"},
+      payload: {
+        key: 'master',
+        path: '/systems',
+        method: 'POST',
+        exp: (Date.now()/1000|0) + 60,
+        body: {
+          alg: 'sha256',
+          hash: sha256(body),
+        },
+      }
+    })
+
+    const opts = reqOpts(url, token)
+    opts.method = 'POST'
+    opts.headers['Content-Type'] = 'application/json'
+    const req = http.request(opts, function (res) {
+      res.pipe(concat(function (data) {
+        const result = JSON.parse(data)
+        t.same(result.status, 'created')
+        t.end()
+      }))
+    })
+
+    req.write(body)
+    req.end()
+  })
+
+  test('POST request, master key, hash buffer', function (t) {
+    const url = api.makeUrl('/systems')
+    const body = Buffer('{"slug": "test-system-two", "name": "Test System ∞", "url":"http://example.org"}')
     const token = jws.sign({
       secret: secret,
       header: {typ: "JWT", alg: "HS256"},
