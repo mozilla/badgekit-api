@@ -105,12 +105,15 @@ module.exports = function spawner(app, callback) {
           req.end()
         }
         req.pipe(concat(function (body) {
-          resolve(req.response.statusCode, JSON.parse(body), req.response.headers)
+          resolve(req.response.statusCode, maybeParseJSON(body), req.response.headers)
         }))
       } else {
-        request[method.toLowerCase()](baseUrl + url, function (err, res, body) {
+        request[method.toLowerCase()]({
+          url: baseUrl + url,
+          followRedirect: false,
+        }, function (err, res, body) {
           if (err) throw err
-          resolve(res.statusCode, JSON.parse(body), res.headers)
+          resolve(res.statusCode, maybeParseJSON(body), res.headers)
         })
       }
       return deferred.promise
@@ -147,4 +150,12 @@ module.exports = function spawner(app, callback) {
   })
 
   return deferred.promise
+}
+
+function maybeParseJSON(body) {
+  try {
+    return JSON.parse(body)
+  } catch (err) {
+    return body
+  }
 }
