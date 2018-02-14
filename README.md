@@ -1,3 +1,5 @@
+**This software is no longer supported.**
+
 # BadgeKit API
 
 The BadgeKit API provides back-end processing and data storage for issuing Open Badges. You can use the API in conjunction with the [BadgeKit app](https://github.com/mozilla/openbadges-badgekit) or can use the API itself, with your own front-ends for badge admin and for earners. With BadgeKit handling the data for badges and earner applications, you can deliver interaction with your community of badge earners, plugging into the API for data and to respond to badge issuing events.
