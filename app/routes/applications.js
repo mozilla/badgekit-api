@@ -5,6 +5,7 @@ const Badges = require('../models/badge');
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 const hash = require('../lib/hash').hash
+const sendPaginated = require('../lib/send-paginated');
 
 const dbErrorHandler = errorHelper.makeDbHandler('application')
 
@@ -50,18 +51,54 @@ exports = module.exports = function applyApplicationRoutes (server) {
       order: ['badgeId', 'applications.created'],
     };
 
+    switch ('' + req.query.processed) {
+      case 'true':
+      case '1':
+        query.processed = { value: null, op: 'IS NOT' };
+        break;
+
+      case 'false':
+      case '0':
+        query.processed = null;
+        break;
+
+      case 'any':
+      case '':
+      case 'undefined':
+        break;
+
+      default:
+        return res.send(400, {
+          code: 'InvalidParameter',
+          parameter: 'processed',
+          message: 'Invalid `processed` parameter. Expecting one of \'true\', \'false\' or \'any\'.',
+        });
+    }
+
     if (req.badge) query.badgeId = req.badge.id;
     if (req.system) query.systemId = req.system.id;
     if (req.issuer) query.issuerId = req.issuer.id;
     if (req.program) query.programId = req.program.id;
 
-    Applications.get(query, options, function foundRows (error, rows) {
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    Applications.get(query, options, function foundRows (error, result) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({applications: rows.map(function (application) {
-        return Applications.toResponse(application, req);
-      })});
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+
+      var responseData = {applications: rows.map(function (application) { return Applications.toResponse(application, req); })}
+      sendPaginated(req, res, responseData, total);
 
       return next();
     });

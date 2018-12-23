@@ -16,7 +16,7 @@ The BadgeKit API docs include the information you need to get started using the 
 * [Webhooks](webhooks.md)
 * [Authorization](authorization.md)
 
-You can interact with badge and application data managed by the API using the endpoints. The data you send to the API endpoints needs to be signed for authentication, and the data you receive from the API (in responses and webhook messages) is signed before it is sent. To detect badging events carried out through the API, such as badges being issued and badge applications being reviewed, you can configure a webhook URL to which BadgeKit API will send data.
+You can interact with badge and application data managed by the API using the endpoints. The data you send to the API endpoints needs to be signed for authentication, and the data you receive from the API (in responses and webhook messages) is signed before it is sent. To detect badging events carried out through the API, such as badges being issued/ revoked and badge applications being reviewed, you can configure a webhook URL to which BadgeKit API will send data.
 
 The API docs provide a reference for the endpoints and webhooks. You will also find detailed guides to carrying out common processes, including the assessment flow, together with sample code excerpts, in the [BadgeKit API wiki](https://github.com/mozilla/badgekit-api/wiki):
 

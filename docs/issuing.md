@@ -48,6 +48,13 @@ GET /systems/:slug/issuers/:slug/badges/:slug/instances
 GET /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances
 ```
 
+#### Available request parameters
+
+* **`page`:** - page of results to return
+* **`count`:** - count of results to return per page
+
+e.g. `/systems/<slug>/badges/<slug>/instances?count=2&page=1`
+
 ### Expected response
 
 ```
@@ -64,7 +71,7 @@ Content-Type: application/json
       "expires": "2014-10-29T10:16:01.000Z",
       "issuedOn": "2014-05-29T10:16:01.000Z",
       "claimCode": "claim-code",
-      "assertionURl": "http://issuersite.com/public/assertions/instance-slug",
+      "assertionUrl": "http://issuersite.com/public/assertions/instance-slug",
       "badge": {
         "id": 1,
         "slug": "badge-slug",
@@ -72,9 +79,16 @@ Content-Type: application/json
       }
     },
     ...
-  ]
+  ],
+  "pageData": {
+    "page": 1,
+    "count": 2,
+    "total": 4
+  }
 }
 ```
+
+_`pageData` is returned when pagination parameters are used._
 
 #### Response structure
 
@@ -117,28 +131,26 @@ Content-Type: application/json
 
 ```json
 {
-  "instances": [
+  "instance":
     {
       "slug": "instance-slug",
       "email": "earneremail@adomain.com",
       "expires": "2014-10-29T10:16:01.000Z",
       "issuedOn": "2014-05-29T10:16:01.000Z",
       "claimCode": "claim-code",
-      "assertionURl": "http://issuersite.com/public/assertions/instance-slug",
+      "assertionUrl": "http://issuersite.com/public/assertions/instance-slug",
       "badge": {
         "id": 1,
         "slug": "badge-slug",
         ...
       }
-    },
-    ...
-  ]
+    }
 }
 ```
 
 #### Response structure
 
-* instances `[ ]`
+* instance
  * slug
  * email
  * expires

@@ -3,16 +3,30 @@ const hash = require('../lib/hash')
 const async = require('async')
 const safeExtend = require('../lib/safe-extend')
 const Badges = require('../models/badge');
+const makeBadgeClassUrl = require('./utils').makeBadgeClassUrl
 const Milestones = require('../models/milestone');
 const imageHelper = require('../lib/image-helper')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
+const sendPaginated = require('../lib/send-paginated');
 
 const putBadgeHelper = imageHelper.putModel(Badges)
 const dbErrorHandler = errorHelper.makeDbHandler('badge')
 
 exports = module.exports = function applyBadgeRoutes (server) {
+  // allows routes to override the display of the returned badges
+  var responseFormatter = Badges.toResponse
 
+  server.get('/public/badges', [
+    function(req, res, next) {
+      req.badgeListName = "badgelist"
+      responseFormatter = function(row, request) {
+        return { location: req.resolvePath(makeBadgeClassUrl(row)) }
+      }
+      next()
+    },
+    showAllBadges
+  ]);
   server.get('/systems/:systemSlug/badges', [
     middleware.findSystem(),
     showAllBadges,
@@ -61,11 +75,29 @@ exports = module.exports = function applyBadgeRoutes (server) {
     if (req.issuer) query.issuerId = req.issuer.id
     if (req.program) query.programId = req.program.id
 
-    Badges.get(query, options, function foundRows (error, rows) {
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    Badges.get(query, options, function foundRows (error, result) {
       if (error)
         return dbErrorHandler(error, null, res, next);
 
-      res.send({badges: rows.map(Badges.toResponse)});
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+
+      var responseData = {}
+      badgeListName = req.badgeListName || 'badges'
+      responseData[badgeListName] = rows.map(responseFormatter)
+
+      sendPaginated(req, res, responseData, total);
+
       return next();
     });
   }

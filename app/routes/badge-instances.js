@@ -3,6 +3,7 @@ const util = require('util')
 const unixtimeFromDate = require('../lib/unixtime-from-date')
 const sha256 = require('../lib/hash').sha256
 const customError = require('../lib/custom-error')
+const sendPaginated = require('../lib/send-paginated')
 const Badges = require('../models/badge')
 const ClaimCodes = require('../models/claim-codes')
 const Webhooks = require('../models/webhook')
@@ -11,6 +12,7 @@ const Milestones = require('../models/milestone')
 const errorHelper = require('../lib/error-helper')
 const middleware = require('../lib/middleware')
 const log = require('../lib/logger')
+const makeBadgeClassUrl = require('./utils').makeBadgeClassUrl
 
 const findSystemBadge = [
   middleware.findSystem(),
@@ -180,7 +182,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
           next()
 
           const comment = req.body.comment || null;
-          hookData.push(instanceToHookData(instance))
+          hookData.push(instanceToHookData(instance, comment))
 
           return Milestones.findAndAward(instance.email, badge);
         })
@@ -259,8 +261,23 @@ exports = module.exports = function applyBadgeRoutes (server) {
   server.get(prefix.program + getInstancesSuffix,
              findProgramBadge, getBadgeInstances)
   function getBadgeInstances(req, res, next) {
-    BadgeInstances.get({ badgeId: req.badge.id}, {relationships: true, relationshipsDepth: 2}).then(function (rows) {
-      return res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+    var options = {relationships: true, relationshipsDepth: 2};
+
+    if (req.pageData) {
+      options.limit = req.pageData.count;
+      options.page = req.pageData.page;
+      options.includeTotal = true;
+    }
+
+    BadgeInstances.get({ badgeId: req.badge.id}, options).then(function (result) {
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+      var responseData = {instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })}
+      return sendPaginated(req, res, responseData, total);
     })
     .error(function (err) {
       log.error(err, 'error fetching badge instances');
@@ -289,7 +306,29 @@ exports = module.exports = function applyBadgeRoutes (server) {
              findProgramBadgeInstance, deleteBadgeInstance)
   function deleteBadgeInstance(req, res, next) {
     BadgeInstances.del({id: req.badgeInstance.id}).then(function () {
-      return res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
+      res.send({instance: BadgeInstances.toResponse(req.badgeInstance, req)});
+
+      // Webhook stuff shouldn't hold up the request, so we call
+      // `next()` before looking up any hooks we have to send off
+      next()
+
+      hookData = {
+        action: 'revoke',
+        uid: req.badgeInstance.slug,
+        badge: req.badge.toResponse(),
+        email: req.badgeInstance.email
+      }
+      return Webhooks.getOne({systemId: req.system.id})
+    }).then(function (hook) {
+      if (!hook)
+        return log.info({code: 'WebhookNotFound', system: req.system}, 'Webhook not found for system')
+
+      hook.call(hookData, function (err, res, body) {
+        if (err)
+          return log.warn({code: 'WebhookRequestError', error: err})
+        if (res.statusCode != 200)
+          return log.warn({code: 'WebhookBadResponse', status: res.statusCode, body: body})
+      })
     })
     .error(function (err) {
       log.error(err, 'error deleting badge instance');
@@ -339,13 +378,28 @@ exports = module.exports = function applyBadgeRoutes (server) {
     BadgeInstances.get([query, queryParams]).then(function (rows) {
       var instanceIds = rows.map(function(row) { return row.id; });
       if (instanceIds.length) {
-        return BadgeInstances.get( { id: instanceIds }, { relationships: true, relationshipsDepth: 2 });
+        var options = { relationships: true, relationshipsDepth: 2 };
+        if (req.pageData) {
+          options.limit = req.pageData.count;
+          options.page = req.pageData.page;
+          options.includeTotal = true;
+        }
+
+        return BadgeInstances.get( { id: instanceIds }, options);
       }
       else {
         return Promise.resolve([]);
       }
-    }).then(function (rows) {
-      res.send({instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })});
+    }).then(function (result) {
+      var total = 0;
+      var rows = result;
+      if (req.pageData) {
+        total = result.total;
+        rows = result.rows;
+      }
+
+      var responseData = {instances: rows.map(function (row) { return BadgeInstances.toResponse(row, req); })}
+      return sendPaginated(req, res, responseData, total);
     }).error(function (err) {
       if (!err.restCode)
         log.error(err, 'unknown error in getUserInstances route')
@@ -397,27 +451,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
       issuedOn: unixtimeFromDate(instance.issuedOn),
       expires: unixtimeFromDate(instance.expires),
     }
-  }
-  function makeBadgeClassUrl(badge) {
-    const badgeSlug = badge.slug
-    const programSlug = badge.program && badge.program.slug
-    const issuerSlug = badge.issuer && badge.issuer.slug
-    const systemSlug = badge.system && badge.system.slug
-
-    if (programSlug && issuerSlug && systemSlug)
-      return util.format('/public/systems/%s/issuers/%s/programs/%s/badges/%s',
-                        systemSlug, issuerSlug, programSlug, badgeSlug)
-
-    if (!programSlug && issuerSlug && systemSlug)
-      return util.format('/public/systems/%s/issuers/%s/badges/%s',
-                        systemSlug, issuerSlug, badgeSlug)
-
-    if (!programSlug && !issuerSlug && systemSlug)
-      return util.format('/public/systems/%s/badges/%s',
-                        systemSlug, badgeSlug)
-
-    log.error({badge: badge}, 'badge has incomplete parantage – sending broken assertion')
-    return '/public'
   }
 
   server.get(publicPrefix.system +'/badges/:badgeSlug',

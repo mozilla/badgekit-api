@@ -12,14 +12,33 @@ spawn(app).then(function (api) {
       return body.applications.map(prop('slug')).sort()
     }
 
-    t.plan(23);
+    t.plan(32);
 
-    api.get('/systems/chicago/applications').then(function (res) {
+    api.get('/systems/chicago/applications?page=1&count=2').then(function (res) {
       const slugs = getSlugs(res.body)
       active = res.body.applications
       t.same(res.statusCode, 200, 'should have HTTP 200')
       t.same(slugs.length, 2)
+      t.same(res.body.pageData.total, 2)
+      t.same(res.body.pageData.page, 1)
+      t.same(res.body.pageData.count, 2)
       t.same(slugs.indexOf('app-pittsburgh'), -1, 'should not have pittsburgh system application')
+    }).catch(api.fail(t))
+
+    api.get('/systems/chicago/applications?processed=true').then(function (res) {
+      const slugs = getSlugs(res.body)
+      active = res.body.applications
+      t.same(res.statusCode, 200, 'should have HTTP 200')
+      t.same(slugs.length, 1)
+      t.same(slugs.indexOf('app-scratch'), -1, 'should not have unprocessed badge application')
+    }).catch(api.fail(t))
+
+    api.get('/systems/chicago/applications?processed=false').then(function (res) {
+      const slugs = getSlugs(res.body)
+      active = res.body.applications
+      t.same(res.statusCode, 200, 'should have HTTP 200')
+      t.same(slugs.length, 1)
+      t.same(slugs.indexOf('app-archived'), -1, 'should not have processed badge application')
     }).catch(api.fail(t))
 
     api.get('/systems/chicago/badges/chicago-scratch-badge/applications').then(function (res) {

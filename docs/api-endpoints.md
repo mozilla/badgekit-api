@@ -38,6 +38,7 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug
+    * **GET** /public/badges
   * [Claim Codes](claim-codes.md)
     * **GET** /systems/:slug/codes/:code
     * **GET** /systems/:slug/issuers/:slug/codes/:code
@@ -118,11 +119,3 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **DELETE** /systems/:slug/milestones/:milestoneId
 
 See also [authorization](authorization.md) and [webhooks](webhooks.md).
-
-<!--
-* **GET** /public/systems/:slug 
-* **GET** /public/systems/:slug/issuers/:slug
-* **GET** /public/systems/:slug/issuers/:slug/programs/:slug 
-* **GET** /public/assertions/:slug
-* **GET** /public/images/:imageId
--->

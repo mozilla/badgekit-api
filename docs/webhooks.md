@@ -8,6 +8,7 @@ BadgeKit will send data to your webhook URL when these events occur:
 
 * [An application review is submitted](#new-application-review-submitted)
 * [A badge is awarded/issued (a badge instance is created)](#new-badge-instance-created)
+* [A badge is revoked (a badge instance is deleted)](#badge-instance-deleted)
 
 ## Authentication
 
@@ -107,6 +108,36 @@ The `award` action webhook is sent whenever a badge is issued, whether this invo
 * assertionUrl
 * issuedOn
 * comment
+
+## Badge Instance Deleted
+
+If it is determined that a badge earner should no longer have a badge, their badge instance can be deleted.  When this occurs, the API sends a message notifying the webhook that the earner's badge has been revoked. The message includes the action (which will be `revoke`), the UID, the badge revoked, and the earner email.
+
+The `revoke` action webhook is sent whenever a badge is revoked.  This allows issuers to carry out any tasks associated with revoking the badge, such as removing permissions on a website tied to the possession of a particular badge.
+
+### Example Message
+
+```json
+{
+    "action": "revoke",
+    "uid": "abcdefghijkl1234567890",
+    "badge": 
+    {
+        "id": 11,
+        "slug": "badge-slug",
+        ...
+    },
+
+    "email": "anearner@adomain.com"
+}
+```
+
+#### Message structure
+
+* action
+* uid
+* [badge](badges.md)
+* email
 
 ## Guides
 

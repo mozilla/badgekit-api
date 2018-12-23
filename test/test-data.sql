@@ -179,6 +179,7 @@ INSERT INTO `badges` SET
   `limit` = 2,
   `unique` = 1,
   `strapline` = 'test test test',
+  `type` = 'Not too shabby',
   `imageId` = 1;
 
 INSERT INTO `claimCodes` SET
@@ -222,6 +223,7 @@ INSERT INTO `applications` SET
   `slug` = 'app-archived',
   `badgeId` = 3,
   `systemId` = 1,
+  `processed` = '2014-06-10 14:02:57',
   `learner` = 'totebag@dujg.com';
 
 INSERT INTO `applications` SET

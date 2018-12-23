@@ -1,6 +1,6 @@
 {
   "name": "badgekit-api",
-  "version": "0.2.12",
+  "version": "0.2.18",
   "description": "A badge issuing platform",
   "author": "Mozilla OpenBadges",
   "license": "MPLv2",
@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "mysql": "~2.0.0-alpha9",
-    "restify": "~2.6.1",
-    "streamsql": "~0.8.0",
+    "restify": "~2.8.2",
+    "streamsql": "~0.8.3",
     "validator": "~2.0.0",
     "xtend": "~2.1.1",
     "bluebird": "~1.0.8",
