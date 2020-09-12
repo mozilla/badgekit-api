@@ -583,7 +583,6 @@ exports = module.exports = function applyBadgeRoutes (server) {
     return next()
   }
   function makeBadgeClass(badge, req) {
-    // #TODO: alignment urls, tags
     var imageUrl = badge.image.toUrl()
     if (!/^http/.test(imageUrl))
       imageUrl = req.resolvePath(imageUrl)
@@ -594,6 +593,7 @@ exports = module.exports = function applyBadgeRoutes (server) {
       criteria: badge.criteriaUrl,
       alignment: badge.alignments.map(function(alignment) { return { name: alignment.name, url: alignment.url, description: alignment.description } }),
       issuer: req.resolvePath(publicIssuerUrl(badge)),
+      tags:badge.tags.map(function(tag) { return tag.value })
     }
   }
   function publicIssuerUrl(badge) {
