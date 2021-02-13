@@ -11,8 +11,8 @@
     "lint": "jshint app/*"
   },
   "dependencies": {
-    "mysql": "~2.0.0-alpha9",
-    "restify": "~2.8.2",
+    "mysql": "2.16.0",
+    "restify": "4.3.0",
     "habitat": "0.4.1",
     "streamsql": "~0.8.3",
     "validator": "~2.0.0",
