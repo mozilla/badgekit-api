@@ -13,7 +13,7 @@ exports = module.exports = function applySystemRoutes (server) {
   server.get('/systems', showAllSystems);
   function showAllSystems(req, res, next) {
     const query = {}
-    const options = {relationships: true};
+    const options = {relationships: true, relationshipsDepth: 2};
     
     if (req.pageData) {
       options.limit = req.pageData.count;
