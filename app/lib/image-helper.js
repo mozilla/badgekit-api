@@ -1,6 +1,7 @@
 module.exports = {
   createFromFile: createFromFile,
   createFromUrl: createFromUrl,
+  createFromData: createFromData,
   getFromPost: getFromPost,
   putModel: putModel,
 }
@@ -42,9 +43,43 @@ function createFromFile (file, callback) {
 }
 
 function createFromUrl (url, callback) {
+  const scheme = (/^([a-z]+):/i.exec(url)||['']).pop().toLowerCase();
+
+  if (scheme === 'data')
+    return createFromData(url, callback);
+
   const row = {
     slug: hash('md5', Date.now() + url),
     url: url
+  };
+
+  Images.put(row, function (err, result) {
+    callback(err, result.insertId);
+  });
+}
+
+function createFromData (data, callback) {
+  if (typeof data === 'string') {
+    const parts = /^(?:data:)?(?:([^;]+);)?(?:charset=(.*);)?(?:([^,]+),)?(.*)$/i.exec(data);
+
+    data = {
+      mimetype: parts[1],
+      charset: parts[2],
+      encoding: parts[3],
+      data: parts[4]
+    };
+  }
+
+  const mimetype = data.mimetype || 'text/plain';
+  const charset = data.charset || 'US-ASCII';
+  const encoding = data.encoding || null;
+
+  const buffer = new Buffer(data.data, encoding);
+
+  const row = {
+    slug: hashString(Date.now() + data.data),
+    mimetype: mimetype,
+    data: buffer
   };
 
   Images.put(row, function (err, result) {
@@ -75,7 +110,10 @@ function putModel(Model) {
 
     if (image) {
       if (typeof image === 'string') {
-        image = {url: image};
+        if (/^data:/.test(image))
+          image = {data: image};
+        else
+          image = {url: image};
       } else {
         image = {
           mimetype: image.type,
@@ -87,7 +125,7 @@ function putModel(Model) {
 
       validationErrors = validationErrors.concat(Images.validateRow(image));
 
-      if (!image.size && !image.url) {
+      if (!image.size && !image.url && !image.data) {
         validationErrors.push({
           message: "Missing value",
           field: 'image'
@@ -106,5 +144,8 @@ function putModel(Model) {
 
     if (image.url)
       return createFromUrl(image.url, finish);
+
+    if (image.data)
+      return createFromData(image.data, finish);
   }
 }
