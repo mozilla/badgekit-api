@@ -74,6 +74,9 @@ See the following overview of the available BadgeKit API endpoints - browse to t
     * **POST** /systems/:slug/badges/:slug/instances
     * **POST** /systems/:slug/issuers/:slug/badges/:slug/instances
     * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances
+    * **POST** /systems/:slug/badges/:slug/instances/bulk
+    * **POST** /systems/:slug/issuers/:slug/badges/:slug/instances/bulk
+    * **POST** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/bulk
     * **DELETE** /systems/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/badges/:slug/instances/:email
     * **DELETE** /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/:email

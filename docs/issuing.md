@@ -31,6 +31,10 @@ Issuing is the process of awarding a badge to a specific earner. In BadgeKit API
  * `POST /systems/:slug/badges/:slug/instances`
  * `POST /systems/:slug/issuers/:slug/badges/:slug/instances`
  * `POST /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances`
+* [Create Multiple Badge Instances](#create-multiple-badge-instances)
+ * `POST /systems/:slug/badges/:slug/instances/bulk`
+ * `POST /systems/:slug/issuers/:slug/badges/:slug/instances/bulk`
+ * `POST /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/bulk`
 * [Delete an Instance](#delete-an-instance)
  * `DELETE /systems/:slug/badges/:slug/instances/:email`
  * `DELETE /systems/:slug/issuers/:slug/badges/:slug/instances/:email`
@@ -271,6 +275,85 @@ The assertion URL represents the location of the badge assertion. A badge assert
         "assertionUrl": "http://issuersite.com/public/assertions/abcde..."
         ...
     }
+  }
+```
+
+## Create Multiple Badge Instances
+
+The API supports bulk issuing of badges. The endpoint allows a particular badge to be issued to multiple earner email addresses.
+
+### Expected request
+
+```
+POST /systems/:slug/badges/:slug/instances/bulk
+POST /systems/:slug/issuers/:slug/badges/:slug/instances/bulk
+POST /systems/:slug/issuers/:slug/programs/:slug/badges/:slug/instances/bulk
+```
+
+Requests can be sent as `application/json`, `application/x-www-form-urlencoded` or `multipart/form-data`.
+
+| Parameters             | Required        | Description              |
+|:-----------------------|-----------------|--------------------------|
+| **emails** | required | Array of email addresses for the earners the badge is being issued to. |
+
+### Expected response
+
+```
+HTTP/1.1 201 Created
+Content-Type: application/json
+```
+
+```json
+{
+  "status": "created",
+  "instances": [{
+      "slug": "abcdefghi123456789abcdefghi123456789",
+      "email": "earner@somedomain.com",
+      "expires": null,
+      "issuedOn": "2014-05-29T10:16:01.654Z",
+      "claimCode": "abcde12345",
+      "assertionUrl": "http://issuersite.com/public/assertions/abcdefghi123456789abcdefghi123456789",
+      "badge": null
+  },
+  ...
+  ]
+}
+```
+
+The bulk issuing route does not accept the claim code parameter. If the badge has already been issued to an email address in the passed array, it will not be issued again and the returned array will not contain a badge instance for that email. Similarly, if an email address was included twice in the array, only one instance will be created and returned.
+
+#### Response structure
+
+* status
+* instances `[ ]`
+ * slug
+ * email
+ * expires
+ * issuedOn
+ * claimCode
+ * assertionUrl
+ * [badge](badges.md)
+
+#### Potential errors
+
+* **Invalid data**
+
+```
+  HTTP/1.1 400 Bad Request
+  Content-Type: application/json
+```
+
+```json
+  {
+    "code": "ValidationError",
+    "message": "Could not validate required fields",
+    "details": [
+      {
+        "field": "email",
+        "value": "..."
+      },
+      ...
+    ]
   }
 ```
 
